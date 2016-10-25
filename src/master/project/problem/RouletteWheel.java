@@ -25,12 +25,13 @@ public class RouletteWheel {
         this.fitness[0] = 0;
         for(int i = 0; i < fitness.length; i++){
             this.fitness[i+1] = this.fitness[i] + fitness[i];
-            total += i;
+            total += fitness[i];
         }
     }
     
     public int spin(){
-        int r = random.nextInt(total);
+        
+        int r = random.nextInt(this.total);
         int left = 0;
         int right = fitness.length - 1;
         int mid;
@@ -43,4 +44,6 @@ public class RouletteWheel {
         }
         return left;
     }
+    
+    public int getTotal() { return total; }
 }

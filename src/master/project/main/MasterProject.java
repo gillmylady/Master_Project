@@ -37,12 +37,14 @@ public class MasterProject {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         // TODO code application logic here
         
-        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_1_9.txt");
+        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_3_9.txt");
         System.out.println(ss.getTaskNumber());
         System.out.println();
         
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
         abc.RunBasicABCAlgorithm(50000);
+        
+        
         /*abc.displayAllSolution();
         
         abc.allSolutionsTryAdd(ss);

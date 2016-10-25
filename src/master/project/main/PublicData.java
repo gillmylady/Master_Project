@@ -5,6 +5,9 @@
  */
 package master.project.main;
 
+import java.util.List;
+import master.project.problem.Solution;
+
 /**
  *
  * @author gillmylady
@@ -31,6 +34,13 @@ public class PublicData {
     public static int totalBeeNumber500 = 500;
     public static int totalBeeNumber1000 = 1000;
     
-    
+    public static int[] getSolutionFitness(List<Solution> solutions){
+        int[] ret = new int[solutions.size()];
+        
+        for(int i = 0; i < solutions.size(); i++){
+            ret[i] = solutions.get(i).totalPriority();
+        }
+        return ret;
+    }
     
 }

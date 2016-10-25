@@ -63,12 +63,15 @@ public class AbcBasicAlgorithm {
         int rdNum;
         int rdSchedule;
         int averagePrio;
-        int[] eachPrio = new int[workerBeeNumber];
+        int[] eachPrio = new int[solutions.size()];
         while((i++) < round){
             
             displayAllSolution();
             
-            rdNum = rd.nextInt(solutions.size());
+            eachPrio = PublicData.getSolutionFitness(solutions);
+            RouletteWheel rw = new RouletteWheel(eachPrio);
+            rdNum = rw.spin();
+            //System.out.println(rdNum);
             rdSchedule = solutions.get(rdNum).getOneScheduledTask();
             
             for(int sID = 0; sID < solutions.size(); sID++){
@@ -96,23 +99,13 @@ public class AbcBasicAlgorithm {
                 solutions.get(sID).addCount();
                 
             }
-            
+            //every 50 rounds, check those solutions which didnt change for a while so need to reset them.
             if(i % 25 == 0){
                 allSolutionsTryAdd();
-            }
-            
-            
-            //every 50 rounds, check those solutions which didnt change for a while so need to reset them.
-            if(round % PublicData.resetBeeCount == 0){
-                averagePrio = 0;
+                averagePrio = rw.getTotal() / eachPrio.length;
+                //System.out.printf("rw.getTotal()=%d, eachPrio.length=%d, averagePrio=%d\n", rw.getTotal(), eachPrio.length, averagePrio);
                 for(int j = 0; j < eachPrio.length; j++){
-                    eachPrio[j] = solutions.get(j).totalPriority();
-                    averagePrio += eachPrio[j];
-                }
-                averagePrio /= eachPrio.length;
-                
-                for(int j = 0; j < eachPrio.length; j++){
-                    if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() < averagePrio){
+                    if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() <= averagePrio){
                         solutions.get(j).resetSolution();
                         System.out.println("reset one solution");
                     }
