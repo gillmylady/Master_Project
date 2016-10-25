@@ -53,11 +53,11 @@ public class AbcBasicAlgorithm {
             
         }
         
-        RunABCAlgorithm(100);
+        RunBasicABCAlgorithm(100);
         
     }
     
-    public void RunABCAlgorithm(int round){
+    public void RunBasicABCAlgorithm(int round){
         int i = 0;
         Random rd = new Random();
         int rdNum;
@@ -120,25 +120,6 @@ public class AbcBasicAlgorithm {
                 
             }
         }
-    }
-    
-    public Solution rouletteWheelProb(){
-        int total = 0;
-        int[] fit = new int[solutions.size()];
-        for(int i = 0; i < solutions.size(); i++){
-            fit[i] = solutions.get(i).totalPriority();
-            total += fit[i];
-        }
-        Random r = new Random();
-        int rv = r.nextInt(total);
-        for(int i = 0; i < fit.length; i++){
-            if(rv <= fit[i]){
-                return solutions.get(i);
-            }else{
-                rv -= fit[i];
-            }
-        }
-        return null;
     }
     
     public void displayAllSolution(){

@@ -18,8 +18,15 @@ import master.project.problem.*;
     a. if one technician has conflict among scheduled tasks
     b. if one task is scheduled more than once
 2. gap of technician, 压缩, to try schedule more tasks
+3. exchange two schedules in two technicians
 3. Now, set executeTime <= endTime - processTime
 4. consider if allowing backup, since sometimes dont backup and we will jump out local optimal solution
+
+develop:
+1. basic ABC
+2. ABC + xxxxx
+3. ABC + yyyyy
+4. ABC + zzzzz
 */
 
 public class MasterProject {
@@ -30,12 +37,12 @@ public class MasterProject {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         // TODO code application logic here
         
-        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_12_9.txt");
+        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_1_9.txt");
         System.out.println(ss.getTaskNumber());
         System.out.println();
         
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
-        abc.RunABCAlgorithm(50000);
+        abc.RunBasicABCAlgorithm(50000);
         /*abc.displayAllSolution();
         
         abc.allSolutionsTryAdd(ss);
