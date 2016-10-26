@@ -16,13 +16,11 @@ import master.project.main.PublicData;
  */
 public class AbcBasicAlgorithm {
     
-    private int totalBeeNumber = 0;
     private int workerBeeNumber = 0;
     private int onlookerBeeNumber = 0;
     private List<Solution> solutions;
     
     public AbcBasicAlgorithm(int beeNumber, Instance instance){
-        this.totalBeeNumber = beeNumber;
         this.workerBeeNumber = beeNumber/2;
         this.onlookerBeeNumber = beeNumber - beeNumber/2 - 1;
         solutions = new ArrayList<>();
@@ -50,20 +48,24 @@ public class AbcBasicAlgorithm {
                 s.constructiveRandomSolution();     //random solution
             }
             solutions.add(s);
-            
         }
         
-        RunBasicABCAlgorithm(100);
-        
+        for(int i = 0; i < this.onlookerBeeNumber; i++){
+            Solution s = new Solution(instance, i);
+            s.constructiveRandomSolution();     //random solution
+            solutions.add(s);
+        }
     }
     
-    public void RunBasicABCAlgorithm(int round){
+    public void RunBasicABCAlgorithm(int round, boolean onlookerBeeExist){
         int i = 0;
         Random rd = new Random();
         int rdNum;
         int rdSchedule;
         int averagePrio;
+        
         int[] eachPrio = new int[solutions.size()];
+        
         while((i++) < round){
             
             displayAllSolution();
@@ -103,14 +105,23 @@ public class AbcBasicAlgorithm {
             if(i % 25 == 0){
                 allSolutionsTryAdd();
                 averagePrio = rw.getTotal() / eachPrio.length;
-                //System.out.printf("rw.getTotal()=%d, eachPrio.length=%d, averagePrio=%d\n", rw.getTotal(), eachPrio.length, averagePrio);
-                for(int j = 0; j < eachPrio.length; j++){
-                    if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() <= averagePrio){
-                        solutions.get(j).resetSolution();
-                        System.out.println("reset one solution");
+                    
+                if(onlookerBeeExist == false){
+                    //System.out.printf("rw.getTotal()=%d, eachPrio.length=%d, averagePrio=%d\n", rw.getTotal(), eachPrio.length, averagePrio);
+                    for(int j = 0; j < eachPrio.length; j++){
+                        if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() <= averagePrio){
+                            solutions.get(j).resetSolution();
+                            System.out.println("reset one solution");
+                        }
+                    }
+                }else{
+                    for(int j = this.workerBeeNumber; j < eachPrio.length; j++){
+                        if(solutions.get(j).getCount() > PublicData.resetBeeCount){
+                            solutions.get(j).resetSolution();
+                            System.out.println("reset one solution");
+                        }
                     }
                 }
-                
             }
         }
     }

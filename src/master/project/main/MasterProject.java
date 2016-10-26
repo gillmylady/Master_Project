@@ -23,10 +23,13 @@ import master.project.problem.*;
 4. consider if allowing backup, since sometimes dont backup and we will jump out local optimal solution
 
 develop:
-1. basic ABC
-2. ABC + xxxxx
-3. ABC + yyyyy
-4. ABC + zzzzz
+1. basic ABC, either allowing or not allowing onlooker bee
+2. ABC + xxxxx, allow swap and exchange
+3. ABC + yyyyy, allow shortest technician
+4. ABC + zzzzz, allow shrink time of each technician (try move backward)
+
+conclusion: increasing number of bees might not help, because more steps are not helpful. (random solution too bad)
+
 */
 
 public class MasterProject {
@@ -37,12 +40,12 @@ public class MasterProject {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         // TODO code application logic here
         
-        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_3_9.txt");
+        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_12_9.txt");
         System.out.println(ss.getTaskNumber());
         System.out.println();
         
-        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
-        abc.RunBasicABCAlgorithm(50000);
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
+        abc.RunBasicABCAlgorithm(50000, false);
         
         
         /*abc.displayAllSolution();
