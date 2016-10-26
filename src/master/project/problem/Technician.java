@@ -5,7 +5,12 @@
  */
 package master.project.problem;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,6 +21,8 @@ public class Technician {
     private int endTime;             // end work time
     private int returnOriginTime;    // time for this technician return origin, so that idle time = endtime - returnOriginTime
     private HashMap<Integer, Schedule> schedules;   // schedule's exact startExecuteTime and itself
+    private List<Map.Entry<Integer, Schedule>> sortedList;    //schedules are sorted by execute time
+    
     
     //random construct an object
     public Technician(int startTime, int endTime){
@@ -56,6 +63,52 @@ public class Technician {
         
         return ret;
     }
+    
+    public void sortExecuteTime(){
+        sortedList = new LinkedList<>(schedules.entrySet());
+        Collections.sort(sortedList, new Comparator<Map.Entry<Integer, Schedule>>(){
+            @Override
+            public int compare(Map.Entry<Integer, Schedule> o1, Map.Entry<Integer, Schedule> o2) {
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+        /*
+        for(int i = 0; i < list.size(); i++){
+            System.out.println(list.get(i).getKey());
+            System.out.println(list.get(i).getValue().parameterToString());
+        }
+        */
+        
+    }
+    
+    public String getSortedExecuteTimeSchedules(){
+        String ret = "";
+        sortExecuteTime();
+        
+        ret += "{";
+        ret += startTime;
+        
+        for(int i = 0; i < sortedList.size(); i++){
+            ret += ", [";
+            ret += sortedList.get(i).getKey();
+            
+            ret += "(";
+            ret += sortedList.get(i).getValue().getStartTime();
+            ret += ", ";
+            ret += sortedList.get(i).getValue().getEndTime();
+            ret += "),";
+            
+            ret += (sortedList.get(i).getKey() + sortedList.get(i).getValue().getProcessTime());
+            ret += "]";
+        }
+        
+        ret += ", ";
+        ret += endTime;
+        ret += "}";
+        
+        return ret;
+    }
+    
     
     //get last schedule's execute time
     public Integer getLastScheduleExecuteTime(){

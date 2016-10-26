@@ -22,6 +22,9 @@ import master.project.problem.*;
 3. Now, set executeTime <= endTime - processTime
 4. consider if allowing backup, since sometimes dont backup and we will jump out local optimal solution
 
+
+Refer: Effective Heuristic Procedures for a FTSP
+
 develop:
 1. basic ABC, either allowing or not allowing onlooker bee
 2. ABC + xxxxx, allow swap and exchange
@@ -40,13 +43,19 @@ public class MasterProject {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         // TODO code application logic here
         
-        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_12_9.txt");
+        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_2_9.txt");
         System.out.println(ss.getTaskNumber());
         System.out.println();
         
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
-        abc.RunBasicABCAlgorithm(50000, false);
+        abc.RunBasicABCAlgorithm(500, false);
+        abc.displayEachSolutionSortedSchedule();
         
+        
+        
+        //abc.getSolutions().get(6).getSolution().get(0).sortExecuteTime();
+        
+        //System.out.println(abc.getSolutions().get(6).getSolution().get(0).getSortedExecuteTimeSchedules());
         
         /*abc.displayAllSolution();
         

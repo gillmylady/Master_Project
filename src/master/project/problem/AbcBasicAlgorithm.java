@@ -51,7 +51,7 @@ public class AbcBasicAlgorithm {
         }
         
         for(int i = 0; i < this.onlookerBeeNumber; i++){
-            Solution s = new Solution(instance, i);
+            Solution s = new Solution(instance, i + this.workerBeeNumber);
             s.constructiveRandomSolution();     //random solution
             solutions.add(s);
         }
@@ -122,6 +122,15 @@ public class AbcBasicAlgorithm {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    public void displayEachSolutionSortedSchedule(){
+        for(Solution s : solutions){
+            System.out.printf("solution %d:\n", s.getID());
+            for(Technician t : s.getSolution()){
+                System.out.println(t.getSortedExecuteTimeSchedules());
             }
         }
     }
