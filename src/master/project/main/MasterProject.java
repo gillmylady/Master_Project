@@ -60,7 +60,7 @@ public class MasterProject {
         int instanceNumber = 20;
         ReferredResult result = new ReferredResult();
         for(int instType = 0; instType < instanceType.length; instType++){
-            for(int caseN = 13; caseN <= caseNumber; caseN++){
+            for(int caseN = 1; caseN <= caseNumber; caseN++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
                     String key = instanceType[instType] + "_" + caseN + "_" + instN;
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
