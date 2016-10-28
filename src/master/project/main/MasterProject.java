@@ -43,6 +43,10 @@ conclusion: increasing number of bees might not help, because more steps are not
         -> done, now we parse the result file and print the result and see how much ABC improve the solution
 4.  try constructive method, 
         a.  use multiple heuristic methods and assign them different probability, randomly pick (roulette wheel)
+            -> exchange is done
+            -> swap = neighbor selection is done
+            -> change, one task scheduled by t1 was changed to t2
+                   This might not be used when initial solution is generated, it can be used for constructive solution's use
         b.  try add and replace and other local methods <---|
 5.  some bees run using this method, some using another method
         -> run differents method parallelly.
@@ -81,11 +85,14 @@ public class MasterProject {
                     
                     Instance ss = new Instance(fileName);
                     
+                    if(caseN < 12)
+                        continue;
+                    
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
                     if(caseN < 10)
-                        abc.RunBasicABCAlgorithm(caseN * 2000, true, false);
+                        abc.RunBasicABCAlgorithm(caseN * 2000, true, false, false);
                     else
-                        abc.RunBasicABCAlgorithm(caseN * 100, true, true);
+                        abc.RunBasicABCAlgorithm(caseN * 50, true, true, true);
                     System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d\n", key, abc.getInitialBestSolutionValue(), 
                             abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue());
                     
@@ -104,6 +111,7 @@ public class MasterProject {
                     }
                     
                     //add test of exchange
+                    /*
                     int testExchange = 0;
                     boolean exchangeSucc = false;
                     int printFail = 0;
@@ -124,7 +132,7 @@ public class MasterProject {
                         
                     }
                     return;
-                    
+                    */
                     
                 }
             }

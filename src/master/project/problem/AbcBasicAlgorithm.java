@@ -60,7 +60,9 @@ public class AbcBasicAlgorithm {
         initialBestSolutionValue = getBestSolutionValue();
     }
     
-    public void RunBasicABCAlgorithm(int round, boolean onlookerBeeExist, boolean workerBeeAllowNotBackupWhenGetStucked){
+    public void RunBasicABCAlgorithm(int round, boolean onlookerBeeExist, 
+            boolean workerBeeAllowNotBackupWhenGetStucked,
+            boolean allowExchange){
         int i = 0;
         Random rd = new Random();
         int rdNum;
@@ -129,6 +131,19 @@ public class AbcBasicAlgorithm {
                     }
                 }
             }
+            
+            //add some exchange for the solutions:
+            if(allowExchange){
+                solutionsTryExchange();
+            }
+        }
+    }
+    
+    public void solutionsTryExchange(){
+        for(Solution s : solutions){
+            //if(s.getCount() > PublicData.resetBeeCount){
+                s.exchangeTasksAmongTechnicians();
+            //}
         }
     }
     

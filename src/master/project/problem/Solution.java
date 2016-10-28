@@ -421,18 +421,18 @@ public class Solution {
         while(t2 == t1){
             t2 = rd.nextInt(solution.size());
         }
-        System.out.printf("exchangeTasks\n t1 = %d, t2 = %d\n", t1, t2);
+        //System.out.printf("exchangeTasks\n t1 = %d, t2 = %d\n", t1, t2);
         
         //select a random task from the first technician
         int t1TaskExecuteTime = solution.get(t1).getOneScheduledTaskExecuteTime();
         Schedule t1Task = solution.get(t1).getTaskFromExecuteTime(t1TaskExecuteTime);
         solution.get(t1).deleteSchedule(t1TaskExecuteTime, t1Task);
-        System.out.printf("t1 ExeTime = %d, t1Task = %d\n", t1TaskExecuteTime, t1Task.getScheduleID());
+        //System.out.printf("t1 ExeTime = %d, t1Task = %d\n", t1TaskExecuteTime, t1Task.getScheduleID());
         
         //see if there is one task in the second technician so that they can exchange and shorten travel time
         Schedule t2Task = oneTechnicianAddWithDrop(t2, t1Task);
         if(t2Task == null){         //t2 fail
-            System.out.println("t2 cannot delete any task and add t1Task");
+            //System.out.println("t2 cannot delete any task and add t1Task");
             solution.get(t1).addSchedule(t1TaskExecuteTime, t1Task);    //t1 add back, exchange fail
             return false;
         }
@@ -442,7 +442,7 @@ public class Solution {
             System.out.println("t1, t2 exchange correctly");
             return true;
         }else{
-            System.out.println("t1 cannot add t2's task and both recover");
+            //System.out.println("t1 cannot add t2's task and both recover");
             //t2 need to remove t1Task and add t2Task
             solution.get(t2).deleteRecentAddTask();
             checkAddOneTask(t2Task, t2);
