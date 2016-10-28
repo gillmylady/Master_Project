@@ -60,7 +60,7 @@ public class AbcBasicAlgorithm {
         initialBestSolutionValue = getBestSolutionValue();
     }
     
-    public void RunBasicABCAlgorithm(int round, boolean onlookerBeeExist){
+    public void RunBasicABCAlgorithm(int round, boolean onlookerBeeExist, boolean workerBeeAllowNotBackupWhenGetStucked){
         int i = 0;
         Random rd = new Random();
         int rdNum;
@@ -96,7 +96,10 @@ public class AbcBasicAlgorithm {
                     solutions.get(sID).setCount(0);
                     continue;
                 }
-                if(solutions.get(sID).addOneTaskWithDrop(rdSchedule) == true){
+                if(solutions.get(sID).addOneTaskWithDrop(rdSchedule, 
+                        workerBeeAllowNotBackupWhenGetStucked && 
+                        sID < this.workerBeeNumber &&
+                        solutions.get(sID).getCount() > PublicData.workerBeeNotBackUp ) == true){ //PublicData.resetBeeCount
                     //System.out.println("solution improved");
                     solutions.get(sID).setCount(0);
                     continue;

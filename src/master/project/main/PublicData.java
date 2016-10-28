@@ -25,6 +25,7 @@ public class PublicData {
     public static boolean allowBackup = true;
     public static boolean dontAllowBackup = true;
     
+    public static int workerBeeNotBackUp = 10;
     public static int resetBeeCount = 20;
     
     public static int totalBeeNumber20 = 20;

@@ -35,16 +35,17 @@ conclusion: increasing number of bees might not help, because more steps are not
 
 
 10.26 update:
-1.  leave some probablity for solution not restore back-up when tryiing add one task
+1.  leave some probablity for solution not restore back-up when trying add one task
 2.  try another way of probability selection method, like, select only from limited/restricted pool where only a certain percentange of 
         the individuals are allowed based on fitness value
 3.  see smaller/larger size's result, how good or bad are they respectively
+        -> done, now we parse the result file and print the result and see how much ABC improve the solution
 4.  try constructive method, 
         a.  use multiple heuristic methods and assign them different probability, randomly pick (roulette wheel)
         b.  try add and replace and other local methods <---|
-5.  some bees run usiing this method, some using another method
+5.  some bees run using this method, some using another method
         -> run differents method parallelly.
-
+6.  split big instance to smaller ones, to speed up calculation time
 */
 
 public class MasterProject {
@@ -70,6 +71,9 @@ public class MasterProject {
                     if(instanceType[instType].equalsIgnoreCase("RC") && instN <= 7)
                         continue;*/
                     
+                    /*if(caseN < 12)
+                        continue;
+                    */
                     //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_"
                     //my PC: "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_"
                     //String fileName = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_" + key + ".txt";
@@ -85,7 +89,10 @@ public class MasterProject {
                     Instance ss = new Instance(fileName);
                     
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
-                    abc.RunBasicABCAlgorithm(500, true);
+                    if(caseN < 10)
+                        abc.RunBasicABCAlgorithm(caseN * 2000, true, false);
+                    else
+                        abc.RunBasicABCAlgorithm(caseN * 100, true, true);
                     System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d\n", key, abc.getInitialBestSolutionValue(), 
                             abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue());
                     

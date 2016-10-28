@@ -337,7 +337,7 @@ public class Solution {
         return false;
     }
     
-    public boolean addOneTaskWithDrop(int scheduleID){
+    public boolean addOneTaskWithDrop(int scheduleID, boolean allowNotBackup){
         //drop one task whose execute time is in the window of this new task
         Random r = new Random();
         int rdNumber = r.nextInt(solution.size());  //start check from a random-number of technician
@@ -385,10 +385,13 @@ public class Solution {
                         //leave some probabality for solution not backup
                         Random rd = new Random();
                         int j = rd.nextInt(10);
-                        if(PublicData.dontAllowBackup) //80% percentage to backup, 20% not backup for jumpming local optimal
+                        //if(PublicData.dontAllowBackup) //80% percentage to backup, 20% not backup for jumpming local optimal
+                        if(allowNotBackup == false || (allowNotBackup && j < 5))     //50% percentage not backup
                         {
                             solution.get(i).addSchedule(executeTime, backupS);
                             scheduledTasks.add(backupS.getScheduleID());
+                        }else{
+                            return true;
                         }
                         /*if(PublicData.allowBackup && j < 8) //80% percentage to backup, 20% not backup for jumpming local optimal
                         {
