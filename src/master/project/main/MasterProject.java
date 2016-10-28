@@ -87,8 +87,10 @@ public class MasterProject {
                                 return;
                             }
                         }
-                        abc.displayEachSolutionSortedSchedule();
-                        System.out.printf("\n\n");
+                        
+                        //see sorted tasks if need
+                        //abc.displayEachSolutionSortedSchedule();
+                        //System.out.printf("\n\n");
                     }
                 }
             }
