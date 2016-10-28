@@ -412,6 +412,74 @@ public class Solution {
         return false;
     }
     
+    public boolean exchangeTasksAmongTechnicians(){
+        
+        //select two random technicians
+        int t1, t2;
+        Random rd = new Random();
+        t1 = t2 = rd.nextInt(solution.size());
+        while(t2 == t1){
+            t2 = rd.nextInt(solution.size());
+        }
+        System.out.printf("exchangeTasks\n t1 = %d, t2 = %d\n", t1, t2);
+        
+        //select a random task from the first technician
+        int t1TaskExecuteTime = solution.get(t1).getOneScheduledTaskExecuteTime();
+        Schedule t1Task = solution.get(t1).getTaskFromExecuteTime(t1TaskExecuteTime);
+        solution.get(t1).deleteSchedule(t1TaskExecuteTime, t1Task);
+        System.out.printf("t1 ExeTime = %d, t1Task = %d\n", t1TaskExecuteTime, t1Task.getScheduleID());
+        
+        //see if there is one task in the second technician so that they can exchange and shorten travel time
+        Schedule t2Task = oneTechnicianAddWithDrop(t2, t1Task);
+        if(t2Task == null){         //t2 fail
+            System.out.println("t2 cannot delete any task and add t1Task");
+            solution.get(t1).addSchedule(t1TaskExecuteTime, t1Task);    //t1 add back, exchange fail
+            return false;
+        }
+        
+        //continue to see if t1 can add this schedule or not
+        if(checkAddOneTask(t2Task, t1) == true){        //can add to t1
+            System.out.println("t1, t2 exchange correctly");
+            return true;
+        }else{
+            System.out.println("t1 cannot add t2's task and both recover");
+            //t2 need to remove t1Task and add t2Task
+            solution.get(t2).deleteRecentAddTask();
+            checkAddOneTask(t2Task, t2);
+            
+            //t1 need to add t1task
+            solution.get(t1).addSchedule(t1TaskExecuteTime, t1Task);
+            return false;
+        }
+    }
+    
+    //add new task, if succeed, return the dropped task
+    public Schedule oneTechnicianAddWithDrop(int techID, Schedule s){
+        List<Map.Entry<Integer, Schedule>> list = new LinkedList<>(solution.get(techID).getScheduledTask().entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<Integer, Schedule>>(){
+            @Override
+            public int compare(Map.Entry<Integer, Schedule> o1, Map.Entry<Integer, Schedule> o2) {
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+        
+        int executeTime = 0;
+        Schedule task = null;
+        for(int i = 0; i < list.size(); i++){
+            executeTime = list.get(i).getKey();
+            task = list.get(i).getValue();
+            
+            solution.get(techID).deleteSchedule(executeTime, task);
+            
+            if(checkAddOneTask(s, techID)){
+                return task;
+            }else{
+                solution.get(techID).addSchedule(executeTime, task);
+            }
+        }
+        return null;
+    }
+    
     public List<Technician> getSolution(){
         return solution;
     }

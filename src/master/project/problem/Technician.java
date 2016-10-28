@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  *
@@ -22,7 +23,7 @@ public class Technician {
     private int returnOriginTime;    // time for this technician return origin, so that idle time = endtime - returnOriginTime
     private HashMap<Integer, Schedule> schedules;   // schedule's exact startExecuteTime and itself
     private List<Map.Entry<Integer, Schedule>> sortedList;    //schedules are sorted by execute time
-    
+    private int recentAddTaskTime;
     
     //random construct an object
     public Technician(int startTime, int endTime){
@@ -30,6 +31,7 @@ public class Technician {
         this.endTime = endTime;
         returnOriginTime = startTime;           //initially, returnOriginTime is the start time
         schedules = new HashMap<>();            //exact startExecuteTime and schedule
+        recentAddTaskTime = 0;
     }
     
     public int getStartTime(){
@@ -151,7 +153,8 @@ public class Technician {
     //leave if one technician conflict one schedule to outside's dealing
     // travelTime = -1 , then no need to update returnTime
     public boolean addSchedule(int executeTime, Schedule s){
-        schedules.put(executeTime, s);     
+        schedules.put(executeTime, s);  
+        recentAddTaskTime = executeTime;
         return true;
     }
     
@@ -173,6 +176,10 @@ public class Technician {
         return true;
     }
     
+    public boolean deleteRecentAddTask(){
+        return deleteSchedule(recentAddTaskTime, null);
+    }
+    
     public void removeAllSchedules(){
         schedules.clear();
     }
@@ -190,4 +197,16 @@ public class Technician {
     public int getIdleTime(){
         return endTime - returnOriginTime;
     }
+    
+    public int getOneScheduledTaskExecuteTime(){
+        Random rd = new Random();
+        sortExecuteTime();
+        int rdNumber = rd.nextInt(sortedList.size());
+        return sortedList.get(rdNumber).getKey();
+    }
+    
+    public Schedule getTaskFromExecuteTime(int executeTime){
+        return schedules.get(executeTime);
+    }
+    
 }

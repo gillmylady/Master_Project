@@ -141,6 +141,14 @@ public class AbcBasicAlgorithm {
         }
     }
     
+    public void displayOneSolutionSortedSchedule(int solutionID){
+        Solution s = solutions.get(solutionID);
+        System.out.printf("solution %d:\n", s.getID());
+        for(Technician t : s.getSolution()){
+            System.out.println(t.getSortedExecuteTimeSchedules());
+        }
+    }
+    
     public void displayAllSolution(){
         for(Solution s : solutions){
             System.out.printf("%d ", s.totalPriority());

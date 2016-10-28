@@ -36,6 +36,7 @@ conclusion: increasing number of bees might not help, because more steps are not
 
 10.26 update:
 1.  leave some probablity for solution not restore back-up when trying add one task
+        -> done for workerBee with some probability
 2.  try another way of probability selection method, like, select only from limited/restricted pool where only a certain percentange of 
         the individuals are allowed based on fitness value
 3.  see smaller/larger size's result, how good or bad are they respectively
@@ -66,14 +67,8 @@ public class MasterProject {
                     String key = instanceType[instType] + "_" + caseN + "_" + instN;
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
-                    /*if(instanceType[instType].equalsIgnoreCase("R") || instanceType[instType].equalsIgnoreCase("C"))
-                        continue;
-                    if(instanceType[instType].equalsIgnoreCase("RC") && instN <= 7)
-                        continue;*/
                     
-                    /*if(caseN < 12)
-                        continue;
-                    */
+        
                     //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_"
                     //my PC: "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_"
                     //String fileName = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_" + key + ".txt";
@@ -83,8 +78,6 @@ public class MasterProject {
                     }else{
                         fileName = PublicData.homeInstancePath + key + ".txt";
                     }
-                    
-                    
                     
                     Instance ss = new Instance(fileName);
                     
@@ -109,9 +102,34 @@ public class MasterProject {
                         //abc.displayEachSolutionSortedSchedule();
                         //System.out.printf("\n\n");
                     }
+                    
+                    //add test of exchange
+                    int testExchange = 0;
+                    boolean exchangeSucc = false;
+                    int printFail = 0;
+                    int solutionID = 8;
+                    abc.displayOneSolutionSortedSchedule(solutionID);
+                    while((testExchange++) < 100){
+                        Solution s = abc.getSolutions().get(solutionID);
+                        exchangeSucc = s.exchangeTasksAmongTechnicians();
+                        if(exchangeSucc == true){
+                            System.out.println("true!!!!!!!!");
+                            abc.displayOneSolutionSortedSchedule(solutionID);
+                        }else if(printFail < 5){
+                            System.out.println("fail!!!!!!!!");
+                            abc.displayOneSolutionSortedSchedule(solutionID);
+                            printFail++;
+                        }
+                        System.out.println();
+                        
+                    }
+                    return;
+                    
+                    
                 }
             }
         }
+        
         /*
         Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_13_3.txt");
         System.out.println(ss.getTaskNumber());
