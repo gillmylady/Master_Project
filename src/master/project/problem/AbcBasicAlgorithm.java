@@ -19,6 +19,7 @@ public class AbcBasicAlgorithm {
     private int workerBeeNumber = 0;
     private int onlookerBeeNumber = 0;
     private List<Solution> solutions;
+    private int initialBestSolutionValue = 0;
     
     public AbcBasicAlgorithm(int beeNumber, Instance instance){
         this.workerBeeNumber = beeNumber/2;
@@ -55,6 +56,8 @@ public class AbcBasicAlgorithm {
             s.constructiveRandomSolution();     //random solution
             solutions.add(s);
         }
+        
+        initialBestSolutionValue = getBestSolutionValue();
     }
     
     public void RunBasicABCAlgorithm(int round, boolean onlookerBeeExist){
@@ -68,7 +71,7 @@ public class AbcBasicAlgorithm {
         
         while((i++) < round){
             
-            displayAllSolution();
+            //displayAllSolution();
             
             eachPrio = PublicData.getSolutionFitness(solutions);
             RouletteWheel rw = new RouletteWheel(eachPrio);
@@ -111,14 +114,14 @@ public class AbcBasicAlgorithm {
                     for(int j = 0; j < eachPrio.length; j++){
                         if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() <= averagePrio){
                             solutions.get(j).resetSolution();
-                            System.out.println("reset one solution");
+                            //System.out.println("reset one solution");
                         }
                     }
                 }else{
                     for(int j = this.workerBeeNumber; j < eachPrio.length; j++){
                         if(solutions.get(j).getCount() > PublicData.resetBeeCount){
                             solutions.get(j).resetSolution();
-                            System.out.println("reset one solution");
+                            //System.out.println("reset one solution");
                         }
                     }
                 }
@@ -157,5 +160,19 @@ public class AbcBasicAlgorithm {
     
     public List<Solution> getSolutions(){
         return solutions;
+    }
+    
+    public int getInitialBestSolutionValue(){
+        return initialBestSolutionValue;
+    }
+    
+    public int getBestSolutionValue(){
+        int bestV = 0;
+        for(Solution s : solutions){
+            if(s.totalPriority() > bestV){
+                bestV = s.totalPriority();
+            }
+        }
+        return bestV;
     }
 }

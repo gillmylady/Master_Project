@@ -33,6 +33,18 @@ develop:
 
 conclusion: increasing number of bees might not help, because more steps are not helpful. (random solution too bad)
 
+
+10.26 update:
+1.  leave some probablity for solution not restore back-up when tryiing add one task
+2.  try another way of probability selection method, like, select only from limited/restricted pool where only a certain percentange of 
+        the individuals are allowed based on fitness value
+3.  see smaller/larger size's result, how good or bad are they respectively
+4.  try constructive method, 
+        a.  use multiple heuristic methods and assign them different probability, randomly pick (roulette wheel)
+        b.  try add and replace and other local methods <---|
+5.  some bees run usiing this method, some using another method
+        -> run differents method parallelly.
+
 */
 
 public class MasterProject {
@@ -41,17 +53,64 @@ public class MasterProject {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
-        // TODO code application logic here
         
-        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_2_9.txt");
+        
+        String[] instanceType = {"R", "C", "RC", "RAD"};
+        int caseNumber = 13;
+        int instanceNumber = 20;
+        ReferredResult result = new ReferredResult();
+        for(int instType = 0; instType < instanceType.length; instType++){
+            for(int caseN = 13; caseN <= caseNumber; caseN++){
+                for(int instN = 1; instN <= instanceNumber; instN++){
+                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
+                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+                        continue;
+                    /*if(instanceType[instType].equalsIgnoreCase("R") || instanceType[instType].equalsIgnoreCase("C"))
+                        continue;
+                    if(instanceType[instType].equalsIgnoreCase("RC") && instN <= 7)
+                        continue;*/
+                    
+                    String fileName = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_" + key + ".txt";
+                    
+                    Instance ss = new Instance(fileName);
+                    
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
+                    abc.RunBasicABCAlgorithm(500, true);
+                    System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d\n", key, abc.getInitialBestSolutionValue(), 
+                            abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue());
+                    
+                    if(abc.getBestSolutionValue() > abc.getInitialBestSolutionValue()){
+                        for(Solution s: abc.getSolutions()){
+                            ConflictTest ct = new ConflictTest(s);
+                            if(ct.testIfConflict() == true){
+                                System.out.println("some schedules conflict!!!");
+                                return;
+                            }
+                        }
+                        abc.displayEachSolutionSortedSchedule();
+                        System.out.printf("\n\n");
+                    }
+                }
+            }
+        }
+        /*
+        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_13_3.txt");
         System.out.println(ss.getTaskNumber());
         System.out.println();
         
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
         abc.RunBasicABCAlgorithm(500, false);
         abc.displayEachSolutionSortedSchedule();
+        */
         
+        /*
+        ReferredResult r = new ReferredResult();
         
+        System.out.println(r.valueOfKey("R_10_12"));
+        System.out.println(r.valueOfKey("C_10_12"));
+        System.out.println(r.valueOfKey("RAD_10_12"));
+        System.out.println(r.valueOfKey("RC_10_12"));
+        */
         
         //abc.getSolutions().get(6).getSolution().get(0).sortExecuteTime();
         
