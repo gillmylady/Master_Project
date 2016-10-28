@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import master.project.main.PublicData;
 
 /**
  *
@@ -29,7 +30,17 @@ public class ReferredResult {
         C = new HashMap<>();
         RC = new HashMap<>();
         RAD = new HashMap<>();
-        ParseReferredResult("/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt");
+        
+        //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/Results.txt"
+        //home  "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt"
+        //ParseReferredResult("/home/hfw5079/NetBeansProjects/Master_Project/Results.txt");
+        
+        if(PublicData.AmIAtSublab){
+            ParseReferredResult(PublicData.sunlabResultPath);
+        }else
+            ParseReferredResult(PublicData.homeResultPath);
+    
+    
     }
     
     public void ParseReferredResult(String fileName) throws FileNotFoundException, UnsupportedEncodingException{

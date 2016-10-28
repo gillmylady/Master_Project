@@ -70,7 +70,17 @@ public class MasterProject {
                     if(instanceType[instType].equalsIgnoreCase("RC") && instN <= 7)
                         continue;*/
                     
-                    String fileName = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_" + key + ".txt";
+                    //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_"
+                    //my PC: "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_"
+                    //String fileName = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_" + key + ".txt";
+                    String fileName = null;
+                    if(PublicData.AmIAtSublab){
+                        fileName = PublicData.sunlabInstancePath + key + ".txt";
+                    }else{
+                        fileName = PublicData.homeInstancePath + key + ".txt";
+                    }
+                    
+                    
                     
                     Instance ss = new Instance(fileName);
                     
