@@ -155,6 +155,71 @@ public class Solution {
         }
     }
     
+    //contructive solution from zero, using multiple heuristic, applying RouletteWheel probablity selection
+    //use multiple heuristic methods and assign them different probability, randomly pick (roulette wheel)
+    //firstly, sort tasks by priority/processTime
+    //add, exchange, change(one task from T1 to T2 seems no need because we apply nearest technician here) 
+    //swap, one techinician, drop one task and schedule another one (makes change sense)
+    //nearest technician, 
+    public void constructiveMultiveHeuristicSolution(){
+        Random rd = new Random();
+        int scheduleID;
+        int techID;
+        List<Integer> candidateTasks = new ArrayList<>();
+        for(Schedule s : allSchedules){
+            if(s.getScheduleID() == 0)
+                continue;
+            candidateTasks.add(s.getScheduleID());
+        }
+        
+        int probExchange = 10;  //10$ to exchange tasks among technicians
+        int probChange = 20;    //10% to change one task from T1 to T2
+        int probSwap = 30;      //10% for a technician to drop one task and re-schedule another one
+        int probAdd = 100;      //70% to add one task
+        
+        //System.out.println(candidateTasks.size());
+        for(int i = 0; i < allSchedules.size() - 1; i++){
+            
+            int rdNumber = 0;
+            int rdProb = rd.nextInt(probAdd);
+            if(i > 0 && rdProb < probExchange){
+                exchangeTasksAmongTechnicians();    //doesn't care the return value true of false
+                continue;
+            }else if(i > 0 && rdProb < probChange){
+                rdNumber = rd.nextInt(candidateTasks.size());
+                scheduleID = candidateTasks.get(rdNumber);
+                addOneTaskWithDrop(scheduleID, false);  //to return dropped task? so we can add it back to the candidate
+                continue;
+            }else if(i > 0 && rdProb < probSwap){
+                //drop any task and re-schedule one
+                //randomly delete one task and then re-schedule one
+                continue;
+            }
+            
+            //probAdd 
+            if(candidateTasks.size() > 0)
+                rdNumber = rd.nextInt(candidateTasks.size());
+            scheduleID = candidateTasks.get(rdNumber);
+            Schedule s = getTaskFromID(scheduleID);
+            
+            techID = rd.nextInt(solution.size());
+            for(int j = 0; j < solution.size(); j++){
+                
+                if(checkAddOneTask(s, techID) == false){
+                    techID++;
+                    if(techID >= solution.size())
+                        techID = 0;
+                }else{
+                    break;
+                }
+            }
+            candidateTasks.remove(rdNumber);    //if this task is scheduled, remove it from the candidate list
+        }
+    }
+    
+    
+    
+    
     //reset this solution
     public void resetSolution(){
         
@@ -439,7 +504,7 @@ public class Solution {
         
         //continue to see if t1 can add this schedule or not
         if(checkAddOneTask(t2Task, t1) == true){        //can add to t1
-            System.out.println("t1, t2 exchange correctly");
+            //System.out.println("t1, t2 exchange correctly");
             return true;
         }else{
             //System.out.println("t1 cannot add t2's task and both recover");
