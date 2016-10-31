@@ -201,6 +201,8 @@ public class Technician {
     public int getOneScheduledTaskExecuteTime(){
         Random rd = new Random();
         sortExecuteTime();
+        if(sortedList.size() == 0)                  //if there is no scheduled task yet, return -1
+            return -1;
         int rdNumber = rd.nextInt(sortedList.size());
         return sortedList.get(rdNumber).getKey();
     }

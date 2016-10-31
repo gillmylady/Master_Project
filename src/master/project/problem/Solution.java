@@ -180,19 +180,28 @@ public class Solution {
         //System.out.println(candidateTasks.size());
         for(int i = 0; i < allSchedules.size() - 1; i++){
             
+            //System.out.println(totalPriority());
+            
             int rdNumber = 0;
             int rdProb = rd.nextInt(probAdd);
             if(i > 0 && rdProb < probExchange){
                 exchangeTasksAmongTechnicians();    //doesn't care the return value true of false
+                i--;        //dont change i
                 continue;
             }else if(i > 0 && rdProb < probChange){
                 rdNumber = rd.nextInt(candidateTasks.size());
                 scheduleID = candidateTasks.get(rdNumber);
-                addOneTaskWithDrop(scheduleID, false);  //to return dropped task? so we can add it back to the candidate
+                Schedule droppedTask = addOneTaskWithDrop(scheduleID, false);  //to return dropped task? so we can add it back to the candidate
+                if(droppedTask != null){
+                    candidateTasks.remove(rdNumber);            //remove changed one
+                    candidateTasks.add(droppedTask.getScheduleID());    //add dropped one
+                }
+                i--;
                 continue;
             }else if(i > 0 && rdProb < probSwap){
                 //drop any task and re-schedule one
                 //randomly delete one task and then re-schedule one
+                i--;
                 continue;
             }
             
@@ -402,7 +411,8 @@ public class Solution {
         return false;
     }
     
-    public boolean addOneTaskWithDrop(int scheduleID, boolean allowNotBackup){
+    //if succeed, return one schedule which is dropped, otherwise, return null
+    public Schedule addOneTaskWithDrop(int scheduleID, boolean allowNotBackup){
         //drop one task whose execute time is in the window of this new task
         Random r = new Random();
         int rdNumber = r.nextInt(solution.size());  //start check from a random-number of technician
@@ -443,7 +453,7 @@ public class Solution {
                     //scheduledTasks.remove((Integer) backupS.getScheduleID());
                     
                     if(checkAddOneTask(task, i) == true){
-                        return true;
+                        return backupS;
                     }else{
                         //solution.get(i).getScheduledTask().put(executeTime, backupS);
                         
@@ -456,7 +466,7 @@ public class Solution {
                             solution.get(i).addSchedule(executeTime, backupS);
                             scheduledTasks.add(backupS.getScheduleID());
                         }else{
-                            return true;
+                            return null;
                         }
                         /*if(PublicData.allowBackup && j < 8) //80% percentage to backup, 20% not backup for jumpming local optimal
                         {
@@ -474,7 +484,7 @@ public class Solution {
             }
         }
         
-        return false;
+        return null;
     }
     
     public boolean exchangeTasksAmongTechnicians(){
@@ -490,6 +500,8 @@ public class Solution {
         
         //select a random task from the first technician
         int t1TaskExecuteTime = solution.get(t1).getOneScheduledTaskExecuteTime();
+        if(t1TaskExecuteTime == -1)
+            return false;
         Schedule t1Task = solution.get(t1).getTaskFromExecuteTime(t1TaskExecuteTime);
         solution.get(t1).deleteSchedule(t1TaskExecuteTime, t1Task);
         //System.out.printf("t1 ExeTime = %d, t1Task = %d\n", t1TaskExecuteTime, t1Task.getScheduleID());

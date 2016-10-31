@@ -45,7 +45,18 @@ public class AbcBasicAlgorithm {
             }else if(i == 5){
                 s.greedySortSchedulesProcessTime(); //priority/processTime
                 s.constructiveShortDistanceSolution();//short distance
-            }else{
+            }else if(i == 6){
+                s.greedySortSchedulesPriorityProcessTime(); //priority/processTime
+                s.constructiveMultiveHeuristicSolution();//short distance
+            }else if(i == 7){
+                s.greedySortSchedulesPriority(); //priority/processTime
+                s.constructiveMultiveHeuristicSolution();//short distance
+            }else if(i == 8){
+                s.greedySortSchedulesProcessTime(); //priority/processTime
+                s.constructiveMultiveHeuristicSolution();//short distance
+            }
+            
+            else{
                 s.constructiveRandomSolution();     //random solution
             }
             solutions.add(s);
@@ -101,7 +112,7 @@ public class AbcBasicAlgorithm {
                 if(solutions.get(sID).addOneTaskWithDrop(rdSchedule, 
                         workerBeeAllowNotBackupWhenGetStucked && 
                         sID < this.workerBeeNumber &&
-                        solutions.get(sID).getCount() > PublicData.workerBeeNotBackUp ) == true){ //PublicData.resetBeeCount
+                        solutions.get(sID).getCount() > PublicData.workerBeeNotBackUp ) != null){ //PublicData.resetBeeCount
                     //System.out.println("solution improved");
                     solutions.get(sID).setCount(0);
                     continue;
