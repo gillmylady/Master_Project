@@ -60,11 +60,12 @@ public class MasterProject {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
-        
         String[] instanceType = {"R", "C", "RC", "RAD"};
         int caseNumber = 13;
         int instanceNumber = 20;
         ReferredResult result = new ReferredResult();
+        
+        LogFile log = new LogFile("log500ttt.txt");
         for(int instType = 0; instType < instanceType.length; instType++){
             for(int caseN = 1; caseN <= caseNumber; caseN++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
@@ -85,16 +86,28 @@ public class MasterProject {
                     
                     Instance ss = new Instance(fileName);
                     
-                    if(caseN < 12)
-                        continue;
                     
-                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
-                    if(caseN < 10)
-                        abc.RunBasicABCAlgorithm(caseN * 2000, true, false, false);
-                    else
+                    
+                    log.writeFile(PublicData.printTime());
+                    log.writeFile("\n");
+                    System.out.println(PublicData.printTime());
+                    
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+                    //if(caseN < 10)
+                    //    abc.RunBasicABCAlgorithm(caseN * 5000, true, false, false);
+                    //else
                         abc.RunBasicABCAlgorithm(caseN * 500, true, true, true);
-                    System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d\n", key, abc.getInitialBestSolutionValue(), 
-                            abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue());
+                    //System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d, gap=%d\n", key, abc.getInitialBestSolutionValue(), 
+                    //        abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue(), 
+                    //        result.valueOfKey(key) - abc.getBestSolutionValue());
+                    
+                    String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getBestSolutionValue()
+                            + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getBestSolutionValue() - abc.getInitialBestSolutionValue())
+                            + ", gap=" + (result.valueOfKey(key) - abc.getBestSolutionValue());
+                    log.writeFile(logBuf);
+                    log.writeFile("\n");
+                    
+                    System.out.println(logBuf);
                     
                     if(abc.getBestSolutionValue() > abc.getInitialBestSolutionValue()){
                         for(Solution s: abc.getSolutions()){
@@ -105,68 +118,13 @@ public class MasterProject {
                             }
                         }
                         
-                        //see sorted tasks if need
-                        //abc.displayEachSolutionSortedSchedule();
-                        //System.out.printf("\n\n");
                     }  
-                    
-                    //add test of exchange
-                    /*
-                    int testExchange = 0;
-                    boolean exchangeSucc = false;
-                    int printFail = 0;
-                    int solutionID = 8;
-                    abc.displayOneSolutionSortedSchedule(solutionID);
-                    while((testExchange++) < 100){
-                        Solution s = abc.getSolutions().get(solutionID);
-                        exchangeSucc = s.exchangeTasksAmongTechnicians();
-                        if(exchangeSucc == true){
-                            System.out.println("true!!!!!!!!");
-                            abc.displayOneSolutionSortedSchedule(solutionID);
-                        }else if(printFail < 5){
-                            System.out.println("fail!!!!!!!!");
-                            abc.displayOneSolutionSortedSchedule(solutionID);
-                            printFail++;
-                        }
-                        System.out.println();
-                        
-                    }
-                    return;
-                    */
-                    
+                   
                 }
             }
         }
         
-        /*
-        Instance ss = new Instance("/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_R_13_3.txt");
-        System.out.println(ss.getTaskNumber());
-        System.out.println();
-        
-        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber20, ss);
-        abc.RunBasicABCAlgorithm(500, false);
-        abc.displayEachSolutionSortedSchedule();
-        */
-        
-        /*
-        ReferredResult r = new ReferredResult();
-        
-        System.out.println(r.valueOfKey("R_10_12"));
-        System.out.println(r.valueOfKey("C_10_12"));
-        System.out.println(r.valueOfKey("RAD_10_12"));
-        System.out.println(r.valueOfKey("RC_10_12"));
-        */
-        
-        //abc.getSolutions().get(6).getSolution().get(0).sortExecuteTime();
-        
-        //System.out.println(abc.getSolutions().get(6).getSolution().get(0).getSortedExecuteTimeSchedules());
-        
-        /*abc.displayAllSolution();
-        
-        abc.allSolutionsTryAdd(ss);
-        abc.displayAllSolution();
-        */
-        
+        log.closeFile();
         
     }
     

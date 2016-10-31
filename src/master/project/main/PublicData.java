@@ -5,6 +5,7 @@
  */
 package master.project.main;
 
+import java.util.Calendar;
 import java.util.List;
 import master.project.problem.Solution;
 
@@ -44,11 +45,17 @@ public class PublicData {
         return ret;
     }
     
-    public static boolean AmIAtSublab = true;
+    public static boolean AmIAtSublab = false;
     
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String sunlabInstancePath = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String homeResultPath = "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt";
     public static String sunlabResultPath = "/home/hfw5079/NetBeansProjects/Master_Project/Results.txt";
+    
+    public static String printTime(){
+         Calendar ca = Calendar.getInstance();
+         //System.out.println(ca.getTime());
+         return ca.getTime().toString();
+    }
     
 }
