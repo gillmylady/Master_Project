@@ -92,7 +92,7 @@ public class MasterProject {
                     if(caseN < 10)
                         abc.RunBasicABCAlgorithm(caseN * 2000, true, false, false);
                     else
-                        abc.RunBasicABCAlgorithm(caseN * 50, true, true, true);
+                        abc.RunBasicABCAlgorithm(caseN * 500, true, true, true);
                     System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d\n", key, abc.getInitialBestSolutionValue(), 
                             abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue());
                     
@@ -108,7 +108,7 @@ public class MasterProject {
                         //see sorted tasks if need
                         //abc.displayEachSolutionSortedSchedule();
                         //System.out.printf("\n\n");
-                    }
+                    }  
                     
                     //add test of exchange
                     /*
