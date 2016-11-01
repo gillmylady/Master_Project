@@ -65,7 +65,7 @@ public class MasterProject {
         int instanceNumber = 20;
         ReferredResult result = new ReferredResult();
         
-        LogFile log = new LogFile("log500ttt.txt");
+        LogFile log = new LogFile("log1000_600ttt.txt");
         for(int instType = 0; instType < instanceType.length; instType++){
             for(int caseN = 1; caseN <= caseNumber; caseN++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
@@ -73,6 +73,8 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
+                    if(instType == 0)
+                        continue;
         
                     //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_"
                     //my PC: "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_"
@@ -93,10 +95,10 @@ public class MasterProject {
                     System.out.println(PublicData.printTime());
                     
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
-                    //if(caseN < 10)
-                    //    abc.RunBasicABCAlgorithm(caseN * 5000, true, false, false);
-                    //else
-                        abc.RunBasicABCAlgorithm(caseN * 500, true, true, true);
+                    if(caseN < 13)
+                        abc.RunBasicABCAlgorithm(caseN * 1000, true, true, true);
+                    else
+                        abc.RunBasicABCAlgorithm(caseN * 600, true, true, true);
                     //System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d, gap=%d\n", key, abc.getInitialBestSolutionValue(), 
                     //        abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue(), 
                     //        result.valueOfKey(key) - abc.getBestSolutionValue());
