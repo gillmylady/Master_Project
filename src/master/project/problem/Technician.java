@@ -21,8 +21,8 @@ public class Technician {
     private int startTime;           // start work time
     private int endTime;             // end work time
     private int returnOriginTime;    // time for this technician return origin, so that idle time = endtime - returnOriginTime
-    private HashMap<Integer, Schedule> schedules;   // schedule's exact startExecuteTime and itself
-    private List<Map.Entry<Integer, Schedule>> sortedList;    //schedules are sorted by execute time
+    private HashMap<Integer, Task> schedules;   // schedule's exact startExecuteTime and itself
+    private List<Map.Entry<Integer, Task>> sortedList;    //schedules are sorted by execute time
     private int recentAddTaskTime;
     
     //random construct an object
@@ -74,13 +74,20 @@ public class Technician {
         
         sortedList = new LinkedList<>(schedules.entrySet());    //initial sortedList
         
-        Collections.sort(sortedList, new Comparator<Map.Entry<Integer, Schedule>>(){
+        Collections.sort(sortedList, new Comparator<Map.Entry<Integer, Task>>(){
             @Override
-            public int compare(Map.Entry<Integer, Schedule> o1, Map.Entry<Integer, Schedule> o2) {
+            public int compare(Map.Entry<Integer, Task> o1, Map.Entry<Integer, Task> o2) {
                 return o1.getKey().compareTo(o2.getKey());
             }
         });
-        
+    }
+    
+    //return this sortedList for use
+    public List<Map.Entry<Integer, Task>> getSortExecuteTimeList(){
+        if(schedules.isEmpty())           //if empty, then no need to sort
+            return null;
+        sortExecuteTime();
+        return sortedList;
     }
     
     public String getSortedExecuteTimeSchedules(){
@@ -123,8 +130,8 @@ public class Technician {
         return lastExecuteTime;
     }
     
-    //get last Schedule, we can also use the sortedTasks to get the last one
-    public Schedule getLastSchedule(){
+    //get last Task, we can also use the sortedTasks to get the last one
+    public Task getLastSchedule(){
         if(schedules.isEmpty()){
             return null;
         }
@@ -138,7 +145,7 @@ public class Technician {
     
     //calculate the time when this technician can return origin
     public void calculateReturnTime(int travelTime){
-        Schedule lastSchedule = getLastSchedule();
+        Task lastSchedule = getLastSchedule();
         if(lastSchedule == null)
             returnOriginTime = this.startTime;
         else{
@@ -147,13 +154,13 @@ public class Technician {
     }
     
     //return scheduled tasks, for solution to decide if it can add one schedule into this technician
-    public HashMap<Integer, Schedule> getScheduledTask(){
+    public HashMap<Integer, Task> getScheduledTask(){
         return schedules;
     }
     
     //leave if one technician conflict one schedule to outside's dealing
     // travelTime = -1 , then no need to update returnTime
-    public boolean addSchedule(int executeTime, Schedule s){
+    public boolean addSchedule(int executeTime, Task s){
         schedules.put(executeTime, s);  
         recentAddTaskTime = executeTime;
         return true;
@@ -166,7 +173,7 @@ public class Technician {
     //exchange, two technicians exchange tasks
     //swap, one technician drop one task and add another task
     //if executeTime < 0, doesnt judge it
-    public boolean deleteSchedule(int executeTime, Schedule s){
+    public boolean deleteSchedule(int executeTime, Task s){
         if(s != null && schedules.containsValue(s) == false)   //if schedule exist, check if it in the table  
             return false;
         if(s != null && executeTime > 0 )                   //if both exists
@@ -190,7 +197,7 @@ public class Technician {
     // total priority, this is the main objective of FTSP problem
     public int getTotalPriority(){
         int totalValue = 0;
-        for(Schedule s : schedules.values()){
+        for(Task s : schedules.values()){
             totalValue += s.getPriority();
         }
         return totalValue;
@@ -203,7 +210,7 @@ public class Technician {
     
     //get a random task's execute time 
     public int getOneScheduledTaskExecuteTime(){
-        if(sortedList.isEmpty())                  //if there is no scheduled task yet, return -1
+        if(schedules.isEmpty())                  //if there is no scheduled task yet, return -1
             return -1;
         
         Random rd = new Random();
@@ -212,8 +219,8 @@ public class Technician {
         return sortedList.get(rdNumber).getKey();
     }
     
-    //get Schedule from the execute time
-    public Schedule getTaskFromExecuteTime(int executeTime){
+    //get Task from the execute time
+    public Task getTaskFromExecuteTime(int executeTime){
         return schedules.get(executeTime);
     }
     

@@ -76,9 +76,6 @@ public class MasterProject {
                     if(instType == 0)
                         continue;
         
-                    //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_"
-                    //my PC: "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_"
-                    //String fileName = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_" + key + ".txt";
                     String fileName = null;
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
@@ -88,29 +85,20 @@ public class MasterProject {
                     
                     Instance ss = new Instance(fileName);
                     
-                    
-                    
-                    log.writeFile(PublicData.printTime());
-                    log.writeFile("\n");
-                    System.out.println(PublicData.printTime());
+                    log.writeFile(PublicData.printTime() + "\n");
                     
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
                     if(caseN < 13)
                         abc.RunBasicABCAlgorithm(caseN * 1000, true, true, true);
                     else
                         abc.RunBasicABCAlgorithm(caseN * 600, true, true, true);
-                    //System.out.printf("%s: bestBeforeABC=%d, bestAfterABC=%d, referredResult=%d, improveABC=%d, gap=%d\n", key, abc.getInitialBestSolutionValue(), 
-                    //        abc.getBestSolutionValue(), result.valueOfKey(key), abc.getBestSolutionValue() - abc.getInitialBestSolutionValue(), 
-                    //        result.valueOfKey(key) - abc.getBestSolutionValue());
                     
                     String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getBestSolutionValue()
                             + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getBestSolutionValue() - abc.getInitialBestSolutionValue())
-                            + ", gap=" + (result.valueOfKey(key) - abc.getBestSolutionValue());
+                            + ", gap=" + (result.valueOfKey(key) - abc.getBestSolutionValue() + "\n");
                     log.writeFile(logBuf);
-                    log.writeFile("\n");
                     
-                    System.out.println(logBuf);
-                    
+                    //after all, we check again if improved solutions are invalid
                     if(abc.getBestSolutionValue() > abc.getInitialBestSolutionValue()){
                         for(Solution s: abc.getSolutions()){
                             ConflictTest ct = new ConflictTest(s);
@@ -119,7 +107,6 @@ public class MasterProject {
                                 return;
                             }
                         }
-                        
                     }  
                    
                 }

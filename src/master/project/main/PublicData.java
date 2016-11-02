@@ -45,7 +45,7 @@ public class PublicData {
         return ret;
     }
     
-    public static boolean AmIAtSublab = true;
+    public static boolean AmIAtSublab = false;
     
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String sunlabInstancePath = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_";
@@ -54,7 +54,6 @@ public class PublicData {
     
     public static String printTime(){
          Calendar ca = Calendar.getInstance();
-         //System.out.println(ca.getTime());
          return ca.getTime().toString();
     }
     

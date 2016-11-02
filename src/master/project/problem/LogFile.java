@@ -15,6 +15,7 @@ import java.io.IOException;
 /**
  *
  * @author gillmylady
+ * we use this class to operate all log-file, and store test data into files.
  */
 public class LogFile {
     
@@ -31,8 +32,6 @@ public class LogFile {
             }
         }
         try {
-            //System.out.println(fileName.createNewFile());               //create new file
-            
             out = new BufferedWriter(new FileWriter(fileName.getAbsoluteFile()));
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -44,6 +43,10 @@ public class LogFile {
         try {
             out.write(data);
             out.flush();
+            
+            //we find that we need also print the log data in console
+            System.out.print(data);
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }

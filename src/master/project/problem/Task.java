@@ -11,24 +11,24 @@ import java.util.Comparator;
  *
  * @author gillmylady
  */
-public class Schedule{
-    private int scheduleID;             //schedule unique ID for hashtable
+public class Task{
+    private int taskID;             //schedule unique ID for hashtable
     private int priority;
     private int processTime;         //how long it needs to process
     private int startTime;           //time window, start time
     private int endTime;             //time window, end time
     
-    //random construct an object
-    public Schedule(int scheduleID, int priority, int processTime, int startTime, int endTime){
-        this.scheduleID = scheduleID;
+    // constructer
+    public Task(int taskID, int priority, int processTime, int startTime, int endTime){
+        this.taskID = taskID;
         this.priority = priority;
         this.processTime = processTime;
         this.startTime = startTime;
         this.endTime = endTime;
     }
     
-    public int getScheduleID(){
-        return scheduleID;
+    public int getTaskID(){
+        return taskID;
     }
     
     public int getPriority(){
@@ -47,15 +47,16 @@ public class Schedule{
         return endTime;
     }
     
+    //print all parameters of this task
     public String parameterToString(){
-        return "scheduleID = " + scheduleID + ", priority = " + priority + ", processTime = " + processTime 
+        return "scheduleID = " + taskID + ", priority = " + priority + ", processTime = " + processTime 
                 + ", startTime = " + startTime + ", endTime = " + endTime;
     }
    
     //Comparator for sorting the list by priority/processtime 
-    public static Comparator<Schedule> PriorityWithProcessTime = new Comparator<Schedule>() {
+    public static Comparator<Task> PriorityWithProcessTime = new Comparator<Task>() {
         @Override
-        public int compare(Schedule o1, Schedule o2) {
+        public int compare(Task o1, Task o2) {
             double a = (double)o1.getPriority() / (double)o1.getProcessTime();
             double b = (double)o2.getPriority() / (double)o2.getProcessTime();
             return -(int)(1000 * (a-b));
@@ -63,17 +64,17 @@ public class Schedule{
     };
     
     //Comparator for sorting the list by priority/processtime 
-    public static Comparator<Schedule> Priority = new Comparator<Schedule>() {
+    public static Comparator<Task> Priority = new Comparator<Task>() {
         @Override
-        public int compare(Schedule o1, Schedule o2) {
+        public int compare(Task o1, Task o2) {
             return o2.getPriority() - o1.getPriority();
         }
     };
     
     //Comparator for sorting the list by priority/processtime 
-    public static Comparator<Schedule> ProcessTime = new Comparator<Schedule>() {
+    public static Comparator<Task> ProcessTime = new Comparator<Task>() {
         @Override
-        public int compare(Schedule o1, Schedule o2) {
+        public int compare(Task o1, Task o2) {
             return +(o1.getProcessTime()- o2.getProcessTime());
         }
     };

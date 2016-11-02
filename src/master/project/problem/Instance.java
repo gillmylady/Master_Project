@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 /**
  *
  * @author gillmylady
+ * in here, we parse all instances (data set) and use them.
  */
 public class Instance {
     private static final int indexLimit = 13;                //maximum 13 kinds of data to be read
@@ -198,6 +199,7 @@ public class Instance {
     public int getmwValue() {return mwValue;}
     public int getmzValue() {return mzValue;}
     
+    //Euclidean distance
     public int getDistance(int taskn1, int taskn2){
         double euclideanDist;
         double x = taskPosition[taskn1][0] - taskPosition[taskn2][0];

@@ -5,18 +5,14 @@
  */
 package master.project.problem;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author gillmylady
+ * in here, we make conflict test, to make sure each solution is correct (no conflict inside)
  */
 public class ConflictTest {
     Solution solution;
@@ -25,12 +21,14 @@ public class ConflictTest {
         this.solution = s;
     }
     
+    //run two conflict tests
     public boolean testIfConflict(){
         if(ifAnyTaskScheduledTwice() == true)
             return true;
         return ifAnyTechnicianConflict();
     }
     
+    //test if any technician has scheduled tasks conflict (like two tasks cannot be scheduled with the execute time)
     public boolean ifAnyTechnicianConflict(){
         int lastSchedule;
         int thisSchedule;
@@ -39,31 +37,23 @@ public class ConflictTest {
             
         for(Technician t : solution.getSolution()){
             
-            List<Map.Entry<Integer, Schedule>> list = new LinkedList<>(t.getScheduledTask().entrySet());
-            Collections.sort(list, new Comparator<Map.Entry<Integer, Schedule>>(){
-                @Override
-                public int compare(Map.Entry<Integer, Schedule> o1, Map.Entry<Integer, Schedule> o2) {
-                    return o1.getKey().compareTo(o2.getKey());
-                }
-            });
-            Map<Integer, Schedule> sortedSchedules = new LinkedHashMap<>();
-            for(Map.Entry<Integer, Schedule> entry: list){
-                sortedSchedules.put(entry.getKey(), entry.getValue());
-            }
-            ArrayList<Integer> sortedKey = new ArrayList<>(sortedSchedules.keySet());
+            //rewrite this feature, if there is any problem, please refer old back-up codes in thie part.
+            List<Map.Entry<Integer, Task>> sortedList = t.getSortExecuteTimeList();
+            if(sortedList.isEmpty())            //if no tasks inside, just skip it
+                continue;
             
-            for(int i = 0; i <= sortedKey.size(); i++){
+            for(int i = 0; i <= sortedList.size(); i++){
                 if(i == 0){
                     lastSchedule = 0;
                     lastEndTime = t.getStartTime();
                 }
                 else{
-                    lastSchedule = sortedSchedules.get(sortedKey.get(i - 1)).getScheduleID();
-                    lastEndTime = sortedKey.get(i - 1) + sortedSchedules.get(sortedKey.get(i - 1)).getProcessTime();
+                    lastSchedule = sortedList.get(i - 1).getValue().getTaskID();
+                    lastEndTime = sortedList.get(i - 1).getKey() + sortedList.get(i - 1).getValue().getProcessTime();
                 }
-                if(i != sortedKey.size()){
-                    thisSchedule = sortedSchedules.get(sortedKey.get(i)).getScheduleID();
-                    thisStartTime = sortedKey.get(i);
+                if(i != sortedList.size()){
+                    thisSchedule = sortedList.get(i).getValue().getTaskID();
+                    thisStartTime = sortedList.get(i).getKey();
                 }
                 else{
                     thisSchedule = 0;
@@ -73,29 +63,32 @@ public class ConflictTest {
                 //System.out.printf("lastEndTime=%d, thisStartTime=%d, distance=%d\n", lastEndTime, thisStartTime, solution.getDistance(lastSchedule, thisSchedule));
                 
                 //check if this executeTime is before startTime or after endTime
-                if(i != sortedKey.size()){
-                    if(sortedSchedules.get(sortedKey.get(i)).getStartTime() > sortedKey.get(i) ||
-                          sortedSchedules.get(sortedKey.get(i)).getEndTime() < sortedKey.get(i) + sortedSchedules.get(sortedKey.get(i)).getProcessTime())
+                if(i != sortedList.size()){
+                    if(sortedList.get(i).getValue().getStartTime() > sortedList.get(i).getKey() ||
+                          sortedList.get(i).getValue().getEndTime() < sortedList.get(i).getKey() + sortedList.get(i).getValue().getProcessTime())
                         return true;            
                 }
                 
-                //check if the travel time is enought
+                //check if the travel time is enough
                 if(thisStartTime - lastEndTime < solution.getDistance(lastSchedule, thisSchedule))
                     return true;
                 
             }
+            
+            
         }   
         return false;
     }
     
+    //check if there is any scheduled task that is scheduled twice
     public boolean ifAnyTaskScheduledTwice(){
-        HashMap<Integer, Integer> count = new HashMap<>();
+        HashMap<Integer, Integer> count = new HashMap<>();  //<taskId, count>
         for(Technician t : solution.getSolution()){
-            for(Schedule s : t.getScheduledTask().values()){
-                if(count.containsKey(s.getScheduleID()) == false){
-                    count.put(s.getScheduleID(), 1);
+            for(Task s : t.getScheduledTask().values()){
+                if(count.containsKey(s.getTaskID()) == false){
+                    count.put(s.getTaskID(), 1);
                 }else{
-                    count.replace(s.getScheduleID(), count.get(s.getScheduleID()) + 1);
+                    count.replace(s.getTaskID(), count.get(s.getTaskID()) + 1);
                     System.out.println("\n\n\n\n\n\n ifAnyTaskScheduledTwice\n\n\n\n\n");
                 }
             }

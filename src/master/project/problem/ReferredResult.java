@@ -25,24 +25,22 @@ public class ReferredResult {
     HashMap<String, Integer> RC;
     HashMap<String, Integer> RAD;
     
+    //we are going to parse the Result.txt file, to get all instances' results by the referred paper
+    //we store all these results in 4 hashMap, each with one different name of distribution type
     public ReferredResult() throws FileNotFoundException, UnsupportedEncodingException{
         R = new HashMap<>();
         C = new HashMap<>();
         RC = new HashMap<>();
         RAD = new HashMap<>();
         
-        //sun-lab "/home/hfw5079/NetBeansProjects/Master_Project/Results.txt"
-        //home  "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt"
-        //ParseReferredResult("/home/hfw5079/NetBeansProjects/Master_Project/Results.txt");
-        
+        //if we take experiement in the sun lab, the file path is different with that in my own computer
         if(PublicData.AmIAtSublab){
             ParseReferredResult(PublicData.sunlabResultPath);
         }else
             ParseReferredResult(PublicData.homeResultPath);
-    
-    
     }
     
+    //parse the file and store data into the 4 hashmap
     public void ParseReferredResult(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
         String[] data;
         File file = new File(fileName);
@@ -65,6 +63,7 @@ public class ReferredResult {
                 if(data[0].startsWith("R") == false && data[0].startsWith("C") == false)        //first two lines ignore
                     continue;
                 
+                //key is in format of XX_I_J, XX is the type, I is the case number, from 1-13, J is the instance number, from 1-20
                 key = data[0] + "_" + data[1] + "_" + data[2];
                 largestValue = 0;
                 secondLargestValue = 0;
@@ -102,6 +101,8 @@ public class ReferredResult {
         }
     }
     
+    //get value from the key
+    //key is in format of XX_I_J, XX is the type, I is the case number, from 1-13, J is the instance number, from 1-20
     public int valueOfKey(String key){
         if(key.startsWith("RAD")){
             return RAD.get(key);

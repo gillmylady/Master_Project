@@ -18,6 +18,7 @@ public class RouletteWheel {
     int total;
     Random random;
     
+    //constructor
     public RouletteWheel(int[] fitness){
         random = new Random();
         total = 0;
@@ -29,6 +30,7 @@ public class RouletteWheel {
         }
     }
     
+    //spin and get the random value's index
     public int spin(){
         
         int r = random.nextInt(this.total);
