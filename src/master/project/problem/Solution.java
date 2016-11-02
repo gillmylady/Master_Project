@@ -276,7 +276,7 @@ public class Solution {
             str += "technician: ";
             str += solution.get(i).parameterToString();
             str += "\n";
-            str += solution.get(i).scheduleToString();
+            str += solution.get(i).scheduledTasksToString();
         }
         return str;
     }
