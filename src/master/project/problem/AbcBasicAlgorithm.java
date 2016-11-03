@@ -21,6 +21,7 @@ public class AbcBasicAlgorithm {
     private int initialBestSolutionValue = 0;
     
     private List<Solution> solutions;
+    private int soFarBestSolution;
     
     //constructor
     //we construct some initial solutions in here, according to the bees number
@@ -28,6 +29,7 @@ public class AbcBasicAlgorithm {
         this.workerBeeNumber = beeNumber/2;
         this.onlookerBeeNumber = beeNumber - beeNumber/2 - 1;
         solutions = new ArrayList<>();
+        soFarBestSolution = 0;
         for(int i = 0; i < this.workerBeeNumber; i++){
             Solution s = new Solution(instance, i);         //second argument is solution ID
             switch (i) {
@@ -85,13 +87,14 @@ public class AbcBasicAlgorithm {
     
     /*
     totalRounds: how many rounds does this algorithm run? or later on we can add the feature, how much time does it run
+    timeout, if totalRounds < 0, then we use timeout instead
     onlookerBeeExist: if true, onlookerBee exist, and it will be reset after specified rounds' failure to improve 
                         if false, it doesnt exist
     workerBeeAllowNotBackupWhenGetStucked, workerBee doesn't reset, but we allow the chance that if they add task with drop, leave some
                             probability that they dont recover dropped task
     allowExchange: if this algorithm allows exchange among each solution
     */
-    public void RunBasicABCAlgorithm(int totalRounds, boolean onlookerBeeExist, 
+    public void RunBasicABCAlgorithm(int totalRounds, int timeout, boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
             boolean allowExchange){
         
@@ -102,7 +105,10 @@ public class AbcBasicAlgorithm {
         
         int[] eachPrio = new int[solutions.size()];
         
-        while((currentRound++) < totalRounds){
+        //http://stackoverflow.com/questions/19727109/how-to-exit-a-while-loop-after-a-certain-time
+        long startTime = System.currentTimeMillis();
+        
+        while((currentRound++) < totalRounds || (System.currentTimeMillis() - startTime) < timeout * 1000 ){
             
             //if need, we can print all solutions' value in each totalRounds, to see if it's improved
             //displayAllSolution(false);
@@ -174,6 +180,8 @@ public class AbcBasicAlgorithm {
             if(allowExchange){
                 solutionsTryExchange();
             }
+            
+            storeSoFarBestSolutionValue();
         }
     }
     
@@ -235,6 +243,20 @@ public class AbcBasicAlgorithm {
     //store initial best solution and use it for compare -> to see how much ABC improve the initial best solution
     public int getInitialBestSolutionValue(){
         return initialBestSolutionValue;
+    }
+    
+    //store the best solution when trying abc
+    public void storeSoFarBestSolutionValue(){
+        int[] eachPrio =  PublicData.getSolutionFitness(solutions);
+        for(int value : eachPrio){
+            if(value > soFarBestSolution)
+                soFarBestSolution = value;
+        }
+    }
+    
+    //get sofar best solution
+    public int getSoFarBestSolutionValue(){
+        return soFarBestSolution;
     }
     
     //get so-far the best solution's total priority

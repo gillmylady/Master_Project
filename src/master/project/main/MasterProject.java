@@ -73,9 +73,10 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
-                    if(instType < 3)
+                    /*if(instType < 3)
                         continue;
-        
+                    */
+                    
                     String fileName = null;
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
@@ -88,18 +89,23 @@ public class MasterProject {
                     log.writeFile(PublicData.printTime() + "\n");
                     
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
-                    if(caseN < 13)
-                        abc.RunBasicABCAlgorithm(caseN * 1000, true, true, true);
-                    else
-                        abc.RunBasicABCAlgorithm(caseN * 600, true, true, true);
                     
-                    String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getBestSolutionValue()
-                            + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getBestSolutionValue() - abc.getInitialBestSolutionValue())
-                            + ", gap=" + (result.valueOfKey(key) - abc.getBestSolutionValue() + "\n");
+                    /*
+                    if(caseN < 13)
+                        abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true);
+                    else
+                        abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true);
+                    */
+                    //run the rounds in limited time
+                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true);
+                    
+                    String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
+                            + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue() + "\n");
                     log.writeFile(logBuf);
                     
                     //after all, we check again if improved solutions are invalid
-                    if(abc.getBestSolutionValue() > abc.getInitialBestSolutionValue()){
+                    if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
                         for(Solution s: abc.getSolutions()){
                             ConflictTest ct = new ConflictTest(s);
                             if(ct.testIfConflict() == true){

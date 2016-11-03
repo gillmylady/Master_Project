@@ -57,4 +57,6 @@ public class PublicData {
          return ca.getTime().toString();
     }
     
+    public static int[] runLimitTime = {0, 3, 5, 10, 50, 75, 80, 180, 250, 480, 600, 900, 1800, 3600};
+    
 }
