@@ -65,7 +65,7 @@ public class MasterProject {
         int instanceNumber = 20;
         ReferredResult result = new ReferredResult();
         
-        LogFile log = new LogFile("log1000_600ttt.txt");
+        LogFile log = new LogFile("log1000ttt_RAD.txt");
         for(int instType = 0; instType < instanceType.length; instType++){
             for(int caseN = 1; caseN <= caseNumber; caseN++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
@@ -73,7 +73,7 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
-                    if(instType == 0)
+                    if(instType < 3)
                         continue;
         
                     String fileName = null;
