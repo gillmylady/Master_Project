@@ -52,6 +52,9 @@ public class PublicData {
     public static String homeResultPath = "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt";
     public static String sunlabResultPath = "/home/hfw5079/NetBeansProjects/Master_Project/Results.txt";
     
+    public static String homeResultAnalysisPath = "/Users/gillmylady/NetBeansProjects/Master_Project/analusis.txt";
+    public static String sunlabResultAnalysisPath = "/home/hfw5079/NetBeansProjects/Master_Project/analusis.txt";
+    
     public static String printTime(){
          Calendar ca = Calendar.getInstance();
          return ca.getTime().toString();

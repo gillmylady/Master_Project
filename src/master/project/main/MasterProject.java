@@ -66,6 +66,9 @@ public class MasterProject {
         ReferredResult result = new ReferredResult();
         
         LogFile log = new LogFile("log1000ttt_RAD.txt");
+        
+        ResultAnalysis analysis = new ResultAnalysis("analysis.txt");
+        
         for(int instType = 0; instType < instanceType.length; instType++){
             for(int caseN = 1; caseN <= caseNumber; caseN++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
@@ -73,9 +76,8 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
-                    /*if(instType < 3)
+                    if(caseN > 5)
                         continue;
-                    */
                     
                     String fileName = null;
                     if(PublicData.AmIAtSublab){
@@ -101,8 +103,10 @@ public class MasterProject {
                     
                     String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                             + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
-                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue() + "\n");
+                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
                     log.writeFile(logBuf);
+                    analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                                                        , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
                     
                     //after all, we check again if improved solutions are invalid
                     if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
@@ -120,7 +124,7 @@ public class MasterProject {
         }
         
         log.closeFile();
-        
+        analysis.endResultAnalysis();
     }
     
 }

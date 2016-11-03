@@ -1,0 +1,39 @@
+#number of wrong referred paper: 24
+#number of as good as referred paper: 35
+R_1_6, 4
+R_1_17, 5
+R_1_18, 10
+R_1_20, 5
+R_2_9, 14
+C_1_1, 4
+C_1_2, 4
+C_1_4, 1
+C_1_9, 10
+C_1_15, 7
+C_1_17, 8
+C_1_18, 9
+C_2_1, 3
+C_3_1, 7
+RC_1_1, 0
+RC_1_2, 4
+RC_1_4, 4
+RC_1_7, 7
+RC_1_11, 5
+RC_1_14, 6
+RC_1_17, 7
+RC_1_20, 11
+RC_2_3, 14
+RC_2_13, 15
+RC_2_14, 17
+RC_2_20, 9
+RC_3_1, 10
+RAD_1_1, 14
+RAD_1_2, 4
+RAD_1_3, 3
+RAD_1_10, 6
+RAD_1_11, 6
+RAD_1_13, 4
+RAD_1_16, 7
+RAD_2_1, 9
+#number of worse: 181
+#average percentage of worse results: 0.653042901683773
