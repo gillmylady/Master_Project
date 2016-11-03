@@ -60,6 +60,10 @@ public class MasterProject {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
+        RunAllInstancesInSameCase();
+        return;
+        
+        /*
         String[] instanceType = {"R", "C", "RC", "RAD"};
         int caseNumber = 13;
         int instanceNumber = 20;
@@ -92,12 +96,10 @@ public class MasterProject {
                     
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
                     
-                    /*
-                    if(caseN < 13)
-                        abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true);
-                    else
-                        abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true);
-                    */
+                    //if(caseN < 13)
+                    //    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true);
+                    //else
+                    //    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true);
                     //run the rounds in limited time
                     abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true);
                     
@@ -125,6 +127,68 @@ public class MasterProject {
         
         log.closeFile();
         analysis.endResultAnalysis();
+*/
+    }
+    
+    public static void RunAllInstancesInSameCase() throws FileNotFoundException, UnsupportedEncodingException {
+        String[] instanceType = {"R", "C", "RC", "RAD"};
+        int caseNumber = 13;
+        int instanceNumber = 20;
+        ReferredResult result = new ReferredResult();
+        
+        LogFile log = new LogFile("log_ReferedTimeout.txt");
+        
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
+            
+            ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
+        
+            for(int instType = 0; instType < instanceType.length; instType++){
+                for(int instN = 1; instN <= instanceNumber; instN++){
+                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
+                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+                        continue;
+                    
+                    String fileName = null;
+                    if(PublicData.AmIAtSublab){
+                        fileName = PublicData.sunlabInstancePath + key + ".txt";
+                    }else{
+                        fileName = PublicData.homeInstancePath + key + ".txt";
+                    }
+                    
+                    Instance ss = new Instance(fileName);
+                    
+                    log.writeFile(PublicData.printTime() + "\n");
+                    
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+                    
+                    //run the rounds in limited time
+                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true);
+                    
+                    String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
+                            + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
+                    log.writeFile(logBuf);
+                    analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                                                        , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
+                    
+                    //after all, we check again if improved solutions are invalid
+                    if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
+                        for(Solution s: abc.getSolutions()){
+                            ConflictTest ct = new ConflictTest(s);
+                            if(ct.testIfConflict() == true){
+                                System.out.println("some schedules conflict!!!");
+                                return;
+                            }
+                        }
+                    }  
+                   
+                }
+            }
+            analysis.endResultAnalysis();
+        }
+        
+        log.closeFile();
+        
     }
     
 }
