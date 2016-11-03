@@ -64,9 +64,9 @@ public class MasterProject {
         
         //before test, please make sure if i'm at sun-lab or own computer
         
-        //RunAllInstancesInSameCaseWithLimitedTime();
+        RunAllInstancesInSameCaseWithLimitedTime();
         
-        RunAllInstancesInLimitedRounds();
+        //RunAllInstancesInLimitedRounds();
         return;
         
         /*

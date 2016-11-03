@@ -84,9 +84,9 @@ public class ResultAnalysis {
         }
         
         //calculate worse result
-        if(numOfErrorDataInReferredPaper > 0){
+        if(numOfNotAsGoodAsReferedPaper > 0){
             log.writeFile("#number of worse: " + numOfNotAsGoodAsReferedPaper + "\n");
-            log.writeFile("#average percentage of worse results: " + notGoodTotalPercentage/numOfNotAsGoodAsReferedPaper);
+            log.writeFile("#average percentage of worse results: " + notGoodTotalPercentage/numOfNotAsGoodAsReferedPaper + "\n");
         }
         
         log.closeFile();
