@@ -62,6 +62,8 @@ public class MasterProject {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
+        //before test, please make sure if i'm at sun-lab or own computer
+        
         //RunAllInstancesInSameCaseWithLimitedTime();
         
         RunAllInstancesInLimitedRounds();
