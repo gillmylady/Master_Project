@@ -39,7 +39,7 @@ public class ConflictTest {
             
             //rewrite this feature, if there is any problem, please refer old back-up codes in thie part.
             List<Map.Entry<Integer, Task>> sortedList = t.getSortExecuteTimeList();
-            if(sortedList.isEmpty())            //if no tasks inside, just skip it
+            if(sortedList == null || sortedList.isEmpty())            //if no tasks inside, just skip it
                 continue;
             
             for(int i = 0; i <= sortedList.size(); i++){
