@@ -7,6 +7,8 @@ package master.project.main;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import master.project.problem.*;
 /**
  *
@@ -60,7 +62,9 @@ public class MasterProject {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
-        RunAllInstancesInSameCase();
+        //RunAllInstancesInSameCaseWithLimitedTime();
+        
+        RunAllInstancesInLimitedRounds();
         return;
         
         /*
@@ -130,7 +134,8 @@ public class MasterProject {
 */
     }
     
-    public static void RunAllInstancesInSameCase() throws FileNotFoundException, UnsupportedEncodingException {
+    //run ABC algorithm, each instance is given limited time
+    public static void RunAllInstancesInSameCaseWithLimitedTime() throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         int caseNumber = 13;
         int instanceNumber = 20;
@@ -189,6 +194,87 @@ public class MasterProject {
         
         log.closeFile();
         
+    }
+    
+    //run all instances in limited rounds, run all different distributions
+    public static void RunAllInstancesInLimitedRounds(){
+        try {
+            RunAllInstancesInLimitedRounds("R");
+            RunAllInstancesInLimitedRounds("C");
+            RunAllInstancesInLimitedRounds("RC");
+            RunAllInstancesInLimitedRounds("RAD");
+            
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    //run ABC algorithm, each instance is given limited rounds
+    //argument, String key_distribution, start from {"R", "C", "RC", "RAD"}, (each round takes long time)
+    public static void RunAllInstancesInLimitedRounds(String key_distribution) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        int caseNumber = 13;
+        int instanceNumber = 20;
+        ReferredResult result = new ReferredResult();
+        
+        LogFile log = new LogFile("log_ReferedTimeout.txt");
+        ResultAnalysis totalAnalysis = new ResultAnalysis("analysis_" + key_distribution + ".txt");
+        
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
+            
+            ResultAnalysis analysis = new ResultAnalysis("analysis_" + key_distribution + "_" + caseN + ".txt");
+        
+            for(int instN = 1; instN <= instanceNumber; instN++){
+                String key = key_distribution + "_" + caseN + "_" + instN;
+                if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+                    continue;
+
+                String fileName = null;
+                if(PublicData.AmIAtSublab){
+                    fileName = PublicData.sunlabInstancePath + key + ".txt";
+                }else{
+                    fileName = PublicData.homeInstancePath + key + ".txt";
+                }
+
+                Instance ss = new Instance(fileName);
+
+                log.writeFile(PublicData.printTime() + "\n");
+
+                AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+
+                if(caseN < 13)
+                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true);
+                else
+                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true);
+                
+                String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
+                        + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                        + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
+                log.writeFile(logBuf);
+                analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                                                    , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
+
+                totalAnalysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                                                    , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
+
+                //after all, we check again if improved solutions are invalid
+                if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
+                    for(Solution s: abc.getSolutions()){
+                        ConflictTest ct = new ConflictTest(s);
+                        if(ct.testIfConflict() == true){
+                            System.out.println("some schedules conflict!!!");
+                            return;
+                        }
+                    }
+                }  
+            }
+            analysis.endResultAnalysis();
+        }
+        totalAnalysis.endResultAnalysis();
+        log.closeFile();
     }
     
 }
