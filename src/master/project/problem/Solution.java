@@ -7,10 +7,6 @@ package master.project.problem;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -307,13 +303,9 @@ public class Solution {
         int travelTime1 = 0;
         int travelTime2 = 0;
         Technician t = solution.get(techNumber);
-        HashMap<Integer, Task> schedules = t.getScheduledTask();
-        
-        //System.out.print("TechnicianConflictSchedule, size=");
-        //System.out.println(schedules.size());
         
         //if empty, t.startTime + travelTime <= executeTime <= t.endTime - travelTime
-        if(schedules.isEmpty()){            //if there is no schedules for this technician
+        if(t.getScheduledTask().isEmpty()){            //if there is no schedules for this technician
             
             travelTime1 = getDistance(0, s.getTaskID());
             travelTime2 = travelTime1;
@@ -323,33 +315,25 @@ public class Solution {
         }
         else{
             //otherwise, check every gap and see if this sehedule can be scheduled
-            //http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
-            List<Map.Entry<Integer, Task>> list = new LinkedList<>(schedules.entrySet());
-            Collections.sort(list, new Comparator<Map.Entry<Integer, Task>>(){
-                @Override
-                public int compare(Map.Entry<Integer, Task> o1, Map.Entry<Integer, Task> o2) {
-                    return o1.getKey().compareTo(o2.getKey());
-                }
-            });
-            Map<Integer, Task> sortedSchedules = new LinkedHashMap<>();
-            for(Map.Entry<Integer, Task> entry: list){
-                sortedSchedules.put(entry.getKey(), entry.getValue());
-            }
-            ArrayList<Integer> sortedKey = new ArrayList<>(sortedSchedules.keySet());
+            //old codes are removed and optimized. if necessary, check the back-up codes.
+            List<Map.Entry<Integer, Task>> list = solution.get(techNumber).getSortExecuteTimeList();
+            if(list == null || list.isEmpty())
+                return -1;
+            
             travelTime1 = getDistance(0, s.getTaskID());
             int previousEndTimePlusTravelTime = t.getStartTime() 
                    // + instance.getDistance(0, schedules.get(sortedKey.get(0)).getTaskID());
                     + travelTime1;           //this new schedule and original distance
             int nextStartTimeMinusTravelTime;
-            for(int i = 0; i <= sortedKey.size(); i++){
+            for(int i = 0; i <= list.size(); i++){
                 if(i > 0){
                     //last executeTime + processTime + travelTime
-                    travelTime1 = getDistance(schedules.get(sortedKey.get(i-1)).getTaskID(), s.getTaskID());
-                    previousEndTimePlusTravelTime = sortedKey.get(i-1) + schedules.get(sortedKey.get(i-1)).getProcessTime()
+                    travelTime1 = getDistance(list.get(i-1).getValue().getTaskID(), s.getTaskID());
+                    previousEndTimePlusTravelTime = list.get(i-1).getKey() + list.get(i-1).getValue().getProcessTime()
                             + travelTime1;  
                     //System.out.printf("i>0, distance=%d\n",instance.getDistance(schedules.get(sortedKey.get(i-1)).getTaskID(), s.getTaskID()));
                 }    
-                if(i == sortedKey.size())  {              //last schedule, distance to origin point
+                if(i == list.size())  {              //last schedule, distance to origin point
                     travelTime2 = getDistance(s.getTaskID(), 0);
                     nextStartTimeMinusTravelTime = t.getEndTime() 
                             - travelTime2 - s.getProcessTime();
@@ -357,8 +341,8 @@ public class Solution {
                     //System.out.printf("i==sortedkey.size, distance=%d\n",instance.getDistance(s.getTaskID(), 0));
                 }
                 else{
-                    travelTime2 = getDistance(s.getTaskID(), schedules.get(sortedKey.get(i)).getTaskID());
-                    nextStartTimeMinusTravelTime = sortedKey.get(i)        //distance to this point
+                    travelTime2 = getDistance(s.getTaskID(), list.get(i).getValue().getTaskID());
+                    nextStartTimeMinusTravelTime = list.get(i).getKey()        //distance to this point
                             - travelTime2 - s.getProcessTime();
                     //System.out.printf("0<i<size, distance=%d\n",instance.getDistance(s.getTaskID(), schedules.get(sortedKey.get(i)).getTaskID()));
                 }
