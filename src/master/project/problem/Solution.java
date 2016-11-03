@@ -14,41 +14,39 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import master.project.main.PublicData;
+
 
 /**
  *
  * @author gillmylady
  */
 public class Solution {
-    private int ID;
-    private int count;
+    private int ID;                     //solution ID for future use
+    private int count;                  //count of this solution, after how many times try it hasnt been improved
     
-    List<Technician> solution;              //solution, size = techNumber
-    List<Task> allSchedules;            //all schedules
-    private double[][] taskPosition;        
-    private int[][] skill;
+    private double[][] taskPosition;    //tasks' position, from instance data   
+    private int[][] skill;              //tasks' skill requirement
     
-    static int bestTechID;
+    static int bestTechID;              //these three remember the closest technician
     static int bestTechTravelTime;
     static int bestTechExecuteTime;
     
-    //List<Schedule> scheduledTasks;      //use only one hashmap, save space
-    //HashMap<Integer, Integer> scheduledTasks;
+    List<Technician> solution;          //solution, size = techNumber
+    List<Task> allSchedules;            //all schedules
     List<Integer> scheduledTasks;       //only record scheduled tasks' ID
     
-    //generate an empty solution
+    //generate an empty solution, initial solution
     public Solution(Instance instance, int id){
         initialSolution(instance);
         this.ID = id;
     }
     
+    //initial solution from instance data
     private void initialSolution(Instance instance){
         solution = new ArrayList<>();
         for(int i = 0; i < instance.getTechnicianNumber(); i++){
             Technician t = new Technician(instance.getTechStartTime(i), instance.getTechEndTime(i));
-            //System.out.println(t.parameterToString());
-            solution.add(t);
+            solution.add(t);                //one solution is composed by all technicians, we schedule tasks for each technician
         }
         allSchedules = new ArrayList<>();
         for(int i = 0; i < instance.getTaskNumber() + 1; i++){
@@ -56,36 +54,35 @@ public class Solution {
                     instance.getTaskStartTime(i), instance.getTaskEndTime(i));
             allSchedules.add(s);
         }
-        scheduledTasks = new ArrayList<>();
+        scheduledTasks = new ArrayList<>();                 //initially, empty list
         taskPosition = new double[allSchedules.size()][2];
         taskPosition = instance.getPositions();
         skill = new int[instance.getTaskNumber()+1][instance.getTechnicianNumber()];
         skill = instance.getSkills();
         
         this.count = 0;
-        //this.instance = instance;
     }
     
+    //check if one technician can add this task or not
+    //argument: task s, the task to be added
+    //argument: techinicianID, the techinician to add this task
     public boolean checkAddOneTask(Task s, int technicianID){
-        //System.out.printf("scheID = %d, techID = %d\n", s.getTaskID(), technicianID);
-        if(getSkill(s.getTaskID(), technicianID) == false){
-           // System.out.println("fail skill");
+        if(getSkill(s.getTaskID(), technicianID) == false){         //if the skill doesnt meet the requirement
             return false;
         }
-        int executeTime = TechnicianConflictSchedule(technicianID, s);
+        int executeTime = TechnicianConflictSchedule(technicianID, s);  //to see if this task can be scheduled at this technician or not
         //System.out.printf("j=%d,executeTime=%d\n",j,executeTime);
-        if(executeTime != 0){
-            solution.get(technicianID).addSchedule(executeTime, s);
+        if(executeTime > 0){
+            solution.get(technicianID).addSchedule(executeTime, s);         //add this task
             solution.get(technicianID).calculateReturnTime(getDistance(
-                    solution.get(technicianID).getLastSchedule().getTaskID(), 0));
-            scheduledTasks.add(s.getTaskID());
-          //  System.out.println("succeed");
+                    solution.get(technicianID).getLastSchedule().getTaskID(), 0));      //re-caculate the time of technician go back to original
+            scheduledTasks.add(s.getTaskID());                      //scheduledTasks remember this task
             return true;
         }
-        //System.out.println("fail conflict");
         return false;
     }
     
+    //generate a naive solution, check technician one by one to see if it can schedule ordered task
     public void naiveSolution(){
         for(Task s : allSchedules){
             if(s.getTaskID() == 0)          //omit 0 task (all 0)
@@ -97,51 +94,48 @@ public class Solution {
         }
     }
     
+    //construct shortest distance solution, before  that we need to sort all tasks first
     public void constructiveShortDistanceSolution(){
         for(Task s : allSchedules){
             if(s.getTaskID() == 0)          //omit 0 task (all 0)
                 continue;
             
+            //initialize theses three variables, and run all technicians and store the best one
             bestTechID = -1;
             bestTechTravelTime = Integer.MAX_VALUE;
-            //System.out.println(bestTechTravelTime);
             bestTechExecuteTime = -1;
             for(int j = 0; j < solution.size(); j++){
                 //check if this technician has enough skill first
                 if(getSkill(s.getTaskID(), j) == false)
                     continue;
                 
-                TechnicianConflictSchedule(j, s);
+                TechnicianConflictSchedule(j, s);               //run this function, the best will be stored inside
             }
-            //System.out.println(bestTechID);
             if(bestTechID >= 0)
                 checkAddOneTask(s, bestTechID);
         }
     }
     
+    //construct random solution
     public void constructiveRandomSolution(){
         Random rd = new Random();
         int scheduleID;
         int techID;
-        List<Integer> candidateTasks = new ArrayList<>();
+        List<Integer> candidateTasks = new ArrayList<>();           //this list contains un-tried tasks ID
         for(Task s : allSchedules){
             if(s.getTaskID() == 0)
                 continue;
-            candidateTasks.add(s.getTaskID());
+            candidateTasks.add(s.getTaskID());      //initial all candidates (tasks) with their ID
         }
         
-        // some schedules are not tried because of rounds, random might duplicate
-        //System.out.println(candidateTasks.size());
-        for(int i = 0; i < allSchedules.size() - 1; i++){
-          //  System.out.println(i);
-            int rdNumber = 0;
-            if(candidateTasks.size() > 0)
-                rdNumber = rd.nextInt(candidateTasks.size());
-            scheduleID = candidateTasks.get(rdNumber);
-            Task s = getTaskFromID(scheduleID);
+        //for(int i = 0; i < allSchedules.size() - 1; i++){
+        while(candidateTasks.isEmpty() == false){
+            int rdNumber = rd.nextInt(candidateTasks.size());
+            scheduleID = candidateTasks.get(rdNumber);      //get Integer from list index
+            Task s = getTaskFromID(scheduleID);             //get task from taskID
             
-            techID = rd.nextInt(solution.size());
-            for(int j = 0; j < solution.size(); j++){
+            techID = rd.nextInt(solution.size());           //start from a random technician
+            for(int j = 0; j < solution.size(); j++){       //j is a counter, count the number of technician
                 
                 if(checkAddOneTask(s, techID) == false){
                     techID++;
@@ -180,12 +174,10 @@ public class Solution {
         //System.out.println(candidateTasks.size());
         for(int i = 0; i < allSchedules.size() - 1; i++){
             
-            //System.out.println(totalPriority());
-            
             int rdNumber = 0;
             int rdProb = rd.nextInt(probAdd);
             if(i > 0 && rdProb < probExchange){
-                exchangeTasksAmongTechnicians();    //doesn't care the return value true of false
+                exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
                 i--;        //dont change i
                 continue;
             }else if(i > 0 && rdProb < probChange){
@@ -200,7 +192,8 @@ public class Solution {
                 continue;
             }else if(i > 0 && rdProb < probSwap){
                 //drop any task and re-schedule one
-                //randomly delete one task and then re-schedule one
+                //randomly delete one task and then re-schedule one 
+                //this is implemented in neighbor selection
                 i--;
                 continue;
             }
@@ -208,6 +201,8 @@ public class Solution {
             //probAdd 
             if(candidateTasks.size() > 0)
                 rdNumber = rd.nextInt(candidateTasks.size());
+            else
+                break;
             scheduleID = candidateTasks.get(rdNumber);
             Task s = getTaskFromID(scheduleID);
             
@@ -227,21 +222,20 @@ public class Solution {
     }
     
     
-    
-    
     //reset this solution
     public void resetSolution(){
         
         count = 0;
-        for(Technician t : solution){
+        for(Technician t : solution){   //all technicians clear all tasks
             t.removeAllSchedules();
         }
         
-        scheduledTasks.clear();
-        constructiveRandomSolution();
-        
+        scheduledTasks.clear();             //scheduledTasks clear
+        constructiveRandomSolution();       //re-construct random solution
     }
     
+    
+    //try add un-scheduled tasks
     public boolean tryAddFromUnscheduled(){
         boolean add = false;
         for(int j = 0; j < solution.size(); j++){
@@ -258,6 +252,7 @@ public class Solution {
         return add;
     }
     
+    //sort all tasks in these three orders, which is used for greedy heuristic
     public void greedySortSchedulesPriorityProcessTime(){
         Collections.sort(allSchedules, Task.PriorityWithProcessTime);
     }
@@ -381,6 +376,7 @@ public class Solution {
         return availExecuteTime;
     }
     
+    //check if one task is scheduled in this solution or not
     public boolean isTaskScheduled(int scheduleID){
         for(Integer s : scheduledTasks){
             if(s == scheduleID)
@@ -389,6 +385,7 @@ public class Solution {
         return false;
     }
     
+    //get task from taskID
     public Task getTaskFromID(int scheduleID){
         for(Task s : allSchedules){
             if(s.getTaskID() == scheduleID){
@@ -398,13 +395,16 @@ public class Solution {
         return null;
     }
     
+    //add one task without dropping any task
     public boolean addOneTaskWithoutDrop(int scheduleID){
         if(isTaskScheduled(scheduleID) == true)
             return false;
         if(scheduleID == 0)
             return false;
         Task task = getTaskFromID(scheduleID);
-        for(int j = 0; j < solution.size(); j++){
+        if(task == null)
+            return false;
+        for(int j = 0; j < solution.size(); j++){   //try all technicians and see if one can add it
             if(checkAddOneTask(task, j) == true)
                 return true;
         }
@@ -416,70 +416,53 @@ public class Solution {
         //drop one task whose execute time is in the window of this new task
         Random r = new Random();
         int rdNumber = r.nextInt(solution.size());  //start check from a random-number of technician
-        boolean flag = true;
+        boolean repeatFlag = true;                  //help start from a random technician and make sure it tries all technicians
         Task backupS = null;
         Task task = getTaskFromID(scheduleID);
-        for(int i = rdNumber; flag == true || i < rdNumber; ){
+        for(int i = rdNumber; repeatFlag == true || i < rdNumber; ){
             
-            List<Map.Entry<Integer, Task>> list = new LinkedList<>(solution.get(i).getScheduledTask().entrySet());
-            Collections.sort(list, new Comparator<Map.Entry<Integer, Task>>(){
-                @Override
-                public int compare(Map.Entry<Integer, Task> o1, Map.Entry<Integer, Task> o2) {
-                    return o1.getKey().compareTo(o2.getKey());
-                }
-            });
-            Map<Integer, Task> sortedSchedules = new LinkedHashMap<>();
-            for(Map.Entry<Integer, Task> entry: list){
-                sortedSchedules.put(entry.getKey(), entry.getValue());
-            }
-            ArrayList<Integer> sortedKey = new ArrayList<>(sortedSchedules.keySet());
+            //remove the old codes which define sorted tasks, if necessary, refer those back-up codes
+            List<Map.Entry<Integer, Task>> list = solution.get(i).getSortExecuteTimeList();
             
-            
-            for(Integer executeTime : sortedKey){
+            for(int num = 0; list != null && num < list.size(); num++){         //try all tasks in one technician
+                
+                int executeTime = list.get(num).getKey();
+                
                 if(executeTime > task.getStartTime() + 50 && executeTime < task.getEndTime()){  //+50 for travel time
                     backupS = solution.get(i).getScheduledTask().get(executeTime);
                     
                     if(task.getPriority() <= backupS.getPriority())     //only like higher priority
                         continue;
-                            
+                    
+                    //delete the task first, and see if it can add new one
                     solution.get(i).deleteSchedule(executeTime, null);// getScheduledTask().remove(executeTime);
-                    //System.out.println(backupS.getTaskID());
-                    //System.out.println(scheduledTasks.contains(backupS.getTaskID()));
                     for(int id = 0; id < scheduledTasks.size(); id++){
                         if(scheduledTasks.get(id) == backupS.getTaskID()){
                             scheduledTasks.remove(id);
                         }
                     }
-                    //scheduledTasks.remove((Integer) backupS.getTaskID());
                     
-                    if(checkAddOneTask(task, i) == true){
+                    if(checkAddOneTask(task, i) == true){       //if it add successfully, return succeed
                         return backupS;
                     }else{
-                        //solution.get(i).getScheduledTask().put(executeTime, backupS);
                         
                         //leave some probabality for solution not backup
                         Random rd = new Random();
                         int j = rd.nextInt(10);
-                        //if(PublicData.dontAllowBackup) //80% percentage to backup, 20% not backup for jumpming local optimal
                         if(allowNotBackup == false || (allowNotBackup && j < 5))     //50% percentage not backup
                         {
                             solution.get(i).addSchedule(executeTime, backupS);
                             scheduledTasks.add(backupS.getTaskID());
-                        }else{
+                        }else{                  //if we dont recover, then we return, which means the task is not added but we drop one task
                             return null;
                         }
-                        /*if(PublicData.allowBackup && j < 8) //80% percentage to backup, 20% not backup for jumpming local optimal
-                        {
-                            solution.get(i).addSchedule(executeTime, backupS);
-                            scheduledTasks.add(backupS.getTaskID());
-                        }*/
                     }
                 }
             }
             
-            i++;
+            i++;                            //we try from the random start point, and when we reach the end we should go back to the very beginning
             if(i >= solution.size()){
-                flag = false;
+                repeatFlag = false;
                 i = 0;
             }
         }
@@ -487,6 +470,7 @@ public class Solution {
         return null;
     }
     
+    //exchange tasks among two random technicians
     public boolean exchangeTasksAmongTechnicians(){
         
         //select two random technicians
@@ -500,7 +484,7 @@ public class Solution {
         
         //select a random task from the first technician
         int t1TaskExecuteTime = solution.get(t1).getOneScheduledTaskExecuteTime();
-        if(t1TaskExecuteTime == -1)
+        if(t1TaskExecuteTime < 0)
             return false;
         Task t1Task = solution.get(t1).getTaskFromExecuteTime(t1TaskExecuteTime);
         solution.get(t1).deleteSchedule(t1TaskExecuteTime, t1Task);
@@ -532,36 +516,35 @@ public class Solution {
     
     //add new task, if succeed, return the dropped task
     public Task oneTechnicianAddWithDrop(int techID, Task s){
-        List<Map.Entry<Integer, Task>> list = new LinkedList<>(solution.get(techID).getScheduledTask().entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<Integer, Task>>(){
-            @Override
-            public int compare(Map.Entry<Integer, Task> o1, Map.Entry<Integer, Task> o2) {
-                return o1.getKey().compareTo(o2.getKey());
-            }
-        });
-        
+        List<Map.Entry<Integer, Task>> list = solution.get(techID).getSortExecuteTimeList();
+        if(list == null)
+            return null;
         int executeTime = 0;
         Task task = null;
         for(int i = 0; i < list.size(); i++){
             executeTime = list.get(i).getKey();
             task = list.get(i).getValue();
             
-            solution.get(techID).deleteSchedule(executeTime, task);
+            solution.get(techID).deleteSchedule(executeTime, task);     //delete the backup task first
             
-            if(checkAddOneTask(s, techID)){
+            if(checkAddOneTask(s, techID)){ //if succeed, then return
                 return task;
-            }else{
+            }else{                      //recover 
                 solution.get(techID).addSchedule(executeTime, task);
             }
         }
         return null;
     }
     
+    //return solution list in case
     public List<Technician> getSolution(){
         return solution;
     }
     
+    //return one random scheduled Task
     public int getOneScheduledTask(){
+        if(scheduledTasks.isEmpty())
+            return -1;
         Random r = new Random();
         int rdNumber = r.nextInt(scheduledTasks.size());
         return scheduledTasks.get(rdNumber);
@@ -573,10 +556,6 @@ public class Solution {
         int rdNumber = r.nextInt(scheduledTasks.size());
         boolean flag = true;
         for(int i = rdNumber; flag == true || i < rdNumber; ){
-            /*
-            if(scheduledTasks.get(i).getPriority() > prio || (acceptSame == true && scheduledTasks.get(i).getPriority() == prio)){
-                return scheduledTasks.get(i).getTaskID();
-            }*/
             Task s = getTaskFromID(rdNumber);
             if(s.getPriority() < prio || (acceptSame == true && s.getPriority() == prio)){
                 return s.getTaskID();
