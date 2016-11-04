@@ -7,8 +7,6 @@ package master.project.main;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import master.project.problem.*;
 /**
  *
@@ -62,6 +60,8 @@ public class MasterProject {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
+        //剩下可以做的: shrink tasks and see if solutions can be improved
+        
         //before test, please make sure if i'm at sun-lab or own computer
         
         RunAllInstancesInSameCaseWithLimitedTime();
@@ -69,71 +69,7 @@ public class MasterProject {
         //RunAllInstancesInLimitedRounds();
         return;
         
-        /*
-        String[] instanceType = {"R", "C", "RC", "RAD"};
-        int caseNumber = 13;
-        int instanceNumber = 20;
-        ReferredResult result = new ReferredResult();
         
-        LogFile log = new LogFile("log1000ttt_RAD.txt");
-        
-        ResultAnalysis analysis = new ResultAnalysis("analysis.txt");
-        
-        for(int instType = 0; instType < instanceType.length; instType++){
-            for(int caseN = 1; caseN <= caseNumber; caseN++){
-                for(int instN = 1; instN <= instanceNumber; instN++){
-                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
-                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
-                        continue;
-                    
-                    if(caseN > 5)
-                        continue;
-                    
-                    String fileName = null;
-                    if(PublicData.AmIAtSublab){
-                        fileName = PublicData.sunlabInstancePath + key + ".txt";
-                    }else{
-                        fileName = PublicData.homeInstancePath + key + ".txt";
-                    }
-                    
-                    Instance ss = new Instance(fileName);
-                    
-                    log.writeFile(PublicData.printTime() + "\n");
-                    
-                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
-                    
-                    //if(caseN < 13)
-                    //    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true);
-                    //else
-                    //    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true);
-                    //run the rounds in limited time
-                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true);
-                    
-                    String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
-                            + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
-                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
-                    log.writeFile(logBuf);
-                    analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
-                                                        , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
-                    
-                    //after all, we check again if improved solutions are invalid
-                    if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
-                        for(Solution s: abc.getSolutions()){
-                            ConflictTest ct = new ConflictTest(s);
-                            if(ct.testIfConflict() == true){
-                                System.out.println("some schedules conflict!!!");
-                                return;
-                            }
-                        }
-                    }  
-                   
-                }
-            }
-        }
-        
-        log.closeFile();
-        analysis.endResultAnalysis();
-*/
     }
     
     //run ABC algorithm, each instance is given limited time
