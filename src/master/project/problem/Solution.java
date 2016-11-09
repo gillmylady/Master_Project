@@ -520,6 +520,76 @@ public class Solution {
         return null;
     }
     
+    
+    //shrink tasks scheduled in this technician
+    //strategy: 1.move the last task to the end, 2.expand the largest gap by moving previous task and afterward task
+    public void shrinkTasks(){
+        
+        for(int techNumber = 0; techNumber < solution.size(); techNumber++){
+        
+            List<Map.Entry<Integer, Task>> sortedList = solution.get(techNumber).getSortExecuteTimeList();
+            if(sortedList == null || sortedList.isEmpty())
+                continue;
+      
+            //first, check if we can move last task to the end, if yes, we succeed and return
+            int lastExecuteTime = sortedList.get(sortedList.size() - 1).getKey();
+            Task lastTask = sortedList.get(sortedList.size() - 1).getValue();
+            
+            int distanceFromLastTaskToOrigin = getDistance(lastTask.getTaskID(), 0);
+            
+            int latestGoBackToOriginTime = solution.get(techNumber).getEndTime() - distanceFromLastTaskToOrigin;
+            int latestOriginTime = latestGoBackToOriginTime - lastTask.getProcessTime();
+            int latestFinishTime = lastTask.getEndTime() - lastTask.getProcessTime();
+                    
+            //if last task have time to goback to origin later, and this task can be finished later
+            if(latestOriginTime > lastExecuteTime && latestFinishTime > lastExecuteTime){
+                int minValue = Math.min(latestOriginTime, latestFinishTime);
+                
+                //System.out.printf("techNumber=%d, lastExecuteTime=%d. latestOriginTime=%d, latestFinishTime=%d, minValue=%d\n", 
+                //        techNumber, lastExecuteTime, latestOriginTime, latestFinishTime, minValue);
+                solution.get(techNumber).deleteSchedule(lastExecuteTime, null);
+                solution.get(techNumber).addSchedule(minValue, lastTask);
+                
+                continue;
+            }
+            /*
+            //gap of each two tasks
+            int[] gap = new int[sortedList.size()];
+            int lastScheduleID = 0;       //ID
+            int lastScheduleEndTime = solution.get(techNumber).getStartTime();
+            int thisScheduleID;        //last task's end time
+            for(int i = 0; i < sortedList.size(); i++){
+                thisScheduleID = sortedList.get(i).getValue().getTaskID();
+                gap[i] = sortedList.get(i).getKey() - getDistance(lastScheduleID, thisScheduleID) - lastScheduleEndTime;
+                //System.out.printf(" ,%d", gap[i]);
+                lastScheduleID = thisScheduleID;
+                lastScheduleEndTime = sortedList.get(i).getKey() + sortedList.get(i).getValue().getProcessTime();
+            }
+            System.out.println();
+            
+            //try to expand the largest gap, to help schedule one more task
+            int largestGap = 0;
+            int largestGapIndex = 0;
+            for(int i = 0; i < gap.length; i++){
+                if(gap[i] > largestGap){
+                    largestGapIndex = i;
+                    largestGap = gap[i];
+                }
+            }
+            
+            //try move previous task, if it's the first task, no need to check since the first one is scheduled as early as possible
+            if(largestGapIndex > 0){
+            }
+            
+            */
+        }
+        
+        
+    }
+    
+    
+    
+    
     //return solution list in case
     public List<Technician> getSolution(){
         return solution;

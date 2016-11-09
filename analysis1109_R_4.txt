@@ -1,0 +1,2 @@
+#number of worse: 20
+#average percentage of worse results: 0.5035798043825874

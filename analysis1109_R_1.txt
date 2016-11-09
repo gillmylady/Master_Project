@@ -1,0 +1,9 @@
+#number of wrong referred paper: 3
+R_1_1, 3, -22
+R_1_2, 5, -42
+R_1_16, 3, -31
+#number of as good as referred paper: 2
+R_1_18, 7
+R_1_20, 5
+#number of worse: 15
+#average percentage of worse results: 0.40933621933621933

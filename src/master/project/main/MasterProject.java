@@ -64,9 +64,16 @@ public class MasterProject {
         
         //before test, please make sure if i'm at sun-lab or own computer
         
-        RunAllInstancesInSameCaseWithLimitedTime();
+        //RunAllInstancesInSameCaseWithLimitedTime();
         
         //RunAllInstancesInLimitedRounds();
+        
+        for(int i = 1; i <= 20; i++){
+            String key = "R_12_" + i;
+            runOneInstanceInLimitedRounds(key);
+        }
+        //RunAllInstancesInLimitedRounds();
+        
         return;
         
         
@@ -105,7 +112,7 @@ public class MasterProject {
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
                     
                     //run the rounds in limited time
-                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true);
+                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true, false);
                     
                     String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                             + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
@@ -163,7 +170,7 @@ public class MasterProject {
         
         for(int caseN = 1; caseN <= caseNumber; caseN++){
             
-            ResultAnalysis analysis = new ResultAnalysis("analysis_" + key_distribution + "_" + caseN + ".txt");
+            ResultAnalysis analysis = new ResultAnalysis("analysis1109_" + key_distribution + "_" + caseN + ".txt");
         
             for(int instN = 1; instN <= instanceNumber; instN++){
                 String key = key_distribution + "_" + caseN + "_" + instN;
@@ -184,9 +191,9 @@ public class MasterProject {
                 AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
                 if(caseN < 13)
-                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true);
+                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true);
                 else
-                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true);
+                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true, false);
                 
                 String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                         + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
@@ -215,4 +222,38 @@ public class MasterProject {
         log.closeFile();
     }
     
+    //test one instance
+    public static void runOneInstanceInLimitedRounds(String key) throws FileNotFoundException, UnsupportedEncodingException {
+        
+        if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+            return;
+
+        String fileName = null;
+        if(PublicData.AmIAtSublab){
+            fileName = PublicData.sunlabInstancePath + key + ".txt";
+        }else{
+            fileName = PublicData.homeInstancePath + key + ".txt";
+        }
+
+        Instance ss = new Instance(fileName);
+
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+
+        abc.RunBasicABCAlgorithm(3000, -1, true, true, true, true);
+        
+        String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() + "\n";
+        System.out.print(logBuf);
+        //abc.displayAllSolutionsSortedSchedule();
+        abc.displayAllSolution(false);
+        /*
+        abc.solutionsTryShrink();
+        
+        abc.allSolutionsTryAdd();
+        
+        //abc.displayAllSolutionsSortedSchedule();
+        abc.displayAllSolution(false);
+        String logBuf2 = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() + "\n";
+        System.out.print(logBuf2);
+*/
+    }
 }

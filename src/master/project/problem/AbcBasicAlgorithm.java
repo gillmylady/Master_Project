@@ -96,7 +96,7 @@ public class AbcBasicAlgorithm {
     */
     public void RunBasicABCAlgorithm(int totalRounds, int timeout, boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
-            boolean allowExchange){
+            boolean allowExchange, boolean allowShrink){
         
         int currentRound = 0;
         int rdNum;
@@ -126,6 +126,7 @@ public class AbcBasicAlgorithm {
                     ConflictTest ct = new ConflictTest(solutions.get(sID));
                     if(ct.testIfConflict() == true){
                         System.out.println("some schedules conflict!!!");
+                        displayOneSolutionSortedSchedule(sID);
                         return;
                     }
                     continue;
@@ -181,6 +182,10 @@ public class AbcBasicAlgorithm {
                 solutionsTryExchange();
             }
             
+            if(allowShrink){
+                solutionsTryShrink();
+            }
+            
             storeSoFarBestSolutionValue();
         }
     }
@@ -192,6 +197,16 @@ public class AbcBasicAlgorithm {
             //now, we just do exchange every time, since some exchange cannot succeed.
                 s.exchangeTasksAmongTechnicians();
             //}
+        }
+    }
+    
+    //solution try shrink
+    public void solutionsTryShrink(){
+        for(Solution s : solutions){
+            if(s.getCount() > PublicData.resetBeeCount){
+                s.shrinkTasks();
+                s.setCount(0);
+            }
         }
     }
     
@@ -233,6 +248,7 @@ public class AbcBasicAlgorithm {
             if(s.tryAddFromUnscheduled() == true){
             }
         }
+        storeSoFarBestSolutionValue();
     }
     
     //return all solutions' list for use
