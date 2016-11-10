@@ -18,6 +18,7 @@ import java.util.Random;
  * @author gillmylady
  */
 public class Technician {
+    private int technicianID;       //ID
     private int startTime;           // start work time
     private int endTime;             // end work time
     private int returnOriginTime;    // time for this technician return origin, so that idle time = endtime - returnOriginTime
@@ -26,12 +27,17 @@ public class Technician {
     private int recentAddTaskTime;
     
     //random construct an object
-    public Technician(int startTime, int endTime){
+    public Technician(int technicianID, int startTime, int endTime){
+        this.technicianID = technicianID;
         this.startTime = startTime;
         this.endTime = endTime;
         returnOriginTime = startTime;           //initially, returnOriginTime is the start time
         schedules = new HashMap<>();            //exact startExecuteTime and schedule
         recentAddTaskTime = 0;
+    }
+    
+    public int getTechnicianID(){
+        return technicianID;
     }
     
     public int getStartTime(){

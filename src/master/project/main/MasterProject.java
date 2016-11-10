@@ -51,6 +51,22 @@ conclusion: increasing number of bees might not help, because more steps are not
 5.  some bees run using this method, some using another method
         -> run differents method parallelly.
 6.  split big instance to smaller ones, to speed up calculation time
+        
+
+1.	try constructive heuristic
+            a.	add
+            b.	swap and add
+            c.	exchange and add
+            d.	shrink
+			
+2.	try shrink and not shrink, the difference
+        -> done we can compare now
+3.	during neighbor selection,
+            1.	try exchange one whole technician's tasks
+            2.	try exchange or swap 3 or 5 tasks
+        -> done 1st method, 2th method is no difference with 3 or 5 rounds, takes more time
+
+
 */
 
 public class MasterProject {
@@ -64,15 +80,34 @@ public class MasterProject {
         
         //before test, please make sure if i'm at sun-lab or own computer
         
-        //RunAllInstancesInSameCaseWithLimitedTime();
         
         //RunAllInstancesInLimitedRounds();
         
+        /*
         for(int i = 1; i <= 20; i++){
-            String key = "R_12_" + i;
-            runOneInstanceInLimitedRounds(key);
+            String key = "C_3_" + i;
+            runOneInstanceInLimitedRounds(key, false);
+            runOneInstanceInLimitedRounds(key, true);
+            System.out.println();
         }
+        */
+        
         //RunAllInstancesInLimitedRounds();
+        
+        
+        runOneInstanceInLimitedRounds("R_13_6", false, false, false, false, false);
+        runOneInstanceInLimitedRounds("R_13_6", true, false, false, false, false);
+        runOneInstanceInLimitedRounds("R_13_6", true, true, false, false, false);
+        runOneInstanceInLimitedRounds("R_13_6", true, true, true, false, false);
+        runOneInstanceInLimitedRounds("R_13_6", true, true, true, true, false);
+        runOneInstanceInLimitedRounds("R_13_6", true, true, true, true, true);
+        
+        runOneInstanceInLimitedRounds("RAD_13_6", false, false, false, false, false);
+        runOneInstanceInLimitedRounds("RAD_13_6", true, false, false, false, false);
+        runOneInstanceInLimitedRounds("RAD_13_6", true, true, false, false, false);
+        runOneInstanceInLimitedRounds("RAD_13_6", true, true, true, false, false);
+        runOneInstanceInLimitedRounds("RAD_13_6", true, true, true, true, false);
+        runOneInstanceInLimitedRounds("RAD_13_6", true, true, true, true, true);
         
         return;
         
@@ -80,13 +115,19 @@ public class MasterProject {
     }
     
     //run ABC algorithm, each instance is given limited time
-    public static void RunAllInstancesInSameCaseWithLimitedTime() throws FileNotFoundException, UnsupportedEncodingException {
+    public static void RunAllInstancesInSameCaseWithLimitedTime(
+            int caseNumber,
+            boolean onlookerBeeExist, 
+            boolean workerBeeAllowNotBackupWhenGetStucked,
+            boolean allowExchange, boolean allowShrink, 
+            boolean allowExchangeWholeTechnician) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
-        int caseNumber = 13;
         int instanceNumber = 20;
         ReferredResult result = new ReferredResult();
         
-        LogFile log = new LogFile("log_ReferedTimeout.txt");
+        String logFileName = PublicData.printTime();
+        
+        LogFile log = new LogFile(logFileName + "_log.txt");
         
         for(int caseN = 1; caseN <= caseNumber; caseN++){
             
@@ -112,7 +153,8 @@ public class MasterProject {
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
                     
                     //run the rounds in limited time
-                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], true, true, true, false);
+                    abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], onlookerBeeExist, 
+                            workerBeeAllowNotBackupWhenGetStucked, allowExchange, allowShrink, allowExchangeWholeTechnician);
                     
                     String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                             + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
@@ -121,17 +163,7 @@ public class MasterProject {
                     analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
                                                         , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
                     
-                    //after all, we check again if improved solutions are invalid
-                    if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
-                        for(Solution s: abc.getSolutions()){
-                            ConflictTest ct = new ConflictTest(s);
-                            if(ct.testIfConflict() == true){
-                                System.out.println("some schedules conflict!!!");
-                                return;
-                            }
-                        }
-                    }  
-                   
+                    
                 }
             }
             analysis.endResultAnalysis();
@@ -191,9 +223,9 @@ public class MasterProject {
                 AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
                 if(caseN < 13)
-                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true);
+                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, false);
                 else
-                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true, false);
+                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true, false, false);
                 
                 String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                         + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
@@ -223,11 +255,19 @@ public class MasterProject {
     }
     
     //test one instance
-    public static void runOneInstanceInLimitedRounds(String key) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void runOneInstanceInLimitedRounds(
+            String key, 
+            boolean onlookerBeeExist, 
+            boolean workerBeeAllowNotBackupWhenGetStucked,
+            boolean allowExchange, 
+            boolean allowShrink, 
+            boolean allowExchangeWholeTechnician) throws FileNotFoundException, UnsupportedEncodingException {
         
         if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
             return;
 
+        ReferredResult result = new ReferredResult();
+        
         String fileName = null;
         if(PublicData.AmIAtSublab){
             fileName = PublicData.sunlabInstancePath + key + ".txt";
@@ -239,21 +279,15 @@ public class MasterProject {
 
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
-        abc.RunBasicABCAlgorithm(3000, -1, true, true, true, true);
+        abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[13], onlookerBeeExist, 
+            workerBeeAllowNotBackupWhenGetStucked,
+            allowExchange, allowShrink, 
+            allowExchangeWholeTechnician);
         
-        String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() + "\n";
+        String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() 
+                + " ,referedResult=" + result.valueOfKey(key) + "\n";
         System.out.print(logBuf);
-        //abc.displayAllSolutionsSortedSchedule();
         abc.displayAllSolution(false);
-        /*
-        abc.solutionsTryShrink();
         
-        abc.allSolutionsTryAdd();
-        
-        //abc.displayAllSolutionsSortedSchedule();
-        abc.displayAllSolution(false);
-        String logBuf2 = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() + "\n";
-        System.out.print(logBuf2);
-*/
     }
 }

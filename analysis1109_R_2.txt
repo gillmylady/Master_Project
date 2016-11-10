@@ -1,5 +1,5 @@
 #number of wrong referred paper: 2
-R_2_5, 8, -53
-R_2_15, 13, -45
+R_2_5, 10, -55
+R_2_15, 7, -41
 #number of worse: 18
-#average percentage of worse results: 0.5306435031925227
+#average percentage of worse results: 0.4705872921559195

@@ -36,24 +36,12 @@ public class PublicData {
     public static int totalBeeNumber500 = 500;
     public static int totalBeeNumber1000 = 1000;
     
-    public static int[] getSolutionFitness(List<Solution> solutions){
-        int[] ret = new int[solutions.size()];
-        
-        for(int i = 0; i < solutions.size(); i++){
-            ret[i] = solutions.get(i).totalPriority();
-        }
-        return ret;
-    }
-    
-    public static boolean AmIAtSublab = true;
+    public static boolean AmIAtSublab = false;
     
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String sunlabInstancePath = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String homeResultPath = "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt";
     public static String sunlabResultPath = "/home/hfw5079/NetBeansProjects/Master_Project/Results.txt";
-    
-    public static String homeResultAnalysisPath = "/Users/gillmylady/NetBeansProjects/Master_Project/analusis.txt";
-    public static String sunlabResultAnalysisPath = "/home/hfw5079/NetBeansProjects/Master_Project/analusis.txt";
     
     public static String printTime(){
          Calendar ca = Calendar.getInstance();

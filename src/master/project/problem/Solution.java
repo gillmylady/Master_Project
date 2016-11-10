@@ -41,7 +41,7 @@ public class Solution {
     private void initialSolution(Instance instance){
         solution = new ArrayList<>();
         for(int i = 0; i < instance.getTechnicianNumber(); i++){
-            Technician t = new Technician(instance.getTechStartTime(i), instance.getTechEndTime(i));
+            Technician t = new Technician(i, instance.getTechStartTime(i), instance.getTechEndTime(i));
             solution.add(t);                //one solution is composed by all technicians, we schedule tasks for each technician
         }
         allSchedules = new ArrayList<>();
@@ -587,6 +587,56 @@ public class Solution {
         
     }
     
+    //before call this method, should confirm if the target is better than this one
+    //this solution, try drop all tasks at this technician, and schedule all tasks from specificed list
+    public boolean tryExchnageWholeTechnician(int techID, List<Map.Entry<Integer, Task>> sortedList){
+        
+        if(sortedList == null || sortedList.isEmpty()){
+            return false;
+        }
+        
+        //first, check if this technician can schedule all tasks in this sortedList
+        //any task in sortedList can not be scheduled by other technicians
+        int currentTaskID;
+        boolean findFlag;
+        List<Map.Entry<Integer, Task>> thisTechSortedList = solution.get(techID).getSortExecuteTimeList();  //get this sortedList
+        if(thisTechSortedList == null || thisTechSortedList.isEmpty()){                     //must be scheduled in another technician
+            return false;
+        }
+        
+        for(int i = 0; i < sortedList.size(); i++){
+            
+            currentTaskID = sortedList.get(i).getValue().getTaskID();
+            
+            if(scheduledTasks.contains(currentTaskID) == false){        //this task is not scheduled in the solution, ok
+                continue;
+            }
+            findFlag = false;
+            for(int j = 0; j < thisTechSortedList.size(); j++){
+                if(thisTechSortedList.get(j).getValue().getTaskID() == currentTaskID){
+                    findFlag = true;
+                    break;
+                }
+            }
+            if(findFlag == false)                                       //this task is not scheduled in the same technician, then conflict
+                return false;
+            
+        }
+        
+        List<Integer> scheduledByThisTech = new ArrayList<>();          //back up all scheduled tasks list, to delete
+        for(int j = 0; j < thisTechSortedList.size(); j++){
+            scheduledByThisTech.add(thisTechSortedList.get(j).getValue().getTaskID());
+        }
+        
+        solution.get(techID).removeAllSchedules();                      //delete 
+        scheduledTasks.removeAll(scheduledByThisTech);                  //delete
+        
+        for(int i = 0; i < sortedList.size(); i++){                     //add 
+            solution.get(techID).addSchedule(sortedList.get(i).getKey(), sortedList.get(i).getValue());
+        }
+        
+        return true;
+    }
     
     
     

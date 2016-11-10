@@ -1,4 +1,0 @@
-#number of wrong referred paper: 1
-R_3_7, 8, -52
-#number of worse: 19
-#average percentage of worse results: 0.5215321295551864

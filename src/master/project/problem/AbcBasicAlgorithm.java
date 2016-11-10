@@ -7,6 +7,7 @@ package master.project.problem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import master.project.main.PublicData;
 
 /**
@@ -19,6 +20,7 @@ public class AbcBasicAlgorithm {
     private int workerBeeNumber = 0;
     private int onlookerBeeNumber = 0;
     private int initialBestSolutionValue = 0;
+   
     
     private List<Solution> solutions;
     private int soFarBestSolution;
@@ -96,7 +98,7 @@ public class AbcBasicAlgorithm {
     */
     public void RunBasicABCAlgorithm(int totalRounds, int timeout, boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
-            boolean allowExchange, boolean allowShrink){
+            boolean allowExchange, boolean allowShrink, boolean allowExchangeWholeTechnician){
         
         int currentRound = 0;
         int rdNum;
@@ -114,7 +116,7 @@ public class AbcBasicAlgorithm {
             //displayAllSolution(false);
             
             //this is the fitness function, probability choose, for neighbor selection
-            eachPrio = PublicData.getSolutionFitness(solutions);
+            eachPrio = getSolutionFitness(solutions);
             RouletteWheel rw = new RouletteWheel(eachPrio);
             rdNum = rw.spin();                                              //this is the chosen solution (neighbor)
             rdSchedule = solutions.get(rdNum).getOneScheduledTask();        //this is the chosen task for neighbor selection 
@@ -170,7 +172,7 @@ public class AbcBasicAlgorithm {
                     }
                 }else{  //if allow reset onlooker bee, start judge from the first onlooker bee
                     for(int j = this.workerBeeNumber; j < eachPrio.length; j++){
-                        if(solutions.get(j).getCount() > PublicData.resetBeeCount){
+                        if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() < soFarBestSolution){         //highest doesnt reset
                             solutions.get(j).resetSolution();
                         }
                     }
@@ -186,6 +188,16 @@ public class AbcBasicAlgorithm {
                 solutionsTryShrink();
             }
             
+            if(allowExchangeWholeTechnician){
+                int thatSolutionID = -1;
+                while(thatSolutionID < 0 || thatSolutionID != rdNum){
+                    thatSolutionID = rw.spin(); 
+                }
+                copyWholeTechnicianFromAnotherSolution(rdNum, thatSolutionID);
+            }
+            
+            
+           
             storeSoFarBestSolutionValue();
         }
     }
@@ -203,11 +215,33 @@ public class AbcBasicAlgorithm {
     //solution try shrink
     public void solutionsTryShrink(){
         for(Solution s : solutions){
-            if(s.getCount() > PublicData.resetBeeCount){
+            if(s.getCount() > PublicData.resetBeeCount * 5){
                 s.shrinkTasks();
                 s.setCount(0);
             }
         }
+    }
+    
+    //two solutions try exchange whole tasks in same technician
+    public boolean copyWholeTechnicianFromAnotherSolution(int thisSolutionID, int thatSolutionID){
+        
+        Random rd = new Random();
+        
+        int rdTechID = rd.nextInt(solutions.get(1).getSolution().size());
+        
+        //if the same technician's total is >= target, then no need to exchange
+        if(solutions.get(thisSolutionID).getSolution().get(rdTechID).getTotalPriority() >= 
+                solutions.get(thatSolutionID).getSolution().get(rdTechID).getTotalPriority()){
+            return false;
+        }
+        
+        boolean ret = solutions.get(thisSolutionID).tryExchnageWholeTechnician(rdTechID, 
+                solutions.get(thatSolutionID).getSolution().get(rdTechID).getSortExecuteTimeList());
+        
+        System.out.print("copyWholeTechnicianFromAnotherSolution ");
+        System.out.println(ret);
+        
+        return ret;
     }
     
     //display all solutions' sorted tasks
@@ -261,9 +295,19 @@ public class AbcBasicAlgorithm {
         return initialBestSolutionValue;
     }
     
+    //get fitness value
+    public static int[] getSolutionFitness(List<Solution> solutions){
+        int[] ret = new int[solutions.size()];
+        
+        for(int i = 0; i < solutions.size(); i++){
+            ret[i] = solutions.get(i).totalPriority();
+        }
+        return ret;
+    }
+    
     //store the best solution when trying abc
     public void storeSoFarBestSolutionValue(){
-        int[] eachPrio =  PublicData.getSolutionFitness(solutions);
+        int[] eachPrio =  getSolutionFitness(solutions);
         for(int value : eachPrio){
             if(value > soFarBestSolution)
                 soFarBestSolution = value;
