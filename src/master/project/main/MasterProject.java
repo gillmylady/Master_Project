@@ -7,6 +7,10 @@ package master.project.main;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import master.project.problem.*;
 /**
  *
@@ -66,7 +70,6 @@ conclusion: increasing number of bees might not help, because more steps are not
             2.	try exchange or swap 3 or 5 tasks
         -> done 1st method, 2th method is no difference with 3 or 5 rounds, takes more time
 
-
 */
 
 public class MasterProject {
@@ -94,22 +97,7 @@ public class MasterProject {
         
         //RunAllInstancesInLimitedRounds();
         
-        
-        runOneInstanceInLimitedRounds("R_13_6", false, false, false, false, false);
-        runOneInstanceInLimitedRounds("R_13_6", true, false, false, false, false);
-        runOneInstanceInLimitedRounds("R_13_6", true, true, false, false, false);
-        runOneInstanceInLimitedRounds("R_13_6", true, true, true, false, false);
-        runOneInstanceInLimitedRounds("R_13_6", true, true, true, true, false);
-        runOneInstanceInLimitedRounds("R_13_6", true, true, true, true, true);
-        
-        runOneInstanceInLimitedRounds("RAD_13_6", false, false, false, false, false);
-        runOneInstanceInLimitedRounds("RAD_13_6", true, false, false, false, false);
-        runOneInstanceInLimitedRounds("RAD_13_6", true, true, false, false, false);
-        runOneInstanceInLimitedRounds("RAD_13_6", true, true, true, false, false);
-        runOneInstanceInLimitedRounds("RAD_13_6", true, true, true, true, false);
-        runOneInstanceInLimitedRounds("RAD_13_6", true, true, true, true, true);
-        
-        return;
+        RunEachInstanceWithDifferentOption(-1);
         
         
     }
@@ -289,5 +277,148 @@ public class MasterProject {
         System.out.print(logBuf);
         abc.displayAllSolution(false);
         
+    }
+    
+    
+    
+    //run each instance, each instance is given limited round
+    //if the argument round is -1, then run it within limited time
+    //run different approach, and compare result
+    public static void RunEachInstanceWithDifferentOption(int round) throws FileNotFoundException, UnsupportedEncodingException {
+        String[] instanceType = {"R", "C", "RC", "RAD"};
+        int caseNumber = 13;
+        int instanceNumber = 20;
+        ReferredResult result = new ReferredResult();
+        
+        String fn = PublicData.printSimpleTime();
+        LogFile log = new LogFile(fn + "_whole_log.txt");
+        if(log == null){
+            return;
+        }
+        
+        List<ResultAnalysis> analysis = new ArrayList<>();
+        analysis.add(new ResultAnalysis("analysis_NoOnlookerBee_NoWholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_NoOnlookerBee_WholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_OnlookerBee_NoWholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_OnlookerBee_WholeTech.txt"));
+        
+        analysis.add(new ResultAnalysis("analysis_Exch_Drop_NoShrink_NoWholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_Exch_NoDrop_NoShrink_NoWholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_Exch_Drop_NoShrink_WholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_Exch_NoDrop_NoShrink_WholeTech.txt"));
+        
+        analysis.add(new ResultAnalysis("analysis_Exch_Drop_Shrink_NoWholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_Exch_NoDrop_Shrink_NoWholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_Exch_Drop_Shrink_WholeTech.txt"));
+        analysis.add(new ResultAnalysis("analysis_Exch_NoDrop_Shrink_WholeTech.txt"));
+        
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
+            
+            int totalRounds = caseN * round;
+            for(int instType = 0; instType < instanceType.length; instType++){
+                for(int instN = 1; instN <= instanceNumber; instN++){
+                    
+                    //on Nov 11, experiment in sun lab is interrupted, by R_5_9
+                    //start from R_5_9
+                    if(caseN < 5)
+                        continue;
+                    if(instType == 0 && caseN == 5 && instN <= 9)
+                        continue;
+                    
+                    
+                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
+                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+                        continue;
+                    
+                    String fileName = null;
+                    if(PublicData.AmIAtSublab){
+                        fileName = PublicData.sunlabInstancePath + key + ".txt";
+                    }else{
+                        fileName = PublicData.homeInstancePath + key + ".txt";
+                    }
+                    
+                    Instance ss = new Instance(fileName);
+                    
+                    String time = PublicData.printTime();
+                    log.writeFile(time + "\n");
+                    
+                    //we try 8 different approaches together and see difference immediately
+                    int diffApproachIndex = 0;
+                    while(diffApproachIndex < analysis.size()){
+                    
+                        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+
+                        switch(diffApproachIndex){
+                            case 0:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], false, false, false , false, false);
+                                break;
+                                
+                            case 1:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], false, false, false , false, true);
+                                break;
+                                
+                            case 2:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, false , false, false);
+                                break;
+                                
+                            case 3:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, false , false, true);
+                                break;
+                                
+                            case 4:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , false, false);
+                                break;
+                                
+                            case 5:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , false, false);
+                                break;
+                            
+                            case 6:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , false, true);
+                                break;
+                                
+                            case 7:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , false, true);
+                                break;
+                            
+                            case 8:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , true, false);
+                                break;
+                                
+                            case 9:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , true, false);
+                                break;
+                                
+                            case 10:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , true, true);
+                                break;
+                                
+                            case 11:
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , true, true);
+                                break;   
+                            default:
+                                break;
+                        }
+                        
+                        String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
+                                + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                                + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
+                        log.writeFile(logBuf);
+                        analysis.get(diffApproachIndex).insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
+                                                            , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
+                        
+                        diffApproachIndex++;
+                    }
+                }
+            }
+            for(ResultAnalysis ra : analysis){
+                ra.recordSoFar();
+            }
+        }
+        
+        log.closeFile();
+        for(ResultAnalysis ra : analysis){
+            ra.endResultAnalysis();
+        }
     }
 }

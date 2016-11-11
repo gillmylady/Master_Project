@@ -6,8 +6,7 @@
 package master.project.main;
 
 import java.util.Calendar;
-import java.util.List;
-import master.project.problem.Solution;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -17,26 +16,14 @@ public class PublicData {
 
     public static int origin = 0;                       // original location
     
-    public static double max(double a, double b){
-        if(a >= b)
-            return a;
-        else return b;
-    }
-    
-    public static boolean allowBackup = true;
-    public static boolean dontAllowBackup = true;
-    
-    public static int workerBeeNotBackUp = 10;
-    public static int resetBeeCount = 20;
+    public static int workerBeeNotBackUp = 100;         //10 to 100
+    public static int resetBeeCount = 50;              //20 to 50
     
     public static int totalBeeNumber20 = 20;
     public static int totalBeeNumber46 = 46;
     public static int totalBeeNumber100 = 100;
-    public static int totalBeeNumber200 = 200;
-    public static int totalBeeNumber500 = 500;
-    public static int totalBeeNumber1000 = 1000;
     
-    public static boolean AmIAtSublab = false;
+    public static boolean AmIAtSublab = true;
     
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String sunlabInstancePath = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_";
@@ -46,6 +33,16 @@ public class PublicData {
     public static String printTime(){
          Calendar ca = Calendar.getInstance();
          return ca.getTime().toString();
+    }
+    
+    public static String printSimpleTime(){
+        
+        GregorianCalendar gcalendar = new GregorianCalendar();
+        String ret = "";
+        ret += (gcalendar.get(Calendar.MONTH)+1) + ":" + gcalendar.get(Calendar.DATE) + ";" 
+                + gcalendar.get(Calendar.DATE) + ":" + gcalendar.get(Calendar.MINUTE) + ":" + gcalendar.get(Calendar.SECOND);
+        
+        return ret;
     }
     
     public static int[] runLimitTime = {0, 3, 5, 10, 50, 75, 80, 180, 250, 480, 600, 900, 1800, 3600};

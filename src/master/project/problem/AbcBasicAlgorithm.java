@@ -96,9 +96,12 @@ public class AbcBasicAlgorithm {
                             probability that they dont recover dropped task
     allowExchange: if this algorithm allows exchange among each solution
     */
-    public void RunBasicABCAlgorithm(int totalRounds, int timeout, boolean onlookerBeeExist, 
+    public void RunBasicABCAlgorithm(int totalRounds, int timeout, 
+            boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
-            boolean allowExchange, boolean allowShrink, boolean allowExchangeWholeTechnician){
+            boolean allowExchange, 
+            boolean allowShrink, 
+            boolean allowExchangeWholeTechnician){
         
         int currentRound = 0;
         int rdNum;

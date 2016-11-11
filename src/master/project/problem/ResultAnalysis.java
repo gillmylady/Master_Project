@@ -7,6 +7,7 @@ package master.project.problem;
 
 import java.util.ArrayList;
 import java.util.List;
+import master.project.main.PublicData;
 
 /**
  *
@@ -62,6 +63,16 @@ public class ResultAnalysis {
     //when end, record all information into log file and quit
     public void endResultAnalysis(){
         
+        recordSoFar();
+        
+        log.closeFile();
+    }
+    
+    //record so far result, for analysis purpose
+    public void recordSoFar(){
+        
+        log.writeFile("\n" + PublicData.printTime() + "\n");
+        
         if(numOfErrorDataInReferredPaper > 0){
             log.writeFile("#number of wrong referred paper: " + numOfErrorDataInReferredPaper + "\n");
             for(String s : errorDataInPaper){
@@ -88,7 +99,9 @@ public class ResultAnalysis {
             log.writeFile("#number of worse: " + numOfNotAsGoodAsReferedPaper + "\n");
             log.writeFile("#average percentage of worse results: " + notGoodTotalPercentage/numOfNotAsGoodAsReferedPaper + "\n");
         }
-        
+    }
+    
+    public void close(){
         log.closeFile();
     }
     
