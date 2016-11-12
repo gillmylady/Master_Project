@@ -62,6 +62,7 @@ conclusion: increasing number of bees might not help, because more steps are not
             b.	swap and add
             c.	exchange and add
             d.	shrink
+        -> try some other object function, and compare result, do probabily selection
 			
 2.	try shrink and not shrink, the difference
         -> done we can compare now
