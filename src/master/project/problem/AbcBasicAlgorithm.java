@@ -61,15 +61,15 @@ public class AbcBasicAlgorithm {
                     break;
                 case 6:
                     s.greedySortSchedulesPriorityProcessTime(); //priority/processTime
-                    s.constructiveMultiveHeuristicSolution();//short distance
+                    s.constructiveHeuristicSolution();//construstive solution
                     break;
                 case 7:
                     s.greedySortSchedulesPriority(); //priority/processTime
-                    s.constructiveMultiveHeuristicSolution();//short distance
+                    s.constructiveHeuristicSolution();//construstive solution
                     break;
                 case 8:
                     s.greedySortSchedulesProcessTime(); //priority/processTime
-                    s.constructiveMultiveHeuristicSolution();//short distance
+                    s.constructiveHeuristicSolution();//construstive solution
                     break;
                 default:
                     s.constructiveRandomSolution();     //random solution
@@ -116,7 +116,7 @@ public class AbcBasicAlgorithm {
         while((currentRound++) < totalRounds || (System.currentTimeMillis() - startTime) < timeout * 1000 ){
             
             //if need, we can print all solutions' value in each totalRounds, to see if it's improved
-            //displayAllSolution(false);
+            displayAllSolution(false);
             
             //this is the fitness function, probability choose, for neighbor selection
             eachPrio = getSolutionFitness(solutions);

@@ -209,6 +209,18 @@ public class Technician {
         return totalValue;
     }
     
+    //get total process Time
+    public int getTotalProcessTime(){
+        if(schedules.isEmpty())           //if empty, then no need to sort
+            return 0;
+        int ret = 0;
+        sortExecuteTime();
+        for(int i = 0; i < sortedList.size(); i++){
+            ret += sortedList.get(i).getValue().getProcessTime();
+        }
+        return ret;
+    }
+    
     // idle time for this technician return home
     public int getIdleTime(){
         return endTime - returnOriginTime;

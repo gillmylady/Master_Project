@@ -321,11 +321,11 @@ public class MasterProject {
                     
                     //on Nov 11, experiment in sun lab is interrupted, by R_5_9
                     //start from R_5_9
-                    if(caseN < 5)
+                    /*if(caseN < 5)
                         continue;
                     if(instType == 0 && caseN == 5 && instN <= 9)
                         continue;
-                    
+                    */
                     
                     String key = instanceType[instType] + "_" + caseN + "_" + instN;
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect

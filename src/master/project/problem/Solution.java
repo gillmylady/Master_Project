@@ -6,6 +6,7 @@
 package master.project.problem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,13 @@ public class Solution {
         if(getSkill(s.getTaskID(), technicianID) == false){         //if the skill doesnt meet the requirement
             return false;
         }
+        
+        //add constraint, this task should not be scheduled
+        for(Integer taskID : scheduledTasks){
+            if(taskID == s.getTaskID())
+                return false;
+        }
+        
         int executeTime = TechnicianConflictSchedule(technicianID, s);  //to see if this task can be scheduled at this technician or not
         //System.out.printf("j=%d,executeTime=%d\n",j,executeTime);
         if(executeTime > 0){
@@ -215,6 +223,117 @@ public class Solution {
             }
             candidateTasks.remove(rdNumber);    //if this task is scheduled, remove it from the candidate list
         }
+    }
+    
+    
+    //constructive heuristic solution, new objective function
+    //try add, swap = delete and add, exchange//, chang from one technician to another
+    public void constructiveHeuristicSolution(){
+        Random rd = new Random();
+        int techID;
+        List<Integer> candidateTasks = new ArrayList<>();
+        for(Task s : allSchedules){
+            if(s.getTaskID() == 0)
+                continue;
+            candidateTasks.add(s.getTaskID());
+        }
+        
+        //System.out.println(candidateTasks.size());
+        for(int i = 0; i < candidateTasks.size(); i++){
+            
+            int[] fitnessValue = new int[3];
+            fitnessValue[0] = constructiveObjectFunction(0, getTaskFromID(candidateTasks.get(i)));
+            Task dropTask = null;
+            if(scheduledTasks.size() > 0){
+                dropTask = getTaskFromID(scheduledTasks.get(rd.nextInt(scheduledTasks.size())));
+                //System.out.println(dropTask.getTaskID());
+                //System.out.println(Arrays.toString(scheduledTasks.toArray()));
+            }
+            fitnessValue[1] = constructiveObjectFunction(1, dropTask);
+            fitnessValue[2] = constructiveObjectFunction(2, null);
+            RouletteWheel rw = new RouletteWheel(fitnessValue);
+            int probSelection = rw.spin();
+            
+            //exchange
+            if(scheduledTasks.size() > 1 && probSelection == 2){
+                exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
+                i--;        //dont change i
+                continue;
+            }else if(scheduledTasks.size() > 0 && probSelection == 1){  //delete
+                
+                boolean findFlag = false;
+                for(Technician t : solution){
+                    List<Map.Entry<Integer, Task>> list = t.getSortExecuteTimeList();
+                    if(list == null || list.isEmpty())
+                        continue;
+                    for(int taskNum = 0; taskNum < list.size(); taskNum++){
+                        //System.out.println(list.get(taskNum).getValue().getTaskID());
+                        if(list.get(taskNum).getValue().getTaskID() == dropTask.getTaskID()){
+                            t.deleteSchedule(list.get(taskNum).getKey(), null);
+                            for(int id = 0; id < scheduledTasks.size(); id++){
+                                if(scheduledTasks.get(id) == dropTask.getTaskID()){
+                                    scheduledTasks.remove(id);
+                                }
+                            }
+                            findFlag = true;
+                            break;
+                        }
+                    }
+                    if(findFlag == true)
+                        break;
+                }
+                if(findFlag == false){
+                    System.out.println("??\n\n\n\n\n");
+                    return;
+                }
+                i--;
+                candidateTasks.add(dropTask.getTaskID());
+                continue;
+            }else{
+            
+                Task s = getTaskFromID(candidateTasks.get(i));
+
+                techID = rd.nextInt(solution.size());
+                for(int j = 0; j < solution.size(); j++){
+
+                    if(checkAddOneTask(s, techID) == false){
+                        techID++;
+                        if(techID >= solution.size())
+                            techID = 0;
+                    }else{
+                        break;
+                    }
+                }
+                //candidateTasks.remove(i);    //if this task is scheduled, remove it from the candidate list
+            }
+        }
+    }
+    
+    //operationType, add, delete, exchange, change, 
+    //taskID
+    //return new total priority / total processtime
+    public int constructiveObjectFunction(int operationType, Task s){
+        int totalPrio = totalPriority();
+        int totalProcessTime = totalProcessTime();
+        double ret = 0.00;
+        
+        switch(operationType){
+            case 0:     //add
+                //System.out.printf("s.getPriority()=%d, s.getProcessTime()=%d\n",s.getPriority(), s.getProcessTime());
+                if(s != null)
+                    ret = 1000 * (double)(totalPrio + s.getPriority()) / (double) (totalProcessTime + s.getProcessTime());
+                //System.out.print(ret);
+                break;
+            case 1:     //delete
+                if(s != null && totalProcessTime > s.getProcessTime())
+                    ret = 1000 * (double) (totalPrio - s.getPriority()) / (double) (totalProcessTime - s.getProcessTime());
+                break;
+            default:
+                if(totalProcessTime > 0)
+                    ret = 1000 * (double) totalPrio / (double) totalProcessTime;
+                break;
+        }
+        return (int) (ret);
     }
     
     
@@ -689,6 +808,15 @@ public class Solution {
         int totalValue = 0;
         for(Technician t : solution){
             totalValue += t.getTotalPriority();
+        }
+        return totalValue;
+    }
+    
+    //get total process time of all technicians
+    public int totalProcessTime(){
+        int totalValue = 0;
+        for(Technician t : solution){
+            totalValue += t.getTotalProcessTime();
         }
         return totalValue;
     }
