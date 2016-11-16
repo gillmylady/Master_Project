@@ -1,7 +1,9 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ 
+task class, contains variables and methods of task
+
+in this project, schedule = task
+
  */
 package master.project.problem;
 
@@ -12,7 +14,7 @@ import java.util.Comparator;
  * @author gillmylady
  */
 public class Task{
-    private int taskID;             //schedule unique ID for hashtable
+    private int taskID;             //task unique ID for hashtable
     private int priority;
     private int processTime;         //how long it needs to process
     private int startTime;           //time window, start time

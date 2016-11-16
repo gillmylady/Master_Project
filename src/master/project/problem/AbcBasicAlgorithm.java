@@ -84,7 +84,7 @@ public class AbcBasicAlgorithm {
             solutions.add(s);
         }
         
-        initialBestSolutionValue = getBestSolutionValue();                  //get initial best solution's total priority
+        initialBestSolutionValue = calculateBestSolutionValue();                  //get initial best solution's total priority
     }
     
     /*
@@ -92,13 +92,13 @@ public class AbcBasicAlgorithm {
     timeout, if totalRounds < 0, then we use timeout instead
     onlookerBeeExist: if true, onlookerBee exist, and it will be reset after specified rounds' failure to improve 
                         if false, it doesnt exist
-    workerBeeAllowNotBackupWhenGetStucked, workerBee doesn't reset, but we allow the chance that if they add task with drop, leave some
+    allowDrop, workerBee doesn't reset, but we allow the chance that if they add task with drop, leave some
                             probability that they dont recover dropped task
     allowExchange: if this algorithm allows exchange among each solution
     */
     public void RunBasicABCAlgorithm(int totalRounds, int timeout, 
             boolean onlookerBeeExist, 
-            boolean workerBeeAllowNotBackupWhenGetStucked,
+            boolean allowDrop,              //drop, means not recover when exchange or add with drop
             boolean allowExchange, 
             boolean allowShrink, 
             boolean allowExchangeWholeTechnician){
@@ -113,15 +113,18 @@ public class AbcBasicAlgorithm {
         //http://stackoverflow.com/questions/19727109/how-to-exit-a-while-loop-after-a-certain-time
         long startTime = System.currentTimeMillis();
         
+        //reach either rounds or specified time, loop will be over
         while((currentRound++) < totalRounds || (System.currentTimeMillis() - startTime) < timeout * 1000 ){
             
             //if need, we can print all solutions' value in each totalRounds, to see if it's improved
-            displayAllSolution(false);
+            //displayAllSolution(false);
             
             //this is the fitness function, probability choose, for neighbor selection
             eachPrio = getSolutionFitness(solutions);
             RouletteWheel rw = new RouletteWheel(eachPrio);
             rdNum = rw.spin();                                              //this is the chosen solution (neighbor)
+            if(rdNum < 0)       //in case
+                continue;
             rdSchedule = solutions.get(rdNum).getOneScheduledTask();        //this is the chosen task for neighbor selection 
             
             for(int sID = 0; sID < solutions.size(); sID++){
@@ -131,7 +134,7 @@ public class AbcBasicAlgorithm {
                     ConflictTest ct = new ConflictTest(solutions.get(sID));
                     if(ct.testIfConflict() == true){
                         System.out.println("some schedules conflict!!!");
-                        displayOneSolutionSortedSchedule(sID);
+                        displayOneSolutionSortedTask(sID);
                         return;
                     }
                     continue;
@@ -149,8 +152,7 @@ public class AbcBasicAlgorithm {
                 
                 //try if this task can be added with drop, leave some probability for not to recover the dropped task
                 if(solutions.get(sID).addOneTaskWithDrop(rdSchedule, 
-                        workerBeeAllowNotBackupWhenGetStucked && 
-                        sID < this.workerBeeNumber &&
+                        allowDrop && sID < this.workerBeeNumber &&
                         solutions.get(sID).getCount() > PublicData.workerBeeNotBackUp ) != null){ //PublicData.resetBeeCount
                     solutions.get(sID).setCount(0);
                     continue;
@@ -163,11 +165,13 @@ public class AbcBasicAlgorithm {
             
             //every 25 rounds, check those solutions which didnt change for a while so need to reset them.
             if(currentRound % 25 == 0){
-                allSolutionsTryAdd();
-                averagePrio = rw.getTotal() / eachPrio.length;
+                //all solutions try add if any can be added, 
+                //no need to add here since each round will try add without drop
+                //solutionsTryAdd(); 
                     
                 //if dont allow onlooker bee, then we compare each solution with average priority
                 if(onlookerBeeExist == false){
+                    averagePrio = rw.getTotal() / eachPrio.length;
                     for(int j = 0; j < eachPrio.length; j++){
                         if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() <= averagePrio){
                             solutions.get(j).resetSolution();
@@ -187,10 +191,12 @@ public class AbcBasicAlgorithm {
                 solutionsTryExchange();
             }
             
+            //allow shrink
             if(allowShrink){
                 solutionsTryShrink();
             }
             
+            //allow exchange whole tasks of one technician
             if(allowExchangeWholeTechnician){
                 int thatSolutionID = -1;
                 while(thatSolutionID < 0 || thatSolutionID != rdNum){
@@ -199,8 +205,7 @@ public class AbcBasicAlgorithm {
                 copyWholeTechnicianFromAnotherSolution(rdNum, thatSolutionID);
             }
             
-            
-           
+            //after each round, store the best solution
             storeSoFarBestSolutionValue();
         }
     }
@@ -218,12 +223,22 @@ public class AbcBasicAlgorithm {
     //solution try shrink
     public void solutionsTryShrink(){
         for(Solution s : solutions){
-            if(s.getCount() > PublicData.resetBeeCount * 5){
+            if(s.getCount() > PublicData.resetBeeCount){
                 s.shrinkTasks();
                 s.setCount(0);
             }
         }
     }
+    
+    //all solution try add any task
+    public void solutionsTryAdd(){
+        for(Solution s : solutions){
+            if(s.tryAddFromUnscheduled() == true){
+            }
+        }
+        storeSoFarBestSolutionValue();
+    }
+    
     
     //two solutions try exchange whole tasks in same technician
     public boolean copyWholeTechnicianFromAnotherSolution(int thisSolutionID, int thatSolutionID){
@@ -241,30 +256,30 @@ public class AbcBasicAlgorithm {
         boolean ret = solutions.get(thisSolutionID).tryExchnageWholeTechnician(rdTechID, 
                 solutions.get(thatSolutionID).getSolution().get(rdTechID).getSortExecuteTimeList());
         
-        System.out.print("copyWholeTechnicianFromAnotherSolution ");
-        System.out.println(ret);
+        //System.out.print("copyWholeTechnicianFromAnotherSolution ");
+        //System.out.println(ret);
         
         return ret;
     }
     
     //display all solutions' sorted tasks
-    public void displayAllSolutionsSortedSchedule(){
+    public void displayAllSolutionsSortedTask(){
         for(Solution s : solutions){
             System.out.printf("solution %d:\n", s.getID());
             for(Technician t : s.getSolution()){
-                System.out.println(t.getSortedExecuteTimeSchedules());
+                System.out.println(t.toStringSortedExecuteTimeTasks());
             }
         }
     }
     
     //display specified solution's sorted tasks
-    public void displayOneSolutionSortedSchedule(int solutionID){
+    public void displayOneSolutionSortedTask(int solutionID){
         Solution s = solutions.get(solutionID);
         if(s == null)           //make sure this solutionID exist
             return;
         System.out.printf("solution %d:\n", s.getID());
         for(Technician t : s.getSolution()){
-            System.out.println(t.getSortedExecuteTimeSchedules());
+            System.out.println(t.toStringSortedExecuteTimeTasks());
         }
     }
     
@@ -279,26 +294,8 @@ public class AbcBasicAlgorithm {
         System.out.println();
     }
     
-    //all solution try add any task
-    public void allSolutionsTryAdd(){
-        for(Solution s : solutions){
-            if(s.tryAddFromUnscheduled() == true){
-            }
-        }
-        storeSoFarBestSolutionValue();
-    }
     
-    //return all solutions' list for use
-    public List<Solution> getSolutions(){
-        return solutions;
-    }
-    
-    //store initial best solution and use it for compare -> to see how much ABC improve the initial best solution
-    public int getInitialBestSolutionValue(){
-        return initialBestSolutionValue;
-    }
-    
-    //get fitness value
+    //get fitness value, used for calculate probablity for neighbor selection
     public static int[] getSolutionFitness(List<Solution> solutions){
         int[] ret = new int[solutions.size()];
         
@@ -310,20 +307,13 @@ public class AbcBasicAlgorithm {
     
     //store the best solution when trying abc
     public void storeSoFarBestSolutionValue(){
-        int[] eachPrio =  getSolutionFitness(solutions);
-        for(int value : eachPrio){
-            if(value > soFarBestSolution)
-                soFarBestSolution = value;
-        }
-    }
-    
-    //get sofar best solution
-    public int getSoFarBestSolutionValue(){
-        return soFarBestSolution;
+        int bestV = calculateBestSolutionValue();
+        if(bestV > soFarBestSolution)
+            soFarBestSolution = bestV;
     }
     
     //get so-far the best solution's total priority
-    public int getBestSolutionValue(){
+    public int calculateBestSolutionValue(){
         int bestV = 0;
         for(Solution s : solutions){
             if(s.totalPriority() > bestV){
@@ -332,4 +322,20 @@ public class AbcBasicAlgorithm {
         }
         return bestV;
     }
+    
+    //store initial best solution and use it for compare -> to see how much ABC improve the initial best solution
+    public int getInitialBestSolutionValue(){
+        return initialBestSolutionValue;
+    }
+    
+    //get sofar best solution
+    public int getSoFarBestSolutionValue(){
+        return soFarBestSolution;
+    }
+    
+    //return all solutions' list for use
+    public List<Solution> getSolutions(){
+        return solutions;
+    }
+    
 }

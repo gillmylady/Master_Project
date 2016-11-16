@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+
+This is Technician class, contains all variables and methods about technician
+
  */
 package master.project.problem;
 
@@ -18,13 +18,13 @@ import java.util.Random;
  * @author gillmylady
  */
 public class Technician {
-    private int technicianID;       //ID
+    private int technicianID;       //ID, unique
     private int startTime;           // start work time
     private int endTime;             // end work time
     private int returnOriginTime;    // time for this technician return origin, so that idle time = endtime - returnOriginTime
-    private HashMap<Integer, Task> schedules;   // schedule's exact startExecuteTime and itself
+    private HashMap<Integer, Task> tasks;   // schedule's exact startExecuteTime and itself
     private List<Map.Entry<Integer, Task>> sortedList;    //schedules are sorted by execute time
-    private int recentAddTaskTime;
+    private int recentAddTaskTime;      //for exchange method, recent add task might be deleted when fail
     
     //random construct an object
     public Technician(int technicianID, int startTime, int endTime){
@@ -32,40 +32,48 @@ public class Technician {
         this.startTime = startTime;
         this.endTime = endTime;
         returnOriginTime = startTime;           //initially, returnOriginTime is the start time
-        schedules = new HashMap<>();            //exact startExecuteTime and schedule
+        tasks = new HashMap<>();            //exact startExecuteTime and schedule
         recentAddTaskTime = 0;
     }
     
+    //get technician ID
     public int getTechnicianID(){
         return technicianID;
     }
     
+    //get technician start time of work
     public int getStartTime(){
         return startTime;
     }
+    
+    //get technician end time of work
     public int getEndTime() {
         return endTime;
     }
+    
+    //get technician the time of return origin
     public int getReturnOriginTime(){
         return returnOriginTime;
     }
     
+    //set the time of return origin
     public void setReturnOriginTime(int time){
         returnOriginTime = time;
     }
     
+    //print the parameter of this technician
     public String parameterToString(){
         return "startTime = " + startTime + ", endTime = " + endTime + ", returnTime = " + returnOriginTime;
     }
     
-    //return all schedules' execute time and its parameters
+    //return all tasks' execute time and its parameters
     public String scheduledTasksToString(){
         String ret = "";
     
-        for (Integer executeTime : schedules.keySet()) {
+        for (Integer executeTime : tasks.keySet()) {
             ret += executeTime;
             ret += ":";
-            ret += schedules.get(executeTime).parameterToString();
+            ret += tasks.get(executeTime).parameterToString();
             ret += ";";
         }
         ret += "\n";
@@ -73,12 +81,10 @@ public class Technician {
         return ret;
     }
     
+    //sort all scheduled tasks by execute Time
     public void sortExecuteTime(){
         
-        if(schedules.isEmpty())           //if empty, then no need to sort
-            return;
-        
-        sortedList = new LinkedList<>(schedules.entrySet());    //initial sortedList
+        sortedList = new LinkedList<>(tasks.entrySet());    //initial sortedList
         
         Collections.sort(sortedList, new Comparator<Map.Entry<Integer, Task>>(){
             @Override
@@ -90,14 +96,17 @@ public class Technician {
     
     //return this sortedList for use
     public List<Map.Entry<Integer, Task>> getSortExecuteTimeList(){
-        if(schedules.isEmpty())           //if empty, then no need to sort
+        if(tasks.isEmpty())           //if empty, then no need to sort
             return null;
         sortExecuteTime();
         return sortedList;
     }
     
-    public String getSortedExecuteTimeSchedules(){
+    public String toStringSortedExecuteTimeTasks(){
         String ret = "";
+        if(tasks.isEmpty())           //if empty, then no need to sort
+            return ret;
+        
         sortExecuteTime();
         
         ret += "{";
@@ -126,9 +135,9 @@ public class Technician {
     
     
     //get last schedule's execute time
-    public Integer getLastScheduleExecuteTime(){
+    public Integer getLastTaskExecuteTime(){
         Integer lastExecuteTime = null;              //initialize
-        for (Integer next : schedules.keySet()) {
+        for (Integer next : tasks.keySet()) {
             if (lastExecuteTime == null || next > lastExecuteTime) {
                 lastExecuteTime = next;
             }
@@ -137,73 +146,84 @@ public class Technician {
     }
     
     //get last Task, we can also use the sortedTasks to get the last one
-    public Task getLastSchedule(){
-        if(schedules.isEmpty()){
+    public Task getLastTask(){
+        if(tasks.isEmpty()){
             return null;
         }
         
         Integer lastExecuteTime;
-        lastExecuteTime = getLastScheduleExecuteTime();
+        lastExecuteTime = getLastTaskExecuteTime();
         if(lastExecuteTime == null)
             return null;
-        return schedules.get(lastExecuteTime);
+        return tasks.get(lastExecuteTime);
     }
     
     //calculate the time when this technician can return origin
     public void calculateReturnTime(int travelTime){
-        Task lastSchedule = getLastSchedule();
-        if(lastSchedule == null)
+        Task lastTask = getLastTask();
+        if(lastTask == null)
             returnOriginTime = this.startTime;
         else{
-            returnOriginTime = getLastScheduleExecuteTime() + lastSchedule.getProcessTime() + travelTime;
+            returnOriginTime = getLastTaskExecuteTime() + lastTask.getProcessTime() + travelTime;
         }
     }
     
     //return scheduled tasks, for solution to decide if it can add one schedule into this technician
     public HashMap<Integer, Task> getScheduledTask(){
-        return schedules;
+        return tasks;
     }
+    
+    //get a random task's execute time 
+    public int getOneScheduledTaskExecuteTime(){
+        if(tasks.isEmpty())                  //if there is no scheduled task yet, return -1
+            return -1;
+        
+        Random rd = new Random();
+        sortExecuteTime();
+        int rdNumber = rd.nextInt(sortedList.size());
+        return sortedList.get(rdNumber).getKey();
+    }
+    
+    //get Task from the execute time
+    public Task getTaskFromExecuteTime(int executeTime){
+        return tasks.get(executeTime);
+    }
+    
     
     //leave if one technician conflict one schedule to outside's dealing
     // travelTime = -1 , then no need to update returnTime
-    public boolean addSchedule(int executeTime, Task s){
-        schedules.put(executeTime, s);  
+    public boolean addOneTask(int executeTime, Task s){
+        tasks.put(executeTime, s);  
         recentAddTaskTime = executeTime;
         return true;
     }
     
-    //four ways of local search:
-    //add, change, exchange, swap
-    //add, just add
-    //change, one task reassigned to another technician
-    //exchange, two technicians exchange tasks
-    //swap, one technician drop one task and add another task
-    //if executeTime < 0, doesnt judge it
-    public boolean deleteSchedule(int executeTime, Task s){
-        if(s != null && schedules.containsValue(s) == false)   //if schedule exist, check if it in the table  
+    //delete one task, s can be null; but if not, need to check
+    public boolean deleteOneTask(int executeTime, Task s){
+        if(s != null && tasks.containsValue(s) == false)   //if schedule exist, check if it in the table  
             return false;
         if(s != null && executeTime > 0 )                   //if both exists
-            return schedules.remove(executeTime, s);
-        if(executeTime > 0 && schedules.containsKey(executeTime) == false)  //only check if key exist
+            return tasks.remove(executeTime, s);
+        if(executeTime > 0 && tasks.containsKey(executeTime) == false)  //only check if key exist
             return false;
-        schedules.remove(executeTime);
+        tasks.remove(executeTime);
         return true;
     }
     
     //this is for exchange, in exchange, remember the recent added task, when backup we have to delete it
     public boolean deleteRecentAddTask(){
-        return deleteSchedule(recentAddTaskTime, null);
+        return deleteOneTask(recentAddTaskTime, null);
     }
     
     //for reset solution's use
-    public void removeAllSchedules(){
-        schedules.clear();
+    public void removeAllTasks(){
+        tasks.clear();
     }
     
     // total priority, this is the main objective of FTSP problem
     public int getTotalPriority(){
         int totalValue = 0;
-        for(Task s : schedules.values()){
+        for(Task s : tasks.values()){
             totalValue += s.getPriority();
         }
         return totalValue;
@@ -211,7 +231,7 @@ public class Technician {
     
     //get total process Time
     public int getTotalProcessTime(){
-        if(schedules.isEmpty())           //if empty, then no need to sort
+        if(tasks.isEmpty())           //if empty, then no need to sort
             return 0;
         int ret = 0;
         sortExecuteTime();
@@ -226,20 +246,5 @@ public class Technician {
         return endTime - returnOriginTime;
     }
     
-    //get a random task's execute time 
-    public int getOneScheduledTaskExecuteTime(){
-        if(schedules.isEmpty())                  //if there is no scheduled task yet, return -1
-            return -1;
-        
-        Random rd = new Random();
-        sortExecuteTime();
-        int rdNumber = rd.nextInt(sortedList.size());
-        return sortedList.get(rdNumber).getKey();
-    }
-    
-    //get Task from the execute time
-    public Task getTaskFromExecuteTime(int executeTime){
-        return schedules.get(executeTime);
-    }
     
 }

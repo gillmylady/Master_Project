@@ -199,14 +199,4 @@ public class Instance {
     public int getmwValue() {return mwValue;}
     public int getmzValue() {return mzValue;}
     
-    //Euclidean distance
-    public int getDistance(int taskn1, int taskn2){
-        double euclideanDist;
-        double x = taskPosition[taskn1][0] - taskPosition[taskn2][0];
-        double y = taskPosition[taskn1][1] - taskPosition[taskn2][1];
-        euclideanDist = Math.sqrt(x * x + y * y);
-        
-        return ((int) euclideanDist + 1);   //ceiling 
-    }
-    
 }

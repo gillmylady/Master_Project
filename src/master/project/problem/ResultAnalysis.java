@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+
+Referred paper's results, for our analysis
+
  */
 package master.project.problem;
 
@@ -15,21 +15,21 @@ import master.project.main.PublicData;
  */
 public class ResultAnalysis {
     
-    LogFile log;
+    LogFile log;                                //the log file
     
-    int numOfNotAsGoodAsReferedPaper;
+    int numOfNotAsGoodAsReferedPaper;           //all kinds of data
     int numOfAsGoodAsReferredPaper;
     int numOfBetterThanReferredPaper;
     int numOfErrorDataInReferredPaper;
     
     double notGoodTotalPercentage;             //to caculate average
-    List<String> asGoodAsPaper;
+    List<String> asGoodAsPaper;                 //save the keys for satisfied condition
     List<String> betterThanPaper;
     List<String> errorDataInPaper;
     
     public ResultAnalysis(String fileName){
         
-        log = new LogFile(fileName);
+        log = new LogFile(fileName);                //the log file
         
         numOfNotAsGoodAsReferedPaper = 0;
         numOfAsGoodAsReferredPaper = 0;
@@ -43,6 +43,8 @@ public class ResultAnalysis {
     }
     
     //insert one item with key and improved data, and gap
+    //this function will make decision which kind it belongs to
+    //and add the record into correct arraylist
     public void insertOneResultAnalysis(String key, int improveByABC, int gapFromReferredBest){
         
         if(gapFromReferredBest < 0 && Math.abs(gapFromReferredBest) > 2 * improveByABC){
@@ -60,34 +62,26 @@ public class ResultAnalysis {
         }
     }
     
-    //when end, record all information into log file and quit
-    public void endResultAnalysis(){
-        
-        recordSoFar();
-        
-        log.closeFile();
-    }
-    
     //record so far result, for analysis purpose
     public void recordSoFar(){
         
-        log.writeFile("\n" + PublicData.printTime() + "\n");
+        log.writeFile("\n" + PublicData.printTime() + "\n");            //title, time
         
-        if(numOfErrorDataInReferredPaper > 0){
+        if(numOfErrorDataInReferredPaper > 0){                          //how many error data exist
             log.writeFile("#number of wrong referred paper: " + numOfErrorDataInReferredPaper + "\n");
             for(String s : errorDataInPaper){
                 log.writeFile(s + "\n");
             }
         }
         
-        if(numOfBetterThanReferredPaper > 0){
+        if(numOfBetterThanReferredPaper > 0){                           //how many better data we have
             log.writeFile("#number of Better than referred paper: " + numOfBetterThanReferredPaper + "\n");
             for(String s : betterThanPaper){
                 log.writeFile(s + "\n");
             }
         }
         
-        if(numOfAsGoodAsReferredPaper > 0){
+        if(numOfAsGoodAsReferredPaper > 0){                             //as good as paper
             log.writeFile("#number of as good as referred paper: " + numOfAsGoodAsReferredPaper + "\n");
             for(String s : asGoodAsPaper){
                 log.writeFile(s + "\n");
@@ -95,14 +89,21 @@ public class ResultAnalysis {
         }
         
         //calculate worse result
-        if(numOfNotAsGoodAsReferedPaper > 0){
+        if(numOfNotAsGoodAsReferedPaper > 0){                           //worse results
             log.writeFile("#number of worse: " + numOfNotAsGoodAsReferedPaper + "\n");
             log.writeFile("#average percentage of worse results: " + notGoodTotalPercentage/numOfNotAsGoodAsReferedPaper + "\n");
         }
     }
     
+    //only cloase file
     public void close(){
         log.closeFile();
+    }
+    
+    //when end, record all information into log file and quit
+    public void endResultAnalysis(){
+        recordSoFar();                  //record log
+        log.closeFile();                //close
     }
     
 }

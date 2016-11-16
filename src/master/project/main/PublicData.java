@@ -25,6 +25,7 @@ public class PublicData {
     
     public static boolean AmIAtSublab = false;
     
+    //path of my files
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String sunlabInstancePath = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String homeResultPath = "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt";
@@ -45,6 +46,7 @@ public class PublicData {
         return ret;
     }
     
+    //each case's running time according to referred paper
     public static int[] runLimitTime = {0, 3, 5, 10, 50, 75, 80, 180, 250, 480, 600, 900, 1800, 3600};
     
 }

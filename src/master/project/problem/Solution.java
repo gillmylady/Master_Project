@@ -6,7 +6,6 @@
 package master.project.problem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -68,19 +67,15 @@ public class Solution {
             return false;
         }
         
-        //add constraint, this task should not be scheduled
-        for(Integer taskID : scheduledTasks){
-            if(taskID == s.getTaskID())
-                return false;
-        }
-        
         int executeTime = TechnicianConflictSchedule(technicianID, s);  //to see if this task can be scheduled at this technician or not
         //System.out.printf("j=%d,executeTime=%d\n",j,executeTime);
         if(executeTime > 0){
-            solution.get(technicianID).addSchedule(executeTime, s);         //add this task
+            solution.get(technicianID).addOneTask(executeTime, s);         //add this task
             solution.get(technicianID).calculateReturnTime(getDistance(
-                    solution.get(technicianID).getLastSchedule().getTaskID(), 0));      //re-caculate the time of technician go back to original
-            scheduledTasks.add(s.getTaskID());                      //scheduledTasks remember this task
+                    solution.get(technicianID).getLastTask().getTaskID(), 0));      //re-caculate the time of technician go back to original
+            //scheduledTasks.add(s.getTaskID());                      //scheduledTasks remember this task
+            addTaskIntoScheduledList(s.getTaskID(), true);
+            
             return true;
         }
         return false;
@@ -269,12 +264,8 @@ public class Solution {
                     for(int taskNum = 0; taskNum < list.size(); taskNum++){
                         //System.out.println(list.get(taskNum).getValue().getTaskID());
                         if(list.get(taskNum).getValue().getTaskID() == dropTask.getTaskID()){
-                            t.deleteSchedule(list.get(taskNum).getKey(), null);
-                            for(int id = 0; id < scheduledTasks.size(); id++){
-                                if(scheduledTasks.get(id) == dropTask.getTaskID()){
-                                    scheduledTasks.remove(id);
-                                }
-                            }
+                            t.deleteOneTask(list.get(taskNum).getKey(), null);
+                            removeTaskFromScheduedList(dropTask.getTaskID(), true);
                             findFlag = true;
                             break;
                         }
@@ -342,7 +333,7 @@ public class Solution {
         
         count = 0;
         for(Technician t : solution){   //all technicians clear all tasks
-            t.removeAllSchedules();
+            t.removeAllTasks();
         }
         
         scheduledTasks.clear();             //scheduledTasks clear
@@ -391,13 +382,46 @@ public class Solution {
         return str;
     }
     
+    //argument 1; taskID to be added
+    //argument 2: if we want to check if this taskID in the list or not
+    public void addTaskIntoScheduledList(int taskID, boolean check){
+        if(check == true){
+            for(int id = 0; id < scheduledTasks.size(); id++){
+                if(scheduledTasks.get(id) == taskID){
+                    return;
+                }
+            }
+        }
+        scheduledTasks.add(taskID);
+    }
+    
+    //remove one taskID from the list
+    public void removeTaskFromScheduedList(int taskID, boolean checkAll){
+        for(int id = 0; id < scheduledTasks.size(); id++){
+            if(scheduledTasks.get(id) == taskID){
+                scheduledTasks.remove(id);
+                
+                if(checkAll)
+                    continue;
+                
+                break;
+            }
+        }
+    }
+    
     public int getDistance(int taskn1, int taskn2){
         double euclideanDist;
         double x = taskPosition[taskn1][0] - taskPosition[taskn2][0];
         double y = taskPosition[taskn1][1] - taskPosition[taskn2][1];
         euclideanDist = Math.sqrt(x * x + y * y);
         
-        return ((int) euclideanDist + 1);   //ceiling 
+        int roundV = (int) euclideanDist;
+        double floorOrCeil = euclideanDist - (double) roundV;
+        if(floorOrCeil < 0.5)
+            return roundV;
+        else 
+            return roundV + 1;
+        //return ((int) euclideanDist + 1);   //ceiling 
     }
     
     //[t1s - t1e], [t2s, t2e] , get the most earliest time to execute
@@ -538,12 +562,8 @@ public class Solution {
                         continue;
                     
                     //delete the task first, and see if it can add new one
-                    solution.get(i).deleteSchedule(executeTime, null);// getScheduledTask().remove(executeTime);
-                    for(int id = 0; id < scheduledTasks.size(); id++){
-                        if(scheduledTasks.get(id) == backupS.getTaskID()){
-                            scheduledTasks.remove(id);
-                        }
-                    }
+                    solution.get(i).deleteOneTask(executeTime, null);// getScheduledTask().remove(executeTime);
+                    removeTaskFromScheduedList(backupS.getTaskID(), false);
                     
                     if(checkAddOneTask(task, i) == true){       //if it add successfully, return succeed
                         return backupS;
@@ -554,8 +574,9 @@ public class Solution {
                         int j = rd.nextInt(10);
                         if(allowNotBackup == false || (allowNotBackup && j < 5))     //50% percentage not backup
                         {
-                            solution.get(i).addSchedule(executeTime, backupS);
-                            scheduledTasks.add(backupS.getTaskID());
+                            solution.get(i).addOneTask(executeTime, backupS);
+                            //scheduledTasks.add(backupS.getTaskID());
+                            addTaskIntoScheduledList(backupS.getTaskID(), true);
                         }else{                  //if we dont recover, then we return, which means the task is not added but we drop one task
                             return null;
                         }
@@ -590,29 +611,33 @@ public class Solution {
         if(t1TaskExecuteTime < 0)
             return false;
         Task t1Task = solution.get(t1).getTaskFromExecuteTime(t1TaskExecuteTime);
-        solution.get(t1).deleteSchedule(t1TaskExecuteTime, t1Task);
+        solution.get(t1).deleteOneTask(t1TaskExecuteTime, t1Task);
         //System.out.printf("t1 ExeTime = %d, t1Task = %d\n", t1TaskExecuteTime, t1Task.getTaskID());
         
         //see if there is one task in the second technician so that they can exchange and shorten travel time
         Task t2Task = oneTechnicianAddWithDrop(t2, t1Task);
         if(t2Task == null){         //t2 fail
             //System.out.println("t2 cannot delete any task and add t1Task");
-            solution.get(t1).addSchedule(t1TaskExecuteTime, t1Task);    //t1 add back, exchange fail
+            solution.get(t1).addOneTask(t1TaskExecuteTime, t1Task);    //t1 add back, exchange fail
             return false;
         }
+        
+        //System.out.println(Arrays.toString(scheduledTasks.toArray()));
         
         //continue to see if t1 can add this schedule or not
         if(checkAddOneTask(t2Task, t1) == true){        //can add to t1
             //System.out.println("t1, t2 exchange correctly");
+            //System.out.println(Arrays.toString(scheduledTasks.toArray()));
             return true;
         }else{
             //System.out.println("t1 cannot add t2's task and both recover");
+            //System.out.println(Arrays.toString(scheduledTasks.toArray()));
             //t2 need to remove t1Task and add t2Task
             solution.get(t2).deleteRecentAddTask();
             checkAddOneTask(t2Task, t2);
             
             //t1 need to add t1task
-            solution.get(t1).addSchedule(t1TaskExecuteTime, t1Task);
+            solution.get(t1).addOneTask(t1TaskExecuteTime, t1Task);
             return false;
         }
     }
@@ -628,12 +653,14 @@ public class Solution {
             executeTime = list.get(i).getKey();
             task = list.get(i).getValue();
             
-            solution.get(techID).deleteSchedule(executeTime, task);     //delete the backup task first
+            solution.get(techID).deleteOneTask(executeTime, task);     //delete the backup task first
+            removeTaskFromScheduedList(task.getTaskID(), false);        //delete from scheduled list
             
             if(checkAddOneTask(s, techID)){ //if succeed, then return
                 return task;
-            }else{                      //recover 
-                solution.get(techID).addSchedule(executeTime, task);
+            }else{                      //recover the deleted, and add it back to scheduled list
+                solution.get(techID).addOneTask(executeTime, task);
+                addTaskIntoScheduledList(task.getTaskID(), false);
             }
         }
         return null;
@@ -666,11 +693,14 @@ public class Solution {
                 
                 //System.out.printf("techNumber=%d, lastExecuteTime=%d. latestOriginTime=%d, latestFinishTime=%d, minValue=%d\n", 
                 //        techNumber, lastExecuteTime, latestOriginTime, latestFinishTime, minValue);
-                solution.get(techNumber).deleteSchedule(lastExecuteTime, null);
-                solution.get(techNumber).addSchedule(minValue, lastTask);
+                solution.get(techNumber).deleteOneTask(lastExecuteTime, null);
+                solution.get(techNumber).addOneTask(minValue, lastTask);
                 
                 continue;
             }
+            
+            //only move the last task to the end is good enought for this case
+            
             /*
             //gap of each two tasks
             int[] gap = new int[sortedList.size()];
@@ -747,17 +777,15 @@ public class Solution {
             scheduledByThisTech.add(thisTechSortedList.get(j).getValue().getTaskID());
         }
         
-        solution.get(techID).removeAllSchedules();                      //delete 
+        solution.get(techID).removeAllTasks();                      //delete 
         scheduledTasks.removeAll(scheduledByThisTech);                  //delete
         
         for(int i = 0; i < sortedList.size(); i++){                     //add 
-            solution.get(techID).addSchedule(sortedList.get(i).getKey(), sortedList.get(i).getValue());
+            solution.get(techID).addOneTask(sortedList.get(i).getKey(), sortedList.get(i).getValue());
         }
         
         return true;
     }
-    
-    
     
     //return solution list in case
     public List<Technician> getSolution(){

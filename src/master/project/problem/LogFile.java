@@ -23,7 +23,7 @@ public class LogFile {
     BufferedWriter out;
     
     public LogFile(String filePath) {
-        fileName = new File(filePath);
+        fileName = new File(filePath);      //file name into the current path
         if(!fileName.exists()){
             try {
                 fileName.createNewFile();
@@ -32,12 +32,13 @@ public class LogFile {
             }
         }
         try {
-            out = new BufferedWriter(new FileWriter(fileName.getAbsoluteFile()));
+            out = new BufferedWriter(new FileWriter(fileName.getAbsoluteFile()));       //bufferedWritter, to write log
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
     
+    //write data into file
     public void writeFile(String data){
         
         try {
@@ -53,6 +54,7 @@ public class LogFile {
         
     }
     
+    //cloase file
     public void closeFile(){
         
         try {

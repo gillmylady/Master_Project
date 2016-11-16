@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+
+Roulette wheel probability selection class
+
  */
 package master.project.problem;
 
@@ -32,6 +32,9 @@ public class RouletteWheel {
     
     //spin and get the random value's index
     public int spin(){
+        
+        if(this.total == 0)     //in case total = 0, to avoid error happen
+            return -1;
         
         int r = random.nextInt(this.total);
         int left = 0;

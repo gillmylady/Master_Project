@@ -9,8 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import master.project.problem.*;
 /**
  *
@@ -97,6 +95,8 @@ public class MasterProject {
         */
         
         //RunAllInstancesInLimitedRounds();
+        
+        //testExchange();
         
         RunEachInstanceWithDifferentOption(-1);
         
@@ -321,11 +321,10 @@ public class MasterProject {
                     
                     //on Nov 11, experiment in sun lab is interrupted, by R_5_9
                     //start from R_5_9
-                    /*if(caseN < 5)
+                    if(caseN < 5)
                         continue;
-                    if(instType == 0 && caseN == 5 && instN <= 9)
+                    if(instType == 0 && caseN == 5 && instN <= 17)
                         continue;
-                    */
                     
                     String key = instanceType[instType] + "_" + caseN + "_" + instN;
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
@@ -421,5 +420,22 @@ public class MasterProject {
         for(ResultAnalysis ra : analysis){
             ra.endResultAnalysis();
         }
+    }
+    
+    public static void testExchange() throws FileNotFoundException, UnsupportedEncodingException{
+        String key = "R_3_3";
+        String fileName = null;
+        if(PublicData.AmIAtSublab){
+            fileName = PublicData.sunlabInstancePath + key + ".txt";
+        }else{
+            fileName = PublicData.homeInstancePath + key + ".txt";
+        }
+
+        Instance ss = new Instance(fileName);
+
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+
+        abc.RunBasicABCAlgorithm(1000, -1, false, false, true , false, false);
+                                
     }
 }

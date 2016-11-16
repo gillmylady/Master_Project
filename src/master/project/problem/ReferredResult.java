@@ -20,7 +20,7 @@ import master.project.main.PublicData;
  */
 public class ReferredResult {
     
-    HashMap<String, Integer> R;         //eg, "R_C_1, 66"
+    HashMap<String, Integer> R;         //different kinds, to make it quick for looking up//eg, "R_C_1, 66"
     HashMap<String, Integer> C;
     HashMap<String, Integer> RC;
     HashMap<String, Integer> RAD;
@@ -79,6 +79,7 @@ public class ReferredResult {
                 }
                 
                 //System.out.printf("key=%s, value=%d\n",key, secondLargestValue);
+                //select correct table to insert the data
                 if(key.startsWith("RAD")){
                     RAD.put(key, secondLargestValue);
                 }else if(key.startsWith("RC")){
