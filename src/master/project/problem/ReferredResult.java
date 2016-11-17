@@ -36,8 +36,12 @@ public class ReferredResult {
         //if we take experiement in the sun lab, the file path is different with that in my own computer
         if(PublicData.AmIAtSublab){
             ParseReferredResult(PublicData.sunlabResultPath);
-        }else
-            ParseReferredResult(PublicData.homeResultPath);
+        }else{
+            if(PublicData.AmIAtOldMachine)
+                ParseReferredResult(PublicData.homeResultPathOldMachine);
+            else
+                ParseReferredResult(PublicData.homeResultPath);
+        }
     }
     
     //parse the file and store data into the 4 hashmap

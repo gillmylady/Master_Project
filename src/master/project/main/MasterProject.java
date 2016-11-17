@@ -84,9 +84,9 @@ public class MasterProject {
         
         //RunAllInstancesInLimitedRounds();
         
-        //RunEachInstanceWithDifferentOption(-1);
+        RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
+        //RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
         
     }
     
@@ -122,7 +122,10 @@ public class MasterProject {
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
                     }else{
-                        fileName = PublicData.homeInstancePath + key + ".txt";
+                        if(PublicData.AmIAtOldMachine)
+                            fileName = PublicData.homeInstancePathOldMachine + key + ".txt";
+                        else
+                            fileName = PublicData.homeInstancePath + key + ".txt";
                     }
                     
                     Instance ss = new Instance(fileName);
@@ -192,7 +195,10 @@ public class MasterProject {
                 if(PublicData.AmIAtSublab){
                     fileName = PublicData.sunlabInstancePath + key + ".txt";
                 }else{
-                    fileName = PublicData.homeInstancePath + key + ".txt";
+                    if(PublicData.AmIAtOldMachine)
+                            fileName = PublicData.homeInstancePathOldMachine + key + ".txt";
+                        else
+                            fileName = PublicData.homeInstancePath + key + ".txt";
                 }
 
                 Instance ss = new Instance(fileName);
@@ -251,7 +257,10 @@ public class MasterProject {
         if(PublicData.AmIAtSublab){
             fileName = PublicData.sunlabInstancePath + key + ".txt";
         }else{
-            fileName = PublicData.homeInstancePath + key + ".txt";
+            if(PublicData.AmIAtOldMachine)
+                fileName = PublicData.homeInstancePathOldMachine + key + ".txt";
+            else
+                fileName = PublicData.homeInstancePath + key + ".txt";
         }
 
         Instance ss = new Instance(fileName);
@@ -284,8 +293,13 @@ public class MasterProject {
         
         ReferredResult result = new ReferredResult();
         
-        String fn = PublicData.printSimpleTime();
-        LogFile log = new LogFile(fn + "_whole_log.txt");
+        LogFile log = null;
+        if(PublicData.AmIAtOldMachine){
+            log = new LogFile("oldMachine_whole_log.txt");
+        }else{
+            String fn = PublicData.printSimpleTime();
+            log = new LogFile(fn + "_whole_log.txt");
+        }
         if(log == null){
             return;
         }
@@ -328,13 +342,16 @@ public class MasterProject {
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
                     }else{
-                        fileName = PublicData.homeInstancePath + key + ".txt";
+                        if(PublicData.AmIAtOldMachine)
+                            fileName = PublicData.homeInstancePathOldMachine + key + ".txt";
+                        else
+                            fileName = PublicData.homeInstancePath + key + ".txt";
                     }
                     
                     Instance ss = new Instance(fileName);
                     
                     String time = PublicData.printTime();
-                    log.writeFile(time + "\n");
+                    log.writeFile(time + "\r\n");
                     
                     //we try 8 different approaches together and see difference immediately
                     int diffApproachIndex = 0;
@@ -396,7 +413,7 @@ public class MasterProject {
                         
                         String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                                 + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
-                                + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
+                                + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\r\n";
                         log.writeFile(logBuf);
                         analysis.get(diffApproachIndex).insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
                                                             , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
@@ -422,7 +439,10 @@ public class MasterProject {
         if(PublicData.AmIAtSublab){
             fileName = PublicData.sunlabInstancePath + key + ".txt";
         }else{
-            fileName = PublicData.homeInstancePath + key + ".txt";
+            if(PublicData.AmIAtOldMachine)
+                fileName = PublicData.homeInstancePathOldMachine + key + ".txt";
+            else
+                fileName = PublicData.homeInstancePath + key + ".txt";
         }
 
         Instance ss = new Instance(fileName);

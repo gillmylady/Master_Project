@@ -65,33 +65,33 @@ public class ResultAnalysis {
     //record so far result, for analysis purpose
     public void recordSoFar(){
         
-        log.writeFile("\n" + PublicData.printTime() + "\n");            //title, time
+        log.writeFile("\r\n" + PublicData.printTime() + "\r\n");            //title, time
         
         if(numOfErrorDataInReferredPaper > 0){                          //how many error data exist
-            log.writeFile("#number of wrong referred paper: " + numOfErrorDataInReferredPaper + "\n");
+            log.writeFile("#number of wrong referred paper: " + numOfErrorDataInReferredPaper + "\r\n");
             for(String s : errorDataInPaper){
-                log.writeFile(s + "\n");
+                log.writeFile(s + "\r\n");
             }
         }
         
         if(numOfBetterThanReferredPaper > 0){                           //how many better data we have
-            log.writeFile("#number of Better than referred paper: " + numOfBetterThanReferredPaper + "\n");
+            log.writeFile("#number of Better than referred paper: " + numOfBetterThanReferredPaper + "\r\n");
             for(String s : betterThanPaper){
-                log.writeFile(s + "\n");
+                log.writeFile(s + "\r\n");
             }
         }
         
         if(numOfAsGoodAsReferredPaper > 0){                             //as good as paper
-            log.writeFile("#number of as good as referred paper: " + numOfAsGoodAsReferredPaper + "\n");
+            log.writeFile("#number of as good as referred paper: " + numOfAsGoodAsReferredPaper + "\r\n");
             for(String s : asGoodAsPaper){
-                log.writeFile(s + "\n");
+                log.writeFile(s + "\r\n");
             }
         }
         
         //calculate worse result
         if(numOfNotAsGoodAsReferedPaper > 0){                           //worse results
-            log.writeFile("#number of worse: " + numOfNotAsGoodAsReferedPaper + "\n");
-            log.writeFile("#average percentage of worse results: " + notGoodTotalPercentage/numOfNotAsGoodAsReferedPaper + "\n");
+            log.writeFile("#number of worse: " + numOfNotAsGoodAsReferedPaper + "\r\n");
+            log.writeFile("#average percentage of worse results: " + notGoodTotalPercentage/numOfNotAsGoodAsReferedPaper + "\r\n");
         }
     }
     
