@@ -84,9 +84,9 @@ public class MasterProject {
         
         //RunAllInstancesInLimitedRounds();
         
-        RunEachInstanceWithDifferentOption(-1);
+        //RunEachInstanceWithDifferentOption(-1);
         
-        //RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
+        RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
         
     }
     
@@ -108,7 +108,7 @@ public class MasterProject {
         
         LogFile log = new LogFile(logFileName + "_log.txt");
         
-        for(int caseN = 1; caseN <= caseNumber; caseN++){
+        for(int caseN = 3; caseN <= caseNumber; caseN++){
             
             ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
         
