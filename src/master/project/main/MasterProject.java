@@ -84,9 +84,9 @@ public class MasterProject {
         
         //RunAllInstancesInLimitedRounds();
         
-        RunEachInstanceWithDifferentOption(-1);
+        //RunEachInstanceWithDifferentOption(-1);
         
-        //RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
+        RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
         
     }
     
