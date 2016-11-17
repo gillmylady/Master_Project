@@ -88,6 +88,7 @@ public class MasterProject {
         
         RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
         
+        //compareConstructiveSolution();
     }
     
     //run ABC algorithm, each instance is given limited time
@@ -100,7 +101,7 @@ public class MasterProject {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         
         //int instanceNumber = 20;
-        int instanceNumber = 5;
+        int instanceNumber = 10;
         
         ReferredResult result = new ReferredResult();
         
@@ -108,7 +109,7 @@ public class MasterProject {
         
         LogFile log = new LogFile(logFileName + "_log.txt");
         
-        for(int caseN = 3; caseN <= caseNumber; caseN++){
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
             
             ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
         
@@ -130,7 +131,7 @@ public class MasterProject {
                     
                     Instance ss = new Instance(fileName);
                     
-                    log.writeFile(PublicData.printTime() + "\n");
+                    log.writeFile(PublicData.printTime() + "\r\n");
                     
                     AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
                     
@@ -140,7 +141,7 @@ public class MasterProject {
                     
                     String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                             + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
-                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
+                            + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\r\n";
                     log.writeFile(logBuf);
                     analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
                                                         , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
@@ -203,7 +204,7 @@ public class MasterProject {
 
                 Instance ss = new Instance(fileName);
 
-                log.writeFile(PublicData.printTime() + "\n");
+                log.writeFile(PublicData.printTime() + "\r\n");
 
                 AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
@@ -214,7 +215,7 @@ public class MasterProject {
                 
                 String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                         + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
-                        + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\n";
+                        + ", gap=" + (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()) + "\r\n";
                 log.writeFile(logBuf);
                 analysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
                                                     , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
@@ -273,7 +274,7 @@ public class MasterProject {
             allowExchangeWholeTechnician);
         
         String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() 
-                + " ,referedResult=" + result.valueOfKey(key) + "\n";
+                + " ,referedResult=" + result.valueOfKey(key) + "\r\n";
         System.out.print(logBuf);
         abc.displayAllSolution(false);
         
@@ -451,5 +452,83 @@ public class MasterProject {
 
         abc.RunBasicABCAlgorithm(1000, -1, false, false, true , false, false);
                                 
+    }
+    
+    
+    //just generate initial solutions, and compare constructive way and greedy heuristic
+    public static void compareConstructiveSolution() throws FileNotFoundException, UnsupportedEncodingException {
+        String[] instanceType = {"R", "C", "RC", "RAD"};
+        
+        int instanceNumber = 20;
+        int caseNumber = 13;
+        
+        String logFileName = PublicData.printTime();
+        
+        LogFile log = new LogFile(logFileName + "_log.txt");
+        
+        int totalGreedy;
+        int totalConstructive;
+        int constructiveGreaterThanGreedyCount;
+        int constructiveEqualGreedyCount;
+        int constructiveLessThanGreedyCount;
+        
+        int bestG = 0;
+        int bestC = 0;
+        
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
+            
+            totalGreedy = 0;
+            totalConstructive = 0;
+            constructiveGreaterThanGreedyCount = 0;
+            constructiveEqualGreedyCount = 0;
+            constructiveLessThanGreedyCount = 0;
+            
+            for(int instType = 0; instType < instanceType.length; instType++){
+                for(int instN = 1; instN <= instanceNumber; instN++){
+                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
+                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+                        continue;
+                    
+                    String fileName = null;
+                    if(PublicData.AmIAtSublab){
+                        fileName = PublicData.sunlabInstancePath + key + ".txt";
+                    }else{
+                        if(PublicData.AmIAtOldMachine)
+                            fileName = PublicData.homeInstancePathOldMachine + key + ".txt";
+                        else
+                            fileName = PublicData.homeInstancePath + key + ".txt";
+                    }
+                    
+                    Instance ss = new Instance(fileName);
+                    
+                    log.writeFile(PublicData.printTime() + "\r\n");
+                    
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(ss);      //only generate initial solutions and compare result
+                    
+                    bestG = abc.getGreedyBestInitial();
+                    bestC = abc.getConstructiveHeuristic();
+                    
+                    String logBuf = key + ": bestGreedy=" + bestG + ", bestConstructive=" + bestC + "\r\n";
+                    log.writeFile(logBuf);
+                    
+                    totalGreedy += bestG;
+                    totalConstructive += bestC;
+                    if(bestC > bestG)
+                        constructiveGreaterThanGreedyCount++;
+                    else if(bestC == bestG)
+                        constructiveEqualGreedyCount++;
+                    else
+                        constructiveLessThanGreedyCount++;
+                }
+            }
+            
+            log.writeFile("caseNum" + caseN + " ,totalG=" + totalGreedy + " ,totalC=" + totalConstructive
+                            + ",betterConst=" + constructiveGreaterThanGreedyCount + " ,equal=" + constructiveEqualGreedyCount
+                            + " ,betterGreedy=" + constructiveLessThanGreedyCount + "\r\n");
+            
+        }
+        
+        log.closeFile();
+        
     }
 }

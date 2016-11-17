@@ -87,6 +87,79 @@ public class AbcBasicAlgorithm {
         initialBestSolutionValue = calculateBestSolutionValue();                  //get initial best solution's total priority
     }
     
+    //we construct some initial solutions in here, according to the bees number
+    //and compare the solutions of constructive and greedy heuristic
+    public AbcBasicAlgorithm(Instance instance){
+        solutions = new ArrayList<>();
+        soFarBestSolution = 0;
+        for(int i = 0; i < 10; i++){
+            Solution s = new Solution(instance, i);         //second argument is solution ID
+            switch (i) {
+                case 0:
+                    s.greedySortSchedulesPriorityProcessTime(); //priority/processTime
+                    s.naiveSolution();
+                    break;
+                case 1:
+                    s.greedySortSchedulesPriority();            //priority
+                    s.naiveSolution();
+                    break;
+                case 2:
+                    s.greedySortSchedulesProcessTime();         //processTime
+                    s.naiveSolution();
+                    break;
+                case 3:
+                    s.greedySortSchedulesPriorityProcessTime(); //priority/processTime
+                    s.constructiveShortDistanceSolution();//short distance
+                    break;
+                case 4:
+                    s.greedySortSchedulesPriority(); //priority/processTime
+                    s.constructiveShortDistanceSolution();//short distance
+                    break;
+                case 5:
+                    s.greedySortSchedulesProcessTime(); //priority/processTime
+                    s.constructiveShortDistanceSolution();//short distance
+                    break;
+                case 6:
+                    s.greedySortSchedulesPriorityProcessTime(); //priority/processTime
+                    s.constructiveHeuristicSolution();//construstive solution
+                    break;
+                case 7:
+                    s.greedySortSchedulesPriority(); //priority/processTime
+                    s.constructiveHeuristicSolution();//construstive solution
+                    break;
+                case 8:
+                    s.greedySortSchedulesProcessTime(); //priority/processTime
+                    s.constructiveHeuristicSolution();//construstive solution
+                    break;
+                default:
+                    s.constructiveRandomSolution();     //random solution
+                    break;
+            }
+            solutions.add(s);
+        }
+        
+        initialBestSolutionValue = calculateBestSolutionValue();                  //get initial best solution's total priority
+    }
+    
+    //get best initial solution of greedy heuristic
+    public int getGreedyBestInitial(){
+        int bestGreedy = 0;
+        for(int i = 0; i < 6; i++){
+            if(solutions.get(i).totalPriority() > bestGreedy)
+                bestGreedy = solutions.get(i).totalPriority();
+        }
+        return bestGreedy;
+    }
+    //get best solution of constructive heuristic
+    public int getConstructiveHeuristic(){
+        int bestV = 0;
+        for(int i = 6; i < 10; i++){
+            if(solutions.get(i).totalPriority() > bestV)
+                bestV = solutions.get(i).totalPriority();
+        }
+        return bestV;
+    }
+    
     /*
     totalRounds: how many rounds does this algorithm run? or later on we can add the feature, how much time does it run
     timeout, if totalRounds < 0, then we use timeout instead
