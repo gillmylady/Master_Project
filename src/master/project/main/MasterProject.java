@@ -78,28 +78,15 @@ public class MasterProject {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
-        //剩下可以做的: shrink tasks and see if solutions can be improved
-        
         //before test, please make sure if i'm at sun-lab or own computer
         
-        
         //RunAllInstancesInLimitedRounds();
         
-        /*
-        for(int i = 1; i <= 20; i++){
-            String key = "C_3_" + i;
-            runOneInstanceInLimitedRounds(key, false);
-            runOneInstanceInLimitedRounds(key, true);
-            System.out.println();
-        }
-        */
-        
         //RunAllInstancesInLimitedRounds();
-        
-        //testExchange();
         
         RunEachInstanceWithDifferentOption(-1);
         
+        //RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
         
     }
     
@@ -111,7 +98,10 @@ public class MasterProject {
             boolean allowExchange, boolean allowShrink, 
             boolean allowExchangeWholeTechnician) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
-        int instanceNumber = 20;
+        
+        //int instanceNumber = 20;
+        int instanceNumber = 5;
+        
         ReferredResult result = new ReferredResult();
         
         String logFileName = PublicData.printTime();
@@ -212,7 +202,7 @@ public class MasterProject {
                 AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
                 if(caseN < 13)
-                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, false);
+                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, true);
                 else
                     abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true, false, false);
                 
@@ -288,7 +278,10 @@ public class MasterProject {
     public static void RunEachInstanceWithDifferentOption(int round) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         int caseNumber = 13;
-        int instanceNumber = 20;
+        
+        //int instanceNumber = 20;
+        int instanceNumber = 10;
+        
         ReferredResult result = new ReferredResult();
         
         String fn = PublicData.printSimpleTime();
@@ -313,7 +306,8 @@ public class MasterProject {
         analysis.add(new ResultAnalysis("analysis_Exch_Drop_Shrink_WholeTech.txt"));
         analysis.add(new ResultAnalysis("analysis_Exch_NoDrop_Shrink_WholeTech.txt"));
         
-        for(int caseN = 1; caseN <= caseNumber; caseN++){
+        //from case N = 3, to compare each
+        for(int caseN = 3; caseN <= caseNumber; caseN++){
             
             int totalRounds = caseN * round;
             for(int instType = 0; instType < instanceType.length; instType++){
@@ -321,11 +315,11 @@ public class MasterProject {
                     
                     //on Nov 11, experiment in sun lab is interrupted, by R_5_9
                     //start from R_5_9
-                    if(caseN < 5)
+                    /*if(caseN < 5)
                         continue;
                     if(instType == 0 && caseN == 5 && instN <= 17)
                         continue;
-                    
+                    */
                     String key = instanceType[instType] + "_" + caseN + "_" + instN;
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
