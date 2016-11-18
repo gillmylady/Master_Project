@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import master.project.main.PublicData;
 
 
 /**
@@ -283,6 +284,92 @@ public class Solution {
             }else{
             
                 Task s = getTaskFromID(candidateTasks.get(i));
+
+                techID = rd.nextInt(solution.size());
+                for(int j = 0; j < solution.size(); j++){
+
+                    if(checkAddOneTask(s, techID) == false){
+                        techID++;
+                        if(techID >= solution.size())
+                            techID = 0;
+                    }else{
+                        break;
+                    }
+                }
+                //candidateTasks.remove(i);    //if this task is scheduled, remove it from the candidate list
+            }
+        }
+    }
+    
+    //constructive heuristic solution, new objective function
+    //try add, swap = delete and add, exchange//, chang from one technician to another
+    //argument: caseNum, determine when to break the loop (timeout)
+    public void constructiveHeuristicSolution(int caseNum){
+        Random rd = new Random();
+        int techID;
+        List<Integer> candidateTasks = new ArrayList<>();
+        for(Task s : allSchedules){
+            if(s.getTaskID() == 0)
+                continue;
+            candidateTasks.add(s.getTaskID());
+        }
+        
+        //System.out.println(candidateTasks.size());
+        //for(int i = 0; i < candidateTasks.size(); i++){
+        long startTime = System.currentTimeMillis();
+        //reach either rounds or specified time, loop will be over
+        while((System.currentTimeMillis() - startTime) < PublicData.runLimitTime[caseNum] * 1000 ){    
+            
+            int[] fitnessValue = new int[3];
+            int rdSchedule = rd.nextInt(candidateTasks.size());
+            if(isTaskScheduled(candidateTasks.get(rdSchedule)) == true)
+                continue;
+            fitnessValue[0] = constructiveObjectFunction(0, getTaskFromID(candidateTasks.get(rdSchedule)));
+            Task dropTask = null;
+            if(scheduledTasks.size() > 0){
+                dropTask = getTaskFromID(scheduledTasks.get(rd.nextInt(scheduledTasks.size())));
+                //System.out.println(dropTask.getTaskID());
+                //System.out.println(Arrays.toString(scheduledTasks.toArray()));
+            }
+            fitnessValue[1] = constructiveObjectFunction(1, dropTask);
+            fitnessValue[2] = constructiveObjectFunction(2, null);
+            RouletteWheel rw = new RouletteWheel(fitnessValue);
+            int probSelection = rw.spin();
+            
+            //exchange
+            if(scheduledTasks.size() > 1 && probSelection == 2){
+                exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
+                //i--;        //dont change i
+                continue;
+            }else if(scheduledTasks.size() > 0 && probSelection == 1){  //delete
+                
+                boolean findFlag = false;
+                for(Technician t : solution){
+                    List<Map.Entry<Integer, Task>> list = t.getSortExecuteTimeList();
+                    if(list == null || list.isEmpty())
+                        continue;
+                    for(int taskNum = 0; taskNum < list.size(); taskNum++){
+                        //System.out.println(list.get(taskNum).getValue().getTaskID());
+                        if(list.get(taskNum).getValue().getTaskID() == dropTask.getTaskID()){
+                            t.deleteOneTask(list.get(taskNum).getKey(), null);
+                            removeTaskFromScheduedList(dropTask.getTaskID(), true);
+                            findFlag = true;
+                            break;
+                        }
+                    }
+                    if(findFlag == true)
+                        break;
+                }
+                if(findFlag == false){
+                    System.out.println("??\n\n\n\n\n");
+                    return;
+                }
+                //i--;
+                //candidateTasks.add(dropTask.getTaskID());
+                continue;
+            }else{
+            
+                Task s = getTaskFromID(candidateTasks.get(rdSchedule));
 
                 techID = rd.nextInt(solution.size());
                 for(int j = 0; j < solution.size(); j++){

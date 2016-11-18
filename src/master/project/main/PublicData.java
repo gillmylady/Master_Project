@@ -23,7 +23,7 @@ public class PublicData {
     public static int totalBeeNumber46 = 46;
     public static int totalBeeNumber100 = 100;
     
-    public static boolean AmIAtSublab = true;
+    public static boolean AmIAtSublab = false;
     public static boolean AmIAtOldMachine = false;
     
     //path of my files

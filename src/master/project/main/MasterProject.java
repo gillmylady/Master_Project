@@ -86,9 +86,31 @@ public class MasterProject {
         
         //RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
+        //RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
         
-        //compareConstructiveSolution();
+        compareConstructiveSolution();
+        
+        /*    boolean onlookerBeeExist, 
+            boolean workerBeeAllowNotBackupWhenGetStucked,
+            boolean allowExchange, 
+            boolean allowShrink, 
+            boolean allowExchangeWholeTechnician*/
+        
+        int i = 0;
+        while((i++) < 3){
+            runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, false, true);
+            runOneInstanceInLimitedRounds("C_6_1", 6, true, false, true, true, true);
+            runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, true, true);
+            System.out.println();
+        }
+        
+        i = 0;
+        while((i++) < 3){
+            runOneInstanceInLimitedRounds("R_5_2", 5, true, false, true, true, true);
+            runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, false, true);
+            runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, true, true);
+            System.out.println();
+        }
     }
     
     //run ABC algorithm, each instance is given limited time
@@ -243,6 +265,7 @@ public class MasterProject {
     //test one instance
     public static void runOneInstanceInLimitedRounds(
             String key, 
+            int caseNumber, 
             boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
             boolean allowExchange, 
@@ -268,7 +291,7 @@ public class MasterProject {
 
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
-        abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[13], onlookerBeeExist, 
+        abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseNumber], onlookerBeeExist, 
             workerBeeAllowNotBackupWhenGetStucked,
             allowExchange, allowShrink, 
             allowExchangeWholeTechnician);
@@ -503,7 +526,7 @@ public class MasterProject {
                     
                     log.writeFile(PublicData.printTime() + "\r\n");
                     
-                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(ss);      //only generate initial solutions and compare result
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(ss, caseN);      //only generate initial solutions and compare result
                     
                     bestG = abc.getGreedyBestInitial();
                     bestC = abc.getConstructiveHeuristic();

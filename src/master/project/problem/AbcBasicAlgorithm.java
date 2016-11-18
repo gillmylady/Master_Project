@@ -89,7 +89,7 @@ public class AbcBasicAlgorithm {
     
     //we construct some initial solutions in here, according to the bees number
     //and compare the solutions of constructive and greedy heuristic
-    public AbcBasicAlgorithm(Instance instance){
+    public AbcBasicAlgorithm(Instance instance, int caseNum){
         solutions = new ArrayList<>();
         soFarBestSolution = 0;
         for(int i = 0; i < 10; i++){
@@ -121,15 +121,15 @@ public class AbcBasicAlgorithm {
                     break;
                 case 6:
                     s.greedySortSchedulesPriorityProcessTime(); //priority/processTime
-                    s.constructiveHeuristicSolution();//construstive solution
+                    s.constructiveHeuristicSolution(caseNum);//construstive solution
                     break;
                 case 7:
                     s.greedySortSchedulesPriority(); //priority/processTime
-                    s.constructiveHeuristicSolution();//construstive solution
+                    s.constructiveHeuristicSolution(caseNum);//construstive solution
                     break;
                 case 8:
                     s.greedySortSchedulesProcessTime(); //priority/processTime
-                    s.constructiveHeuristicSolution();//construstive solution
+                    s.constructiveHeuristicSolution(caseNum);//construstive solution
                     break;
                 default:
                     s.constructiveRandomSolution();     //random solution
@@ -154,6 +154,12 @@ public class AbcBasicAlgorithm {
     public int getConstructiveHeuristic(){
         int bestV = 0;
         for(int i = 6; i < 10; i++){
+            
+            ConflictTest ct = new ConflictTest(solutions.get(i));
+            if(ct.testIfConflict() == true){
+                System.out.println("\r\n\r\nconflict errorrrrrrr\r\n\r\n");
+            }
+            
             if(solutions.get(i).totalPriority() > bestV)
                 bestV = solutions.get(i).totalPriority();
         }
@@ -281,6 +287,10 @@ public class AbcBasicAlgorithm {
             //after each round, store the best solution
             storeSoFarBestSolutionValue();
         }
+        
+        if(allowShrink){
+            solutionsTryShrinkAfterLoop();
+        }
     }
     
     //solution try exchange, we dont care if it succeed here. If succeed, exchange is done.
@@ -301,6 +311,13 @@ public class AbcBasicAlgorithm {
                 s.setCount(0);
             }
         }
+    }
+    
+    //use this option, when loop is done, try shrink and try add
+    public void solutionsTryShrinkAfterLoop(){
+        solutionsTryShrink();
+        solutionsTryAdd();
+        storeSoFarBestSolutionValue();
     }
     
     //all solution try add any task
