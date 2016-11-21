@@ -96,7 +96,7 @@ public class MasterProject {
         
         //RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(10, true, true, true, true, true);
+        RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true);
         
         //compareConstructiveSolution();
         
@@ -131,6 +131,7 @@ public class MasterProject {
     
     //run ABC algorithm, each instance is given limited time
     public static void RunAllInstancesInSameCaseWithLimitedTime(
+            boolean oddFlag,            //use multiple to run this program
             int caseNumber,
             boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
@@ -138,8 +139,7 @@ public class MasterProject {
             boolean allowExchangeWholeTechnician) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         
-        //int instanceNumber = 20;
-        int instanceNumber = 10;
+        int instanceNumber = 20;
         
         ReferredResult result = new ReferredResult();
         
@@ -147,21 +147,21 @@ public class MasterProject {
         
         LogFile log = new LogFile(logFileName + "_log.txt");
         
-        for(int caseN = 5; caseN <= caseNumber; caseN++){
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
+            
+            if(caseN % 2 == 0)          //only run odd case number cases
+                continue;
             
             ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
         
             for(int instType = 0; instType < instanceType.length; instType++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
-                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
-                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
+                    
+                    if(instN % 2 == 0)          //only run odd instances number
                         continue;
                     
-                    if(caseN < 7)
-                        continue;
-                    if(caseN == 7 && instType < 2)
-                        continue;
-                    if(instType == 2 && caseN == 7 && instN < 9)
+                    String key = instanceType[instType] + "_" + caseN + "_" + instN;
+                    if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
                     String fileName = null;
@@ -193,6 +193,7 @@ public class MasterProject {
                     
                     
                 }
+                analysis.recordSoFar();
             }
             analysis.endResultAnalysis();
         }
