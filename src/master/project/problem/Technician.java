@@ -210,6 +210,20 @@ public class Technician {
         return true;
     }
     
+    //delete one task using taskID
+    public boolean deleteOneTask(int taskID){
+        if(tasks.isEmpty())           //if empty, then no need to sort
+            return false;
+        sortExecuteTime();
+        for(int i = 0; i < sortedList.size(); i++){
+            if(sortedList.get(i).getValue().getTaskID() == taskID){
+                tasks.remove(sortedList.get(i).getKey());
+                return true;
+            }
+        }
+        return false;
+    }
+    
     //this is for exchange, in exchange, remember the recent added task, when backup we have to delete it
     public boolean deleteRecentAddTask(){
         return deleteOneTask(recentAddTaskTime, null);

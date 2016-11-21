@@ -180,7 +180,8 @@ public class AbcBasicAlgorithm {
             boolean allowDrop,              //drop, means not recover when exchange or add with drop
             boolean allowExchange, 
             boolean allowShrink, 
-            boolean allowExchangeWholeTechnician){
+            boolean allowExchangeWholeTechnician,
+            boolean exchangeGreedy){
         
         int currentRound = 0;
         int rdNum;
@@ -229,8 +230,14 @@ public class AbcBasicAlgorithm {
                     continue;
                 }
                 
+                if(exchangeGreedy){
+                    if(solutions.get(sID).addOneTaskWithDropUsingGreedy(rdSchedule, false) != null){ //PublicData.resetBeeCount
+                        solutions.get(sID).setCount(0);
+                        continue;
+                    }
+                }
                 //try if this task can be added with drop, leave some probability for not to recover the dropped task
-                if(solutions.get(sID).addOneTaskWithDrop(rdSchedule, 
+                else if(solutions.get(sID).addOneTaskWithDrop(rdSchedule, 
                         allowDrop && sID < this.workerBeeNumber &&
                         solutions.get(sID).getCount() > PublicData.workerBeeNotBackUp ) != null){ //PublicData.resetBeeCount
                     solutions.get(sID).setCount(0);
@@ -267,7 +274,10 @@ public class AbcBasicAlgorithm {
             
             //add exchange (one local search heuristic) for the solutions:
             if(allowExchange){
-                solutionsTryExchange();
+                if(exchangeGreedy)
+                    solutionsTryExchangeUsingGreedy();
+                else
+                    solutionsTryExchange();
             }
             
             //allow shrink
@@ -300,6 +310,13 @@ public class AbcBasicAlgorithm {
             //now, we just do exchange every time, since some exchange cannot succeed.
                 s.exchangeTasksAmongTechnicians();
             //}
+        }
+    }
+    
+    //solution try greedy exchange, which means only delete worse task
+    public void solutionsTryExchangeUsingGreedy(){
+        for(Solution s : solutions){
+            s.exchangeTasksAmongTechniciansUsingGreedy();
         }
     }
     
@@ -397,9 +414,23 @@ public class AbcBasicAlgorithm {
     
     //store the best solution when trying abc
     public void storeSoFarBestSolutionValue(){
+        /*
         int bestV = calculateBestSolutionValue();
         if(bestV > soFarBestSolution)
-            soFarBestSolution = bestV;
+            soFarBestSolution = bestV;*/
+        
+        for(Solution s : solutions){
+            if(s.totalPriority() > soFarBestSolution){
+                soFarBestSolution = s.totalPriority();
+                //System.out.println(soFarBestSolution);
+                //displayOneSolutionSortedTask(s.getID());
+                ConflictTest ct = new ConflictTest(s);
+                if(ct.testIfConflict() == true){
+                    System.out.println("some schedules conflict!!!\n\n\n\n\n\n\n\n\n\n");
+                    return;
+                }
+            }
+        }
     }
     
     //get so-far the best solution's total priority

@@ -23,6 +23,10 @@ public class PublicData {
     public static int totalBeeNumber46 = 46;
     public static int totalBeeNumber100 = 100;
     
+    public static int exaParameter = 1000;
+    public static int exaLargestParameter = 5; 
+    public static int exaSecondLargestParameter = 3;
+    
     public static boolean AmIAtSublab = false;
     public static boolean AmIAtOldMachine = false;
     

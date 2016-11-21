@@ -399,16 +399,16 @@ public class Solution {
             case 0:     //add
                 //System.out.printf("s.getPriority()=%d, s.getProcessTime()=%d\n",s.getPriority(), s.getProcessTime());
                 if(s != null)
-                    ret = 1000 * (double)(totalPrio + s.getPriority()) / (double) (totalProcessTime + s.getProcessTime());
+                    ret = PublicData.exaParameter * (double)(totalPrio + s.getPriority()) / (double) (totalProcessTime + s.getProcessTime());
                 //System.out.print(ret);
                 break;
             case 1:     //delete
                 if(s != null && totalProcessTime > s.getProcessTime())
-                    ret = 1000 * (double) (totalPrio - s.getPriority()) / (double) (totalProcessTime - s.getProcessTime());
+                    ret = PublicData.exaParameter * (double) (totalPrio - s.getPriority()) / (double) (totalProcessTime - s.getProcessTime());
                 break;
             default:
                 if(totalProcessTime > 0)
-                    ret = 1000 * (double) totalPrio / (double) totalProcessTime;
+                    ret = PublicData.exaParameter * (double) totalPrio / (double) totalProcessTime;
                 break;
         }
         return (int) (ret);
@@ -873,6 +873,259 @@ public class Solution {
         
         return true;
     }
+    
+    //only drop worst tasks to try add a task
+    public Task addOneTaskWithDropUsingGreedy(int scheduleID, boolean allowNotBackup){
+        //drop one task whose execute time is in the window of this new task
+        Random r = new Random();
+        int rdNumber = r.nextInt(solution.size());  //start check from a random-number of technician
+        boolean repeatFlag = true;                  //help start from a random technician and make sure it tries all technicians
+        Task task = getTaskFromID(scheduleID);
+        for(int i = rdNumber; repeatFlag == true || i < rdNumber; ){
+            
+            //remove the old codes which define sorted tasks, if necessary, refer those back-up codes
+            List<Map.Entry<Integer, Task>> list = solution.get(i).getSortExecuteTimeList();
+            int worstTaskIndex = selectWorstTaskObjectiveFunctionValue(i, list);
+            if(worstTaskIndex < 0){
+                i++;                            //we try from the random start point, and when we reach the end we should go back to the very beginning
+                if(i >= solution.size()){
+                    repeatFlag = false;
+                    i = 0;
+                }
+                continue;
+            }
+            //delete t1Task
+            int taskExecuteTime = list.get(worstTaskIndex).getKey();
+            Task dropTask = solution.get(i).getTaskFromExecuteTime(taskExecuteTime);
+            solution.get(i).deleteOneTask(taskExecuteTime, dropTask);
+            removeTaskFromScheduedList(dropTask.getTaskID(), false);          //remove this task 
+
+            if(checkAddOneTask(task, i) == true){       //if it add successfully, return succeed
+                return dropTask;
+            }else{
+
+                //leave some probabality for solution not backup
+                int j = r.nextInt(10);
+                if(allowNotBackup == false || (allowNotBackup && j < 1))     //10% percentage not backup
+                {
+                    solution.get(i).addOneTask(taskExecuteTime, dropTask);
+                    addTaskIntoScheduledList(dropTask.getTaskID(), true);
+                }else{                  //if we dont recover, then we return, which means the task is not added but we drop one task
+                    return null;
+                }
+            }
+             
+            i++;                            //we try from the random start point, and when we reach the end we should go back to the very beginning
+            if(i >= solution.size()){
+                repeatFlag = false;
+                i = 0;
+            }
+        }
+        
+        return null;
+    }
+    
+    //exchange tasks among two random technicians
+    //each technician selection worst task to be exchanged
+    public boolean exchangeTasksAmongTechniciansUsingGreedy(){
+        
+        //select two random technicians
+        int t1, t2;
+        Random rd = new Random();
+        t1 = t2 = rd.nextInt(solution.size());
+        while(t2 == t1){
+            t2 = rd.nextInt(solution.size());
+        }
+        //System.out.printf("exchangeTasks\n t1 = %d, t2 = %d\n", t1, t2);
+        
+        //select worst task from the first technician
+        List<Map.Entry<Integer, Task>> t1SortedList = solution.get(t1).getSortExecuteTimeList(); 
+        int worstTaskIndex = selectWorstTaskObjectiveFunctionValue(t1, t1SortedList);
+        if(worstTaskIndex < 0)
+            return false;
+        
+        //select worst task from the second technician
+        List<Map.Entry<Integer, Task>> t2SortedList = solution.get(t2).getSortExecuteTimeList(); 
+        int worstTaskIndex2 = selectWorstTaskObjectiveFunctionValue(t2, t2SortedList);
+        if(worstTaskIndex2 < 0){                        //cannot find one to exchange
+            return false;
+        }
+        
+        //delete t1Task
+        int t1TaskExecuteTime = t1SortedList.get(worstTaskIndex).getKey();
+        Task t1Task = solution.get(t1).getTaskFromExecuteTime(t1TaskExecuteTime);
+        solution.get(t1).deleteOneTask(t1TaskExecuteTime, t1Task);
+        removeTaskFromScheduedList(t1Task.getTaskID(), false);          //remove this task 
+        //System.out.printf("\n\nt1 ExeTime = %d, t1Task = %d\n", t1TaskExecuteTime, t1Task.getTaskID());
+        
+        //delete t2Task
+        int t2TaskExecuteTime = t2SortedList.get(worstTaskIndex2).getKey();
+        Task t2Task = solution.get(t2).getTaskFromExecuteTime(t2TaskExecuteTime);
+        solution.get(t2).deleteOneTask(t2TaskExecuteTime, t2Task);
+        removeTaskFromScheduedList(t2Task.getTaskID(), false);          //remove this task 
+        //System.out.printf("t2 ExeTime = %d, t2Task = %d\n", t2TaskExecuteTime, t2Task.getTaskID());
+        
+        //continue to see if t1 can add this schedule or not
+        //if there is one technician can add successfully, we add it, the other one just delete, like drop
+        if(checkAddOneTask(t2Task, t1) == true && checkAddOneTask(t1Task, t2) == true){        
+            //System.out.println("t1, t2 exchange correctly");
+            //System.out.println(Arrays.toString(scheduledTasks.toArray()));
+            return true;
+        }else{
+            //System.out.println("recover all tasks");
+            
+            solution.get(t1).deleteOneTask(t2Task.getTaskID());
+            solution.get(t2).deleteOneTask(t1Task.getTaskID());
+            
+            solution.get(t1).addOneTask(t1TaskExecuteTime, t1Task);
+            addTaskIntoScheduledList(t1Task.getTaskID(), true);
+            solution.get(t2).addOneTask(t2TaskExecuteTime, t2Task);
+            addTaskIntoScheduledList(t2Task.getTaskID(), true);
+            return false;
+        }
+    }
+    
+    //when doing neighbor selection, alsway choose best task for other neighbors
+    //return the index of selected task
+    public int selectBestTaskObjectiveFunctionValue(int techID, List<Map.Entry<Integer, Task>> thisTechSortedList){
+        
+        //List<Map.Entry<Integer, Task>> thisTechSortedList = solution.get(techID).getSortExecuteTimeList();  //get this sortedList
+        if(thisTechSortedList == null || thisTechSortedList.isEmpty()){                     //must be scheduled in another technician
+            return -1;
+        }
+        
+        //consider priority and travel time and wait time
+        //we consider the time spend related with this task
+        //eg., right after previous task is done, the technician can come to this task, 
+        //tavel time and wait time may happen //and then process time may happen
+        //and then the technician has to go to next task's place, 
+        //right before next task execute, travel time and wait time may happen
+        //we can count all these time as the time spent in this task; 
+        //notice some time are calculated repeatedly because better task may have smaller wait time, which means more tasks can be scheduled
+        
+        int previousTaskEndTime = 0;
+        int nextTaskExecuteTime = 0;
+        int[] time = new int[thisTechSortedList.size()];
+        
+        //from previousTaskEndTime to nextTaskExecuteTIme
+        for(int i = 0; i < thisTechSortedList.size(); i++){
+            
+            if(i == 0)
+                previousTaskEndTime = solution.get(techID).getStartTime();
+            else    //previous task's execute time + process time
+                previousTaskEndTime = thisTechSortedList.get(i-1).getKey() + thisTechSortedList.get(i-1).getValue().getProcessTime();
+            
+            if(i == thisTechSortedList.size() - 1)
+                nextTaskExecuteTime = solution.get(techID).getEndTime();
+            else    //next task's execute time
+                nextTaskExecuteTime = thisTechSortedList.get(i+1).getKey();
+            
+            time[i] = PublicData.exaParameter * thisTechSortedList.get(i).getValue().getPriority() 
+                    / (nextTaskExecuteTime - previousTaskEndTime);
+        }
+        
+        int largestIndex = -1;
+        int largestValue = 0;
+        int secondLargestIndex = -1;
+        int secondLargestValue = 0;
+        
+        //first find the largest two tasks
+        for(int i = 0; i < time.length; i++){
+            if(time[i] > largestValue){                 //if maximum
+                secondLargestValue = largestValue;
+                secondLargestIndex = largestIndex;
+                largestValue = time[i];
+                largestIndex = i;
+            }else if(time[i] > secondLargestValue){           //if second maximum
+                secondLargestValue = time[i];
+                secondLargestIndex = i;
+            }
+        }
+        
+        //exa the largest two values
+        for(int i = 0; i < time.length; i++){
+            if(i == largestIndex){
+                time[i] *= PublicData.exaLargestParameter;
+            }else if(i == secondLargestIndex){
+                time[i] *= PublicData.exaSecondLargestParameter;
+            }
+        }
+        
+        //then apply roulette wheel selection
+        RouletteWheel rw = new RouletteWheel(time);
+        return rw.spin();
+    }
+    
+    //when doing swap, exchange, alsway drop worst task, for better tasks
+    //return the index of selected task
+    public int selectWorstTaskObjectiveFunctionValue(int techID, List<Map.Entry<Integer, Task>> thisTechSortedList){
+        
+        //List<Map.Entry<Integer, Task>> thisTechSortedList = solution.get(techID).getSortExecuteTimeList();  //get this sortedList
+        if(thisTechSortedList == null || thisTechSortedList.isEmpty()){                     //must be scheduled in another technician
+            return -1;
+        }
+        
+        //consider priority and travel time and wait time
+        //we consider the time spend related with this task
+        //eg., right after previous task is done, the technician can come to this task, 
+        //tavel time and wait time may happen //and then process time may happen
+        //and then the technician has to go to next task's place, 
+        //right before next task execute, travel time and wait time may happen
+        //we can count all these time as the time spent in this task; 
+        //notice some time are calculated repeatedly because better task may have smaller wait time, which means more tasks can be scheduled
+        
+        int previousTaskEndTime = 0;
+        int nextTaskExecuteTime = 0;
+        int[] time = new int[thisTechSortedList.size()];
+        
+        //from previousTaskEndTime to nextTaskExecuteTIme
+        for(int i = 0; i < thisTechSortedList.size(); i++){
+            
+            if(i == 0)
+                previousTaskEndTime = solution.get(techID).getStartTime();
+            else    //previous task's execute time + process time
+                previousTaskEndTime = thisTechSortedList.get(i-1).getKey() + thisTechSortedList.get(i-1).getValue().getProcessTime();
+            
+            if(i == thisTechSortedList.size() - 1)
+                nextTaskExecuteTime = solution.get(techID).getEndTime();
+            else    //next task's execute time
+                nextTaskExecuteTime = thisTechSortedList.get(i+1).getKey();
+            
+            time[i] = (nextTaskExecuteTime - previousTaskEndTime) / thisTechSortedList.get(i).getValue().getPriority();
+        }
+        
+        int largestIndex = -1;
+        int largestValue = 0;
+        int secondLargestIndex = -1;
+        int secondLargestValue = 0;
+        
+        //first find the largest two tasks
+        for(int i = 0; i < time.length; i++){
+            if(time[i] > largestValue){                 //if maximum
+                secondLargestValue = largestValue;
+                secondLargestIndex = largestIndex;
+                largestValue = time[i];
+                largestIndex = i;
+            }else if(time[i] > secondLargestValue){           //if second maximum
+                secondLargestValue = time[i];
+                secondLargestIndex = i;
+            }
+        }
+        
+        //exa the largest two values
+        for(int i = 0; i < time.length; i++){
+            if(i == largestIndex){
+                time[i] *= PublicData.exaLargestParameter;
+            }else if(i == secondLargestIndex){
+                time[i] *= PublicData.exaSecondLargestParameter;
+            }
+        }
+        
+        //then apply roulette wheel selection
+        RouletteWheel rw = new RouletteWheel(time);
+        return rw.spin();
+    }
+    
     
     //return solution list in case
     public List<Technician> getSolution(){
