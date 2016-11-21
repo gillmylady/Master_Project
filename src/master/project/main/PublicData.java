@@ -32,9 +32,9 @@ public class PublicData {
     
     //path of my files
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
-    public static String sunlabInstancePath = "/home/ps441/NetBeansProjects/Master_Project/instances/FTSP_";
+    public static String sunlabInstancePath = "/home/hfw5079/NetBeansProjects/Master_Project/instances/FTSP_";
     public static String homeResultPath = "/Users/gillmylady/Desktop/master project C212/FTSP_Instances and Results/Results.txt";
-    public static String sunlabResultPath = "/home/ps441/NetBeansProjects/Master_Project/Results.txt";
+    public static String sunlabResultPath = "/home/hfw5079/NetBeansProjects/Master_Project/Results.txt";
     
     public static String homeInstancePathOldMachine = "C:\\Users\\gillmylady\\Documents\\NetBeansProjects\\Master_Project\\instances\\FTSP_";
     public static String homeResultPathOldMachine = "C:\\Users\\gillmylady\\Documents\\NetBeansProjects\\Master_Project\\Results.txt";

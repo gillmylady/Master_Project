@@ -96,7 +96,7 @@ public class MasterProject {
         
         //RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true);
+        RunAllInstancesInSameCaseWithLimitedTime(false, 13, true, true, true, true, true);
         
         //compareConstructiveSolution();
         
@@ -149,7 +149,7 @@ public class MasterProject {
         
         for(int caseN = 1; caseN <= caseNumber; caseN++){
             
-            if(caseN % 2 == 0)          //only run odd case number cases
+            if(caseN % 2 == 1)          //only run even case number cases
                 continue;
             
             ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
