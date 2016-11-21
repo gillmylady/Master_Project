@@ -498,7 +498,7 @@ public class MasterProject {
         int bestG = 0;
         int bestC = 0;
         
-        for(int caseN = 1; caseN <= caseNumber; caseN++){
+        for(int caseN = 5; caseN <= caseNumber; caseN++){
             
             totalGreedy = 0;
             totalConstructive = 0;
@@ -539,7 +539,7 @@ public class MasterProject {
                     if(bestC > bestG)
                         constructiveGreaterThanGreedyCount++;
                     else if(bestC == bestG)
-                        constructiveEqualGreedyCount++;
+                        constructiveEqualGreedyCount++;    
                     else
                         constructiveLessThanGreedyCount++;
                 }
