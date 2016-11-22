@@ -96,7 +96,7 @@ public class MasterProject {
         
         //RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true, true, false, true);
+        RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true, true, true, true);
         
         //compareConstructiveSolution();
         
