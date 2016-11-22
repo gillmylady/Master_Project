@@ -1181,7 +1181,7 @@ public class Solution {
         else
             taskIndex = selectBestTaskPriorityProcessTime(techID, techSortedList);
             
-        if(taskIndex >= techSortedList.size() || taskIndex < 0)
+        if(taskIndex < 0 || taskIndex >= techSortedList.size())
             return -1;
         
         return techSortedList.get(taskIndex).getValue().getTaskID();
