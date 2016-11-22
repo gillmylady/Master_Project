@@ -6,6 +6,7 @@
 package master.project.problem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -985,6 +986,37 @@ public class Solution {
         }
     }
     
+    //this is to make the probability larger for best candidate
+    public void exaFunctionValues(int[] time){
+        int largestIndex = -1;
+        int largestValue = 0;
+        int secondLargestIndex = -1;
+        int secondLargestValue = 0;
+        
+        //first find the largest two tasks
+        for(int i = 0; i < time.length; i++){
+            if(time[i] > largestValue){                 //if maximum
+                secondLargestValue = largestValue;
+                secondLargestIndex = largestIndex;
+                largestValue = time[i];
+                largestIndex = i;
+            }else if(time[i] > secondLargestValue){           //if second maximum
+                secondLargestValue = time[i];
+                secondLargestIndex = i;
+            }
+        }
+        
+        //exa the largest two values
+        for(int i = 0; i < time.length; i++){
+            if(i == largestIndex){
+                time[i] *= PublicData.exaLargestParameter;
+            }else if(i == secondLargestIndex){
+                time[i] *= PublicData.exaSecondLargestParameter;
+            }
+        }
+        
+    }
+    
     //when doing neighbor selection, alsway choose best task for other neighbors
     //return the index of selected task
     public int selectBestTaskObjectiveFunctionValue(int techID, List<Map.Entry<Integer, Task>> thisTechSortedList){
@@ -1023,33 +1055,7 @@ public class Solution {
             time[i] = PublicData.exaParameter * thisTechSortedList.get(i).getValue().getPriority() 
                     / (nextTaskExecuteTime - previousTaskEndTime);
         }
-        
-        int largestIndex = -1;
-        int largestValue = 0;
-        int secondLargestIndex = -1;
-        int secondLargestValue = 0;
-        
-        //first find the largest two tasks
-        for(int i = 0; i < time.length; i++){
-            if(time[i] > largestValue){                 //if maximum
-                secondLargestValue = largestValue;
-                secondLargestIndex = largestIndex;
-                largestValue = time[i];
-                largestIndex = i;
-            }else if(time[i] > secondLargestValue){           //if second maximum
-                secondLargestValue = time[i];
-                secondLargestIndex = i;
-            }
-        }
-        
-        //exa the largest two values
-        for(int i = 0; i < time.length; i++){
-            if(i == largestIndex){
-                time[i] *= PublicData.exaLargestParameter;
-            }else if(i == secondLargestIndex){
-                time[i] *= PublicData.exaSecondLargestParameter;
-            }
-        }
+        exaFunctionValues(time);
         
         //then apply roulette wheel selection
         RouletteWheel rw = new RouletteWheel(time);
@@ -1094,32 +1100,32 @@ public class Solution {
             time[i] = (nextTaskExecuteTime - previousTaskEndTime) / thisTechSortedList.get(i).getValue().getPriority();
         }
         
-        int largestIndex = -1;
-        int largestValue = 0;
-        int secondLargestIndex = -1;
-        int secondLargestValue = 0;
+        exaFunctionValues(time);
         
-        //first find the largest two tasks
-        for(int i = 0; i < time.length; i++){
-            if(time[i] > largestValue){                 //if maximum
-                secondLargestValue = largestValue;
-                secondLargestIndex = largestIndex;
-                largestValue = time[i];
-                largestIndex = i;
-            }else if(time[i] > secondLargestValue){           //if second maximum
-                secondLargestValue = time[i];
-                secondLargestIndex = i;
-            }
+        //then apply roulette wheel selection
+        RouletteWheel rw = new RouletteWheel(time);
+        return rw.spin();
+    }
+    
+    //when doing neighbor selection, alsway choose best task for other neighbors
+    //return the index of selected task
+    //here, we select by priority/processTime
+    public int selectBestTaskPriorityProcessTime(int techID, List<Map.Entry<Integer, Task>> thisTechSortedList){
+        
+        //List<Map.Entry<Integer, Task>> thisTechSortedList = solution.get(techID).getSortExecuteTimeList();  //get this sortedList
+        if(thisTechSortedList == null || thisTechSortedList.isEmpty()){                     //must be scheduled in another technician
+            return -1;
         }
         
-        //exa the largest two values
-        for(int i = 0; i < time.length; i++){
-            if(i == largestIndex){
-                time[i] *= PublicData.exaLargestParameter;
-            }else if(i == secondLargestIndex){
-                time[i] *= PublicData.exaSecondLargestParameter;
-            }
+        int[] time = new int[thisTechSortedList.size()];
+        
+        //from previousTaskEndTime to nextTaskExecuteTIme
+        for(int i = 0; i < thisTechSortedList.size(); i++){
+            time[i] = PublicData.exaParameter * thisTechSortedList.get(i).getValue().getPriority() 
+                    / thisTechSortedList.get(i).getValue().getProcessTime();
         }
+        
+        exaFunctionValues(time);
         
         //then apply roulette wheel selection
         RouletteWheel rw = new RouletteWheel(time);
@@ -1159,6 +1165,28 @@ public class Solution {
         }
         return -1;
     }
+    
+    //return one scheduled Task from one techID, using greedy method
+    //argument: objFunFlag, if true, use the object function value, otherwise, use priority/processTime
+    public int getScheduledTaskUsingGreedy(boolean objFunFlag){
+        Random rd = new Random();
+        int techID = rd.nextInt(solution.size());
+        
+        //get sorted list of all tasks, select by probability of selectBestTaskObjectiveFunctionValue
+        List<Map.Entry<Integer, Task>> techSortedList = solution.get(techID).getSortExecuteTimeList();  //get this sortedList
+        
+        int taskIndex;
+        if(objFunFlag)
+            taskIndex = selectBestTaskObjectiveFunctionValue(techID, techSortedList);
+        else
+            taskIndex = selectBestTaskPriorityProcessTime(techID, techSortedList);
+            
+        if(taskIndex >= techSortedList.size() || taskIndex < 0)
+            return -1;
+        
+        return techSortedList.get(taskIndex).getValue().getTaskID();
+    }
+    
     
     public int getID() { return this.ID; }
     public int getCount() { return this.count; }

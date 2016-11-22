@@ -181,7 +181,9 @@ public class AbcBasicAlgorithm {
             boolean allowExchange, 
             boolean allowShrink, 
             boolean allowExchangeWholeTechnician,
-            boolean exchangeGreedy){
+            boolean exchangeGreedy, 
+            boolean greedySelectTask,
+            boolean greedySelectTaskByObjectFunction){
         
         int currentRound = 0;
         int rdNum;
@@ -205,7 +207,15 @@ public class AbcBasicAlgorithm {
             rdNum = rw.spin();                                              //this is the chosen solution (neighbor)
             if(rdNum < 0)       //in case
                 continue;
-            rdSchedule = solutions.get(rdNum).getOneScheduledTask();        //this is the chosen task for neighbor selection 
+            
+            //if greedySelect task for neighbors, select good one
+            if(greedySelectTask){
+                rdSchedule = solutions.get(rdNum).getScheduledTaskUsingGreedy(greedySelectTaskByObjectFunction);        //this is the chosen task for neighbor selection 
+                if(rdSchedule < 0)
+                    continue;
+            }else{
+                rdSchedule = solutions.get(rdNum).getOneScheduledTask();        //this is the chosen task for neighbor selection 
+            }
             
             for(int sID = 0; sID < solutions.size(); sID++){
                 if(sID == rdNum){   

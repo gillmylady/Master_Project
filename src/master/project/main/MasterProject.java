@@ -96,7 +96,7 @@ public class MasterProject {
         
         //RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(false, 13, true, true, true, true, true);
+        RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true, true, false, true);
         
         //compareConstructiveSolution();
         
@@ -127,6 +127,9 @@ public class MasterProject {
             runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, true, true, true);
             System.out.println();
         }*/
+        
+        //runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, false, true, true);
+            
     }
     
     //run ABC algorithm, each instance is given limited time
@@ -136,7 +139,10 @@ public class MasterProject {
             boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
             boolean allowExchange, boolean allowShrink, 
-            boolean allowExchangeWholeTechnician) throws FileNotFoundException, UnsupportedEncodingException {
+            boolean allowExchangeWholeTechnician,
+            boolean allowGreedy,
+            boolean greedySelectTask,
+            boolean greedySelectTaskByObjectFunction) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         
         int instanceNumber = 20;
@@ -149,7 +155,9 @@ public class MasterProject {
         
         for(int caseN = 1; caseN <= caseNumber; caseN++){
             
-            if(caseN % 2 == 1)          //only run even case number cases
+            if(oddFlag && caseN % 2 == 0)          //only run odd case number cases
+                continue;
+            if(oddFlag == false && caseN % 2 == 1)
                 continue;
             
             ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
@@ -182,7 +190,8 @@ public class MasterProject {
                     
                     //run the rounds in limited time
                     abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], onlookerBeeExist, 
-                            workerBeeAllowNotBackupWhenGetStucked, allowExchange, allowShrink, allowExchangeWholeTechnician, true);
+                            workerBeeAllowNotBackupWhenGetStucked, allowExchange, allowShrink, allowExchangeWholeTechnician, allowGreedy, 
+                            greedySelectTask, greedySelectTaskByObjectFunction);
                     
                     String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                             + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
@@ -195,7 +204,8 @@ public class MasterProject {
                 }
                 analysis.recordSoFar();
             }
-            analysis.endResultAnalysis();
+            //analysis.endResultAnalysis();
+            analysis.close();
         }
         
         log.closeFile();
@@ -255,9 +265,9 @@ public class MasterProject {
                 AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
                 if(caseN < 13)
-                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, true, false);
+                    abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, true, false, false, false);
                 else
-                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true, false, false, false);
+                    abc.RunBasicABCAlgorithm(caseN * 600, -1, true, true, true, false, false, false, false, false);
                 
                 String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue()
                         + ", referredResult=" + result.valueOfKey(key) + ", improveABC=" + (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
@@ -295,7 +305,8 @@ public class MasterProject {
             boolean allowExchange, 
             boolean allowShrink, 
             boolean allowExchangeWholeTechnician,
-            boolean exchangeGreedy) throws FileNotFoundException, UnsupportedEncodingException {
+            boolean exchangeGreedy, 
+            boolean greedySelectTask) throws FileNotFoundException, UnsupportedEncodingException {
         
         if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
             return;
@@ -319,7 +330,7 @@ public class MasterProject {
         abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseNumber], onlookerBeeExist, 
             workerBeeAllowNotBackupWhenGetStucked,
             allowExchange, allowShrink, 
-            allowExchangeWholeTechnician, exchangeGreedy);
+            allowExchangeWholeTechnician, exchangeGreedy, greedySelectTask, true);
         
         String logBuf = key + ": bestBeforeABC=" + abc.getInitialBestSolutionValue() + ", bestAfterABC=" + abc.getSoFarBestSolutionValue() 
                 + " ,referedResult=" + result.valueOfKey(key) + "\r\n";
@@ -417,51 +428,51 @@ public class MasterProject {
 
                         switch(diffApproachIndex){
                             case 0:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], false, false, false , false, false, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], false, false, false , false, false, false, false, false);
                                 break;
                                 
                             case 1:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], false, false, false , false, true, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], false, false, false , false, true, false, false, false);
                                 break;
                                 
                             case 2:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, false , false, false, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, false , false, false, false, false, false);
                                 break;
                                 
                             case 3:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, false , false, true, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, false , false, true, false, false, false);
                                 break;
                                 
                             case 4:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , false, false, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , false, false, false, false, false);
                                 break;
                                 
                             case 5:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , false, false, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , false, false, false, false, false);
                                 break;
                             
                             case 6:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , false, true, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , false, true, false, false, false);
                                 break;
                                 
                             case 7:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , false, true, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , false, true, false, false, false);
                                 break;
                             
                             case 8:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , true, false, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , true, false, false, false, false);
                                 break;
                                 
                             case 9:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , true, false, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , true, false, false, false, false);
                                 break;
                                 
                             case 10:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , true, true, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, true, true , true, true, false, false, false);
                                 break;
                                 
                             case 11:
-                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , true, true, false);
+                                abc.RunBasicABCAlgorithm(totalRounds, PublicData.runLimitTime[caseN], true, false, true , true, true, false, false, false);
                                 break;   
                             default:
                                 break;
@@ -505,7 +516,7 @@ public class MasterProject {
 
         AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
 
-        abc.RunBasicABCAlgorithm(2000, -1, false, false, true , false, false, true);
+        abc.RunBasicABCAlgorithm(2000, -1, false, false, true , false, false, true, false, false);
         
         for(Solution s: abc.getSolutions()){
             ConflictTest ct = new ConflictTest(s);
