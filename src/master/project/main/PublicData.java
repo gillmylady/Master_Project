@@ -28,7 +28,7 @@ public class PublicData {
     public static int exaSecondLargestParameter = 3;
     
     public static boolean AmIAtSublab = false;
-    public static boolean AmIAtOldMachine = false;
+    public static boolean AmIAtOldMachine = true;
     
     //path of my files
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";
@@ -48,8 +48,8 @@ public class PublicData {
         
         GregorianCalendar gcalendar = new GregorianCalendar();
         String ret = "";
-        ret += (gcalendar.get(Calendar.MONTH)+1) + ":" + gcalendar.get(Calendar.DATE) + ";" 
-                + gcalendar.get(Calendar.DATE) + ":" + gcalendar.get(Calendar.MINUTE) + ":" + gcalendar.get(Calendar.SECOND);
+        ret += (gcalendar.get(Calendar.MONTH)+1) + "_" + gcalendar.get(Calendar.DATE) + "_" 
+                + gcalendar.get(Calendar.DATE) + "_" + gcalendar.get(Calendar.MINUTE) + "_" + gcalendar.get(Calendar.SECOND);
         
         return ret;
     }

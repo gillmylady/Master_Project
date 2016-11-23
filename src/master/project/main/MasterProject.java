@@ -96,7 +96,8 @@ public class MasterProject {
         
         //RunEachInstanceWithDifferentOption(-1);
         
-        RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true, true, true, false);
+        //RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true, true, true, false);
+        runExperiment();
         
         //compareConstructiveSolution();
         
@@ -149,7 +150,7 @@ public class MasterProject {
         
         ReferredResult result = new ReferredResult();
         
-        String logFileName = PublicData.printTime();
+        String logFileName = PublicData.printSimpleTime();  //time format readable in windows
         
         LogFile log = new LogFile(logFileName + "_log.txt");
         
@@ -160,7 +161,7 @@ public class MasterProject {
             if(oddFlag == false && caseN % 2 == 1)
                 continue;
             
-            ResultAnalysis analysis = new ResultAnalysis("analysis_" + caseN + ".txt");
+            ResultAnalysis analysis = new ResultAnalysis(logFileName + "analysis_" + caseN + ".txt");
         
             for(int instType = 0; instType < instanceType.length; instType++){
                 for(int instN = 1; instN <= instanceNumber; instN++){
@@ -604,4 +605,29 @@ public class MasterProject {
         log.closeFile();
         
     }
+    
+    
+    // run the whole experiments for this project
+    public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
+        runNoOnlookerBee(true);
+        runOnlookerBeeWithoutLocalSearch(true);
+        runOnlookerBeeWithLocalSearch(true);
+    }
+    
+    // run no onlooker bee
+    // argument, odd or even caseN
+    public static void runNoOnlookerBee(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 13, false, false, false, false, false, false, false, false);
+    }
+    
+    // run onlooker bee but without local search
+    public static void runOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 13, true, false, false, false, false, false, false, false);
+    }
+    
+    // run onlooker bee but without local search
+    public static void runOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 13, true, true, true, true, true, false, false, false);
+    }
+    
 }
