@@ -617,17 +617,17 @@ public class MasterProject {
     // run no onlooker bee
     // argument, odd or even caseN
     public static void runNoOnlookerBee(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 13, false, false, false, false, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, false, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 13, true, false, false, false, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 13, true, true, true, true, true, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false);
     }
     
 }
