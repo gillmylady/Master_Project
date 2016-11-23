@@ -28,7 +28,7 @@ public class PublicData {
     public static int exaSecondLargestParameter = 3;
     
     public static boolean AmIAtSublab = false;
-    public static boolean AmIAtOldMachine = true;
+    public static boolean AmIAtOldMachine = false;
     
     //path of my files
     public static String homeInstancePath = "/Users/gillmylady/NetBeansProjects/Master_Project/instances/FTSP_";

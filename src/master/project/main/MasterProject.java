@@ -609,7 +609,7 @@ public class MasterProject {
     
     // run the whole experiments for this project
     public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
-        runNoOnlookerBee(true);
+        //runNoOnlookerBee(true);
         runOnlookerBeeWithoutLocalSearch(true);
         runOnlookerBeeWithLocalSearch(true);
     }
