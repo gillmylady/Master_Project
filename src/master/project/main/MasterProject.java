@@ -610,8 +610,9 @@ public class MasterProject {
     // run the whole experiments for this project
     public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
         //runNoOnlookerBee(true);
-        runOnlookerBeeWithoutLocalSearch(true);
-        runOnlookerBeeWithLocalSearch(true);
+        runOnlookerBeeWithoutLocalSearch(false);
+        //runOnlookerBeeWithLocalSearch(true);
+        runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
     }
     
     // run no onlooker bee
@@ -630,4 +631,18 @@ public class MasterProject {
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false);
     }
     
+    // run onlooker bee but without local search
+    public static void runLocalSearchDropWorst(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, false, false);
+    }
+    
+    // run onlooker bee but without local search
+    public static void runLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, true);
+    }
+    
+    // run onlooker bee but without local search
+    public static void runLocalSearchDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, false);
+    }
 }
