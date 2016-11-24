@@ -609,10 +609,10 @@ public class MasterProject {
     
     // run the whole experiments for this project
     public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
-        //runNoOnlookerBee(true);
-        runOnlookerBeeWithoutLocalSearch(false);
+        runNoOnlookerBee(false);                //mac
+        //runOnlookerBeeWithoutLocalSearch(false);
         //runOnlookerBeeWithLocalSearch(true);
-        runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
+        //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
     }
     
     // run no onlooker bee
