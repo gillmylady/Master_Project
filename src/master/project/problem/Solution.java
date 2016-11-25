@@ -333,17 +333,19 @@ public class Solution {
                 //System.out.println(Arrays.toString(scheduledTasks.toArray()));
             }
             fitnessValue[1] = constructiveObjectFunction(1, dropTask);
-            fitnessValue[2] = constructiveObjectFunction(2, null);
+            fitnessValue[2] = PublicData.exaLargestParameter * constructiveObjectFunction(2, null);
             RouletteWheel rw = new RouletteWheel(fitnessValue);
             int probSelection = rw.spin();
             
             //exchange
             if(scheduledTasks.size() > 1 && probSelection == 2){
-                exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
+                //exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
                 //i--;        //dont change i
-                continue;
+                //continue;
+                exchangeTasksAmongTechniciansUsingGreedy();
             }else if(scheduledTasks.size() > 0 && probSelection == 1){  //delete
                 
+                /*
                 boolean findFlag = false;
                 for(Technician t : solution){
                     List<Map.Entry<Integer, Task>> list = t.getSortExecuteTimeList();
@@ -368,6 +370,30 @@ public class Solution {
                 //i--;
                 //candidateTasks.add(dropTask.getTaskID());
                 continue;
+                */
+                
+                int techNum = rd.nextInt(solution.size());
+                boolean loopflag = false;
+                for(int i = techNum; loopflag == false || i < techNum; ){
+                    //remove the old codes which define sorted tasks, if necessary, refer those back-up codes
+                    List<Map.Entry<Integer, Task>> list = solution.get(i).getSortExecuteTimeList();
+                    int worstTaskIndex = selectWorstTaskObjectiveFunctionValue(i, list);
+                    if(worstTaskIndex < 0){
+                        i++;                            //we try from the random start point, and when we reach the end we should go back to the very beginning
+                        if(i >= solution.size()){
+                            loopflag = true;
+                            i = 0;
+                        }
+                        continue;
+                    }
+                    //delete t1Task
+                    int taskExecuteTime = list.get(worstTaskIndex).getKey();
+                    Task task = solution.get(i).getTaskFromExecuteTime(taskExecuteTime);
+                    solution.get(i).deleteOneTask(taskExecuteTime, task);
+                    removeTaskFromScheduedList(task.getTaskID(), false);          //remove this task 
+                    break;
+                }
+                
             }else{
             
                 Task s = getTaskFromID(candidateTasks.get(rdSchedule));

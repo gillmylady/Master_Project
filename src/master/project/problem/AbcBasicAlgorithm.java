@@ -27,7 +27,8 @@ public class AbcBasicAlgorithm {
     
     //constructor
     //we construct some initial solutions in here, according to the bees number
-    public AbcBasicAlgorithm(int beeNumber, Instance instance){
+    //argument: constructiveFlag, if true, then all instances of onlookerBee is empty in the begiinning
+    public AbcBasicAlgorithm(int beeNumber, Instance instance, boolean constructiveFlag){
         this.workerBeeNumber = beeNumber/2;
         this.onlookerBeeNumber = beeNumber - beeNumber/2 - 1;
         solutions = new ArrayList<>();
@@ -80,7 +81,8 @@ public class AbcBasicAlgorithm {
         
         for(int i = 0; i < this.onlookerBeeNumber; i++){
             Solution s = new Solution(instance, i + this.workerBeeNumber);      //the second argument is the solution ID
-            s.constructiveRandomSolution();     //random solution
+            if(constructiveFlag == false)
+                s.constructiveRandomSolution();     //random solution
             solutions.add(s);
         }
         

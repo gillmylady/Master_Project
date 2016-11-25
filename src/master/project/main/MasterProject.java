@@ -100,37 +100,10 @@ public class MasterProject {
         runExperiment();
         
         //compareConstructiveSolution();
-        
-        //testExchange();
-        /*        
-        int i = 0;
-        while((i++) < 3){
-            runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, false, true, false);
-            runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, false, true, true);
-            System.out.println();
-            runOneInstanceInLimitedRounds("C_6_1", 6, true, false, true, true, true, false);
-            runOneInstanceInLimitedRounds("C_6_1", 6, true, false, true, true, true, true);
-            System.out.println();
-            runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, true, true, false);
-            runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, true, true, true);
-            System.out.println();
-        }
-        
-        i = 0;
-        while((i++) < 3){
-            runOneInstanceInLimitedRounds("R_5_2", 5, true, false, true, true, true, false);
-            runOneInstanceInLimitedRounds("R_5_2", 5, true, false, true, true, true, true);
-            System.out.println();
-            runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, false, true, false);
-            runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, false, true, true);
-            System.out.println();
-            runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, true, true, false);
-            runOneInstanceInLimitedRounds("R_5_2", 5, true, true, true, true, true, true);
-            System.out.println();
-        }*/
-        
-        //runOneInstanceInLimitedRounds("C_6_1", 6, true, true, true, false, true, true);
             
+        //testExchange();
+        
+        
     }
     
     //run ABC algorithm, each instance is given limited time
@@ -143,7 +116,8 @@ public class MasterProject {
             boolean allowExchangeWholeTechnician,
             boolean allowGreedy,
             boolean greedySelectTask,
-            boolean greedySelectTaskByObjectFunction) throws FileNotFoundException, UnsupportedEncodingException {
+            boolean greedySelectTaskByObjectFunction,
+            boolean constructiveFlag) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         
         int instanceNumber = 20;
@@ -187,7 +161,7 @@ public class MasterProject {
                     
                     log.writeFile(PublicData.printTime() + "\r\n");
                     
-                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, constructiveFlag);
                     
                     //run the rounds in limited time
                     abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], onlookerBeeExist, 
@@ -263,7 +237,7 @@ public class MasterProject {
 
                 log.writeFile(PublicData.printTime() + "\r\n");
 
-                AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+                AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
 
                 if(caseN < 13)
                     abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, true, false, false, false);
@@ -326,7 +300,7 @@ public class MasterProject {
 
         Instance ss = new Instance(fileName);
 
-        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
 
         abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseNumber], onlookerBeeExist, 
             workerBeeAllowNotBackupWhenGetStucked,
@@ -425,7 +399,7 @@ public class MasterProject {
                     int diffApproachIndex = 0;
                     while(diffApproachIndex < analysis.size()){
                     
-                        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+                        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
 
                         switch(diffApproachIndex){
                             case 0:
@@ -515,7 +489,7 @@ public class MasterProject {
 
         Instance ss = new Instance(fileName);
 
-        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss);
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
 
         abc.RunBasicABCAlgorithm(2000, -1, false, false, true , false, false, true, false, false);
         
@@ -549,7 +523,7 @@ public class MasterProject {
         int bestG = 0;
         int bestC = 0;
         
-        for(int caseN = 5; caseN <= caseNumber; caseN++){
+        for(int caseN = 1; caseN <= caseNumber; caseN++){
             
             totalGreedy = 0;
             totalConstructive = 0;
@@ -609,40 +583,46 @@ public class MasterProject {
     
     // run the whole experiments for this project
     public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
-        runNoOnlookerBee(false);                //mac
+        //runNoOnlookerBee(false);                //mac
         //runOnlookerBeeWithoutLocalSearch(false);
         //runOnlookerBeeWithLocalSearch(true);
         //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
+        runOnlookerBeeWithLocalSearchWithConstructive(false);
     }
     
     // run no onlooker bee
     // argument, odd or even caseN
     public static void runNoOnlookerBee(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, false, false, false, false, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, false, false, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, false, false, false, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, false, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorst(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, true);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, true, false);
     }
     
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, false, false);
+    }
+    
+    // run onlooker bee but without local search
+    public static void runOnlookerBeeWithLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false, false);
     }
 }
