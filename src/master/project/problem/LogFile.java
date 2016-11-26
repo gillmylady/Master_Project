@@ -28,13 +28,11 @@ public class LogFile {
             try {
                 fileName.createNewFile();
             } catch (IOException ex) {
-                ex.printStackTrace();
             }
         }
         try {
             out = new BufferedWriter(new FileWriter(fileName.getAbsoluteFile()));       //bufferedWritter, to write log
         } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
     
@@ -49,7 +47,6 @@ public class LogFile {
             System.out.print(data);
             
         } catch (IOException ex) {
-            ex.printStackTrace();
         }
         
     }
@@ -60,7 +57,6 @@ public class LogFile {
         try {
             out.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
     

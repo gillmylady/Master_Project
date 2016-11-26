@@ -28,7 +28,8 @@ public class AbcBasicAlgorithm {
     //constructor
     //we construct some initial solutions in here, according to the bees number
     //argument: constructiveFlag, if true, then all instances of onlookerBee is empty in the begiinning
-    public AbcBasicAlgorithm(int beeNumber, Instance instance, boolean constructiveFlag){
+    //argument: onlookerCopyEmployeeBee, if true, initial onlooker bee copied from workerBee by probability selection
+    public AbcBasicAlgorithm(int beeNumber, Instance instance, boolean constructiveFlag, boolean onlookerCopyEmployeeBee){
         this.workerBeeNumber = beeNumber/2;
         this.onlookerBeeNumber = beeNumber - beeNumber/2 - 1;
         solutions = new ArrayList<>();
@@ -79,10 +80,27 @@ public class AbcBasicAlgorithm {
             solutions.add(s);
         }
         
+        //add code for onlooker bee copying from worker bee
+        int[] workerBeePrio = new int[this.workerBeeNumber];
+        for(int i = 0; i < this.workerBeeNumber; i++){
+            workerBeePrio[i] = solutions.get(i).totalPriority();
+        }
+        RouletteWheel rw = new RouletteWheel(workerBeePrio);
+        int selectRw;
+        
         for(int i = 0; i < this.onlookerBeeNumber; i++){
             Solution s = new Solution(instance, i + this.workerBeeNumber);      //the second argument is the solution ID
-            if(constructiveFlag == false)
-                s.constructiveRandomSolution();     //random solution
+            if(constructiveFlag == false){      //don't combine constructive, then make some more initial solutions
+                
+                // if real ABC, onlookerBee copy from workerBee by probability selection
+                if(onlookerCopyEmployeeBee)
+                {
+                    selectRw = rw.spin();
+                    s = solutions.get(selectRw);
+                    s.setID(i + this.workerBeeNumber);
+                }else
+                    s.constructiveRandomSolution();     //random solution
+            }
             solutions.add(s);
         }
         
@@ -446,7 +464,7 @@ public class AbcBasicAlgorithm {
     }
     
     //get so-far the best solution's total priority
-    public int calculateBestSolutionValue(){
+    private int calculateBestSolutionValue(){
         int bestV = 0;
         for(Solution s : solutions){
             if(s.totalPriority() > bestV){

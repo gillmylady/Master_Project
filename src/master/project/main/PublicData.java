@@ -28,6 +28,10 @@ public class PublicData {
     public static int exaSecondLargestParameter = 3;
     
     public static boolean AmIAtSublab = false;
+
+    /**
+     * if i'm using my old pc, then file path is different
+     */
     public static boolean AmIAtOldMachine = false;
     
     //path of my files

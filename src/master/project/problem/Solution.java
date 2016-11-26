@@ -6,7 +6,6 @@
 package master.project.problem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +174,7 @@ public class Solution {
         //System.out.println(candidateTasks.size());
         for(int i = 0; i < allSchedules.size() - 1; i++){
             
-            int rdNumber = 0;
+            int rdNumber;
             int rdProb = rd.nextInt(probAdd);
             if(i > 0 && rdProb < probExchange){
                 exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
@@ -255,7 +254,6 @@ public class Solution {
             if(scheduledTasks.size() > 1 && probSelection == 2){
                 exchangeTasksAmongTechnicians();    //doesn't care the return value true or false
                 i--;        //dont change i
-                continue;
             }else if(scheduledTasks.size() > 0 && probSelection == 1){  //delete
                 
                 boolean findFlag = false;
@@ -281,7 +279,6 @@ public class Solution {
                 }
                 i--;
                 candidateTasks.add(dropTask.getTaskID());
-                continue;
             }else{
             
                 Task s = getTaskFromID(candidateTasks.get(i));
@@ -557,7 +554,7 @@ public class Solution {
     //return execute time of this schedule s for this technician
     private int TechnicianConflictSchedule(int techNumber, Task s){
         int availExecuteTime = 0;
-        int travelTime1 = 0;
+        int travelTime1;
         int travelTime2 = 0;
         Technician t = solution.get(techNumber);
         
@@ -658,7 +655,7 @@ public class Solution {
         Random r = new Random();
         int rdNumber = r.nextInt(solution.size());  //start check from a random-number of technician
         boolean repeatFlag = true;                  //help start from a random technician and make sure it tries all technicians
-        Task backupS = null;
+        Task backupS;
         Task task = getTaskFromID(scheduleID);
         for(int i = rdNumber; repeatFlag == true || i < rdNumber; ){
             
@@ -761,8 +758,8 @@ public class Solution {
         List<Map.Entry<Integer, Task>> list = solution.get(techID).getSortExecuteTimeList();
         if(list == null)
             return null;
-        int executeTime = 0;
-        Task task = null;
+        int executeTime;
+        Task task;
         for(int i = 0; i < list.size(); i++){
             executeTime = list.get(i).getKey();
             task = list.get(i).getValue();
@@ -810,7 +807,6 @@ public class Solution {
                 solution.get(techNumber).deleteOneTask(lastExecuteTime, null);
                 solution.get(techNumber).addOneTask(minValue, lastTask);
                 
-                continue;
             }
             
             //only move the last task to the end is good enought for this case
@@ -1061,8 +1057,8 @@ public class Solution {
         //we can count all these time as the time spent in this task; 
         //notice some time are calculated repeatedly because better task may have smaller wait time, which means more tasks can be scheduled
         
-        int previousTaskEndTime = 0;
-        int nextTaskExecuteTime = 0;
+        int previousTaskEndTime;
+        int nextTaskExecuteTime;
         int[] time = new int[thisTechSortedList.size()];
         
         //from previousTaskEndTime to nextTaskExecuteTIme
@@ -1106,8 +1102,8 @@ public class Solution {
         //we can count all these time as the time spent in this task; 
         //notice some time are calculated repeatedly because better task may have smaller wait time, which means more tasks can be scheduled
         
-        int previousTaskEndTime = 0;
-        int nextTaskExecuteTime = 0;
+        int previousTaskEndTime;
+        int nextTaskExecuteTime;
         int[] time = new int[thisTechSortedList.size()];
         
         //from previousTaskEndTime to nextTaskExecuteTIme
@@ -1213,16 +1209,14 @@ public class Solution {
         return techSortedList.get(taskIndex).getValue().getTaskID();
     }
     
-    
+    public void setID(int id) { this.ID = id; }
     public int getID() { return this.ID; }
     public int getCount() { return this.count; }
     public void setCount(int count) { this.count = count; }
     public void addCount() { this.count++; }
     
     public boolean getSkill(int taskNum, int techNum){
-        if(skill[taskNum][techNum] == 0)
-            return false;
-        else return true;
+        return skill[taskNum][techNum] != 0;
     }
     
     //judge solution's score by total priority

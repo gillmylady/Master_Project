@@ -45,16 +45,16 @@ public class ReferredResult {
     }
     
     //parse the file and store data into the 4 hashmap
-    public void ParseReferredResult(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
+    private void ParseReferredResult(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
         String[] data;
         File file = new File(fileName);
-        String key = null;
-        int largestValue = 0;               //the largest value might be the upper bound, which is not real value of result
-        int secondLargestValue = 0;         //we want to keep the second largest value, which is a good result already
+        String key;
+        int largestValue;               //the largest value might be the upper bound, which is not real value of result
+        int secondLargestValue;         //we want to keep the second largest value, which is a good result already
         BufferedReader reader = null;
         try{
             reader = new BufferedReader(new FileReader(file));
-            String str = null;
+            String str;
             while((str = reader.readLine()) != null){
                 
                 str = str.replace('\t', ' ');

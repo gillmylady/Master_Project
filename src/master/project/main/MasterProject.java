@@ -85,6 +85,8 @@ public class MasterProject {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.UnsupportedEncodingException
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         
@@ -109,7 +111,8 @@ public class MasterProject {
     //run ABC algorithm, each instance is given limited time
     public static void RunAllInstancesInSameCaseWithLimitedTime(
             boolean oddFlag,            //use multiple to run this program
-            int caseNumber,
+            int minCaseNum,
+            int maxCaseNum,
             boolean onlookerBeeExist, 
             boolean workerBeeAllowNotBackupWhenGetStucked,
             boolean allowExchange, boolean allowShrink, 
@@ -117,7 +120,8 @@ public class MasterProject {
             boolean allowGreedy,
             boolean greedySelectTask,
             boolean greedySelectTaskByObjectFunction,
-            boolean constructiveFlag) throws FileNotFoundException, UnsupportedEncodingException {
+            boolean constructiveFlag,
+            boolean onlookerBeeCopyFromEmployeeBee) throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         
         int instanceNumber = 20;
@@ -128,7 +132,7 @@ public class MasterProject {
         
         LogFile log = new LogFile(logFileName + "_log.txt");
         
-        for(int caseN = 1; caseN <= caseNumber; caseN++){
+        for(int caseN = minCaseNum; caseN <= maxCaseNum; caseN++){
             
             if(oddFlag && caseN % 2 == 0)          //only run odd case number cases
                 continue;
@@ -147,7 +151,7 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
-                    String fileName = null;
+                    String fileName;
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
                     }else{
@@ -161,7 +165,7 @@ public class MasterProject {
                     
                     log.writeFile(PublicData.printTime() + "\r\n");
                     
-                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, constructiveFlag);
+                    AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, constructiveFlag, onlookerBeeCopyFromEmployeeBee);
                     
                     //run the rounds in limited time
                     abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseN], onlookerBeeExist, 
@@ -195,10 +199,7 @@ public class MasterProject {
             RunAllInstancesInLimitedRounds("RC");
             RunAllInstancesInLimitedRounds("RAD");
             
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (UnsupportedEncodingException ex) {
-            ex.printStackTrace();
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
         }
         
     }
@@ -223,7 +224,7 @@ public class MasterProject {
                 if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                     continue;
 
-                String fileName = null;
+                String fileName;
                 if(PublicData.AmIAtSublab){
                     fileName = PublicData.sunlabInstancePath + key + ".txt";
                 }else{
@@ -237,7 +238,7 @@ public class MasterProject {
 
                 log.writeFile(PublicData.printTime() + "\r\n");
 
-                AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
+                AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false, false);
 
                 if(caseN < 13)
                     abc.RunBasicABCAlgorithm(caseN * 1000, -1, true, true, true, true, true, false, false, false);
@@ -288,7 +289,7 @@ public class MasterProject {
 
         ReferredResult result = new ReferredResult();
         
-        String fileName = null;
+        String fileName;
         if(PublicData.AmIAtSublab){
             fileName = PublicData.sunlabInstancePath + key + ".txt";
         }else{
@@ -300,7 +301,7 @@ public class MasterProject {
 
         Instance ss = new Instance(fileName);
 
-        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false, false);
 
         abc.RunBasicABCAlgorithm(-1, PublicData.runLimitTime[caseNumber], onlookerBeeExist, 
             workerBeeAllowNotBackupWhenGetStucked,
@@ -335,16 +336,14 @@ public class MasterProject {
         
         ReferredResult result = new ReferredResult();
         
-        LogFile log = null;
+        LogFile log;
         if(PublicData.AmIAtOldMachine){
             log = new LogFile("oldMachine_whole_log.txt");
         }else{
             String fn = PublicData.printSimpleTime();
             log = new LogFile(fn + "_whole_log.txt");
         }
-        if(log == null){
-            return;
-        }
+        
         
         List<ResultAnalysis> analysis = new ArrayList<>();
         analysis.add(new ResultAnalysis("analysis_NoOnlookerBee_NoWholeTech.txt"));
@@ -380,7 +379,7 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
-                    String fileName = null;
+                    String fileName;
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
                     }else{
@@ -399,7 +398,7 @@ public class MasterProject {
                     int diffApproachIndex = 0;
                     while(diffApproachIndex < analysis.size()){
                     
-                        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
+                        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false, false);
 
                         switch(diffApproachIndex){
                             case 0:
@@ -477,7 +476,7 @@ public class MasterProject {
     
     public static void testExchange() throws FileNotFoundException, UnsupportedEncodingException{
         String key = "R_5_3";
-        String fileName = null;
+        String fileName;
         if(PublicData.AmIAtSublab){
             fileName = PublicData.sunlabInstancePath + key + ".txt";
         }else{
@@ -489,7 +488,7 @@ public class MasterProject {
 
         Instance ss = new Instance(fileName);
 
-        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false);
+        AbcBasicAlgorithm abc = new AbcBasicAlgorithm(PublicData.totalBeeNumber46, ss, false, false);
 
         abc.RunBasicABCAlgorithm(2000, -1, false, false, true , false, false, true, false, false);
         
@@ -520,8 +519,8 @@ public class MasterProject {
         int constructiveEqualGreedyCount;
         int constructiveLessThanGreedyCount;
         
-        int bestG = 0;
-        int bestC = 0;
+        int bestG;
+        int bestC;
         
         for(int caseN = 1; caseN <= caseNumber; caseN++){
             
@@ -537,7 +536,7 @@ public class MasterProject {
                     if(key.equalsIgnoreCase("R_13_1") || key.equalsIgnoreCase("RC_13_7"))    //these two instances error, something in the instance incorrect
                         continue;
                     
-                    String fileName = null;
+                    String fileName;
                     if(PublicData.AmIAtSublab){
                         fileName = PublicData.sunlabInstancePath + key + ".txt";
                     }else{
@@ -587,42 +586,50 @@ public class MasterProject {
         //runOnlookerBeeWithoutLocalSearch(false);
         //runOnlookerBeeWithLocalSearch(true);
         //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
-        runOnlookerBeeWithLocalSearchWithConstructive(false);
+        //runOnlookerBeeWithLocalSearchWithConstructive(false);
+        runOnlookerBeeWithLocalSearchWithOnlookerBeeProbSelect(true);
     }
     
     // run no onlooker bee
     // argument, odd or even caseN
     public static void runNoOnlookerBee(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, false, false, false, false, false, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1 , 12, false, false, false, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, false, false, false, false, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, false, false, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, true, true, true, true, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorst(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, true, true, true, true, true, false, false, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, true, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, true, true, true, true, true, true, true, false, false);
     }
     
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, true, true, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, true, true, true, true, true, true, false, false, false);
     }
     
-    // run onlooker bee but without local search
+    // run conbination of constructive and local search
     public static void runOnlookerBeeWithLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 12, true, true, true, true, true, false, false, false, false);
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, true, true, true, true, false, false, false, true, false);
     }
+    
+    // run initial onlooker bee selected from workerBee by probability
+    public static void runOnlookerBeeWithLocalSearchWithOnlookerBeeProbSelect(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, true, true, true, true, false, false, false, false, true);
+    }
+    
+    
 }

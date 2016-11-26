@@ -38,13 +38,13 @@ public class Instance {
     public Instance(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
         int dataIndex = 0;
         int count = 0;
-        int validCount = 0;
+        int validCount;
         String[] data;
         File file = new File(fileName);
         BufferedReader reader = null;
         try{
             reader = new BufferedReader(new FileReader(file));
-            String str = null;
+            String str;
             while(dataIndex < indexLimit){
                 str = reader.readLine();
                 if(str.isEmpty())
@@ -184,9 +184,7 @@ public class Instance {
     public boolean getSkill(int taskNum, int techNum){
         if(taskNum > taskNumber || techNum >= technicianNumber)
             return false;
-        if(skill[taskNum][techNum] == 0)
-            return false;
-        else return true;
+        return skill[taskNum][techNum] != 0;
     }
     
     public int getProcessTime(int taskNumber) { return taskProcessTime[taskNumber]; }
