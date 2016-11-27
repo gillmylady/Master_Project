@@ -27,7 +27,7 @@ public class PublicData {
     public static int exaLargestParameter = 5; 
     public static int exaSecondLargestParameter = 3;
     
-    public static boolean AmIAtSublab = false;
+    public static boolean AmIAtSublab = true;
 
     /**
      * if i'm using my old pc, then file path is different
@@ -53,7 +53,7 @@ public class PublicData {
         GregorianCalendar gcalendar = new GregorianCalendar();
         String ret = "";
         ret += (gcalendar.get(Calendar.MONTH)+1) + "_" + gcalendar.get(Calendar.DATE) + "_" 
-                + gcalendar.get(Calendar.DATE) + "_" + gcalendar.get(Calendar.MINUTE) + "_" + gcalendar.get(Calendar.SECOND);
+                + gcalendar.get(Calendar.HOUR) + "_" + gcalendar.get(Calendar.MINUTE) + "_" + gcalendar.get(Calendar.SECOND);
         
         return ret;
     }
