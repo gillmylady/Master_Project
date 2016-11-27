@@ -589,11 +589,11 @@ public class MasterProject {
         //runOnlookerBeeWithLocalSearchWithConstructive(false);
         //runOnlookerBeeWithLocalSearchWithOnlookerBeeProbSelect(true);
         
-        runLocalSearchDropWorstSelectBestByObjFun(true);
-        runLocalSearchDropWorstSelectBestByObjFun(false);
+        //runLocalSearchDropWorstSelectBestByObjFun(true);
+        //runLocalSearchDropWorstSelectBestByObjFun(false);
         
-        runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
-        runLocalSearchDropWorstSelectBestByPrioProcessTime(false);
+        //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
+        //runLocalSearchDropWorstSelectBestByPrioProcessTime(false);
     }
     
     // run no onlooker bee
@@ -608,8 +608,18 @@ public class MasterProject {
     }
     
     // run onlooker bee but without local search
+    public static void runRealABCOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, false, false, false, false, false, false, false, false, true);
+    }
+    
+    // run onlooker bee but without local search
     public static void runOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, false, false);
+    }
+    
+    // run initial onlooker bee selected from workerBee by probability
+    public static void runRealABCOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, false, true);
     }
     
     // run onlooker bee but without local search
@@ -627,15 +637,22 @@ public class MasterProject {
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, false, false, false);
     }
     
+    // run onlooker bee but without local search
+    public static void runRealABCLocalSearchDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, false, false, true);
+    }
+    
     // run conbination of constructive and local search
     public static void runOnlookerBeeWithLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, true, false);
     }
     
-    // run initial onlooker bee selected from workerBee by probability
-    public static void runOnlookerBeeWithLocalSearchWithOnlookerBeeProbSelect(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
-        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, false, true);
+    // run conbination of constructive and local search
+    public static void runRealABCOnlookerBeeWithLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, true, true);
     }
+    
+    
     
     
 }
