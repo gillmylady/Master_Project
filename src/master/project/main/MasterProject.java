@@ -78,6 +78,20 @@ conclusion: increasing number of bees might not help, because more steps are not
      this is used to determine which tasks are worse than some better ones
      -> when swapped or exchanged, we always delete bad or even worst tasks 
 
+
+11.28 update
+1.  check abandoned solution and see if consecutive 3 abandoned solutions improve, if not, then stop the algorithm
+        if it's getting better, the whole best solution might also be better then we continue
+        -> Monday night's work
+2.  draw some diagram for the paper
+        -> Tuesday's work
+
+3.  we should record the percentage that we improved from the initial best solution if the data is incorrect in the referred paper
+        -> easy, the number of incorrect instances is limited, we can manually record them
+4.  we should compare my result with best initial solution and see how much we improved
+        -> if we want to record all data's improvement percentage from best initial, we have to run the program again
+        -> if we want only record incorrect instances, we can do manually
+5.  Write a read-me file about this project, and how to run this project
 */
 
 public class MasterProject {
