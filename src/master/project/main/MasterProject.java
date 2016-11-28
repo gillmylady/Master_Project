@@ -54,7 +54,7 @@ conclusion: increasing number of bees might not help, because more steps are not
         -> run differents method parallelly.
 6.  split big instance to smaller ones, to speed up calculation time
         
-
+11.3 update
 1.	try constructive heuristic
             a.	add
             b.	swap and add
@@ -69,8 +69,7 @@ conclusion: increasing number of bees might not help, because more steps are not
             2.	try exchange or swap 3 or 5 tasks
         -> done 1st method, 2th method is no difference with 3 or 5 rounds, takes more time
 
-
-
+11.15 update
 1.  use more parameters to determine the object function value when generate constructive solution
         besides priority/processtime, add travel time, highest priority, smallest process time
 
@@ -92,23 +91,12 @@ public class MasterProject {
         
         //before test, please make sure if i'm at sun-lab or own computer
         
-        //RunAllInstancesInLimitedRounds();
-        
-        //RunAllInstancesInLimitedRounds();
-        
-        //RunEachInstanceWithDifferentOption(-1);
-        
-        //RunAllInstancesInSameCaseWithLimitedTime(true, 13, true, true, true, true, true, true, true, false);
         runExperiment();
-        
-        //compareConstructiveSolution();
-            
-        //testExchange();
-        
         
     }
     
     //run ABC algorithm, each instance is given limited time
+    //this method requires multiple arguments
     public static void RunAllInstancesInSameCaseWithLimitedTime(
             boolean oddFlag,            //use multiple to run this program
             int minCaseNum,
@@ -255,16 +243,6 @@ public class MasterProject {
                 totalAnalysis.insertOneResultAnalysis(key, (abc.getSoFarBestSolutionValue() - abc.getInitialBestSolutionValue())
                                                     , (result.valueOfKey(key) - abc.getSoFarBestSolutionValue()));
 
-                //after all, we check again if improved solutions are invalid
-                /*if(abc.getSoFarBestSolutionValue() > abc.getInitialBestSolutionValue()){
-                    for(Solution s: abc.getSolutions()){
-                        ConflictTest ct = new ConflictTest(s);
-                        if(ct.testIfConflict() == true){
-                            System.out.println("some schedules conflict!!!");
-                            return;
-                        }
-                    }
-                }  */
             }
             analysis.endResultAnalysis();
         }
@@ -321,7 +299,6 @@ public class MasterProject {
             }
         }
     }
-    
     
     
     //run each instance, each instance is given limited round
@@ -474,6 +451,7 @@ public class MasterProject {
         }
     }
     
+    //test exchange feature
     public static void testExchange() throws FileNotFoundException, UnsupportedEncodingException{
         String key = "R_5_3";
         String fileName;
@@ -503,6 +481,8 @@ public class MasterProject {
     
     
     //just generate initial solutions, and compare constructive way and greedy heuristic
+    //we find this comparison is not fair, and we decide making some empty initial solutions to 
+    //test the combination of constructive and local search
     public static void compareConstructiveSolution() throws FileNotFoundException, UnsupportedEncodingException {
         String[] instanceType = {"R", "C", "RC", "RAD"};
         
@@ -594,6 +574,14 @@ public class MasterProject {
         
         //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
         //runLocalSearchDropWorstSelectBestByPrioProcessTime(false);
+        
+        //runRealABCLocalSearchDropWorstSelectBestByPrioProcessTime(true);
+        
+        //runRealABCOnlookerBeeWithLocalSearch(true);
+        //runRealABCOnlookerBeeWithLocalSearch(false);
+        
+        runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(true);
+        runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(false);
     }
     
     // run no onlooker bee
@@ -652,7 +640,10 @@ public class MasterProject {
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, true, true);
     }
     
-    
+    // run conbination of constructive and local search, with greedy select worst and best
+    public static void runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, false, true, true);
+    }
     
     
 }
