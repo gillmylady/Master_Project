@@ -27,7 +27,7 @@ public class PublicData {
     public static int exaLargestParameter = 5; 
     public static int exaSecondLargestParameter = 3;
     
-    public static boolean AmIAtSublab = false;
+    public static boolean AmIAtSublab = true;
 
     /**
      * if i'm using my old pc, then file path is different

@@ -130,6 +130,12 @@ public class MasterProject {
             ResultAnalysis analysis = new ResultAnalysis(logFileName + "analysis_" + caseN + ".txt");
         
             for(int instType = 0; instType < instanceType.length; instType++){
+                
+                if(caseN == 10 && instType > 1)
+                    continue;       //run less test cases and speed up experiments
+                if(caseN == 9 && instType > 2)
+                    continue;       //run less test cases and speed up experiments
+                
                 for(int instN = 1; instN <= instanceNumber; instN++){
                     
                     if(instN % 2 == 0)          //only run odd instances number
@@ -562,29 +568,9 @@ public class MasterProject {
     
     // run the whole experiments for this project
     public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
-        //runNoOnlookerBee(false);                //mac
-        //runOnlookerBeeWithoutLocalSearch(false);
-        //runOnlookerBeeWithLocalSearch(true);
-        //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
-        //runOnlookerBeeWithLocalSearchWithConstructive(false);
-        //runOnlookerBeeWithLocalSearchWithOnlookerBeeProbSelect(true);
         
-        //runLocalSearchDropWorstSelectBestByObjFun(true);
-        //runLocalSearchDropWorstSelectBestByObjFun(false);
-        
-        //runLocalSearchDropWorstSelectBestByPrioProcessTime(true);
-        //runLocalSearchDropWorstSelectBestByPrioProcessTime(false);
-        
-        //runRealABCLocalSearchDropWorstSelectBestByPrioProcessTime(true);
-        
-        //runRealABCOnlookerBeeWithLocalSearch(true);
-        //runRealABCOnlookerBeeWithLocalSearch(false);
-        
-        //runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(true);
-        //runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(false);
-        
-        runRealABCLocalSearchDropWorstSelectBestByObjFun(true);
-        runRealABCLocalSearchDropWorstSelectBestByObjFun(false);
+        runABCWithConstructiveWithGreedySelectByObjFun(true);
+        runABCWithConstructiveWithGreedySelectByObjFun(false);
     }
     
     // run no onlooker bee
@@ -594,63 +580,68 @@ public class MasterProject {
     }
     
     // run onlooker bee but without local search
-    public static void runOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runNoLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 12, true, false, false, false, false, false, false, false, false, false);
     }
     
     // run onlooker bee but without local search
-    public static void runRealABCOnlookerBeeWithoutLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runABCNoLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, false, false, false, false, false, false, false, false, true);
     }
     
     // run onlooker bee but without local search
-    public static void runOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, false, false);
     }
     
     // run initial onlooker bee selected from workerBee by probability
-    public static void runRealABCOnlookerBeeWithLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runABCLocalSearch(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, false, true);
     }
     
     // run onlooker bee but without local search
-    public static void runLocalSearchDropWorst(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runDropWorst(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, false, false, false, false);
     }
     
     // run onlooker bee but without local search
-    public static void runLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, true, false, false);
     }
     
     // run onlooker bee but without local search
-    public static void runRealABCLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runABCDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, true, false, true);
     }
     
     // run onlooker bee but without local search
-    public static void runLocalSearchDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, false, false, false);
     }
     
     // run onlooker bee but without local search
-    public static void runRealABCLocalSearchDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runABCDropWorstSelectBestByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, false, false, true);
     }
     
     // run conbination of constructive and local search
-    public static void runOnlookerBeeWithLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, true, false);
     }
     
     // run conbination of constructive and local search
-    public static void runRealABCOnlookerBeeWithLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runABCLocalSearchWithConstructive(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, false, false, false, true, true);
     }
     
     // run conbination of constructive and local search, with greedy select worst and best
-    public static void runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+    public static void runABCWithConstructiveWithGreedySelectByPrioProcessTime(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, false, true, true);
+    }
+    
+    // run conbination of constructive and local search, with greedy select worst and best
+    public static void runABCWithConstructiveWithGreedySelectByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, true, true, true);
     }
     
     
