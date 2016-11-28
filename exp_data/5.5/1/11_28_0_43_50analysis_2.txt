@@ -1,0 +1,43 @@
+
+Mon Nov 28 00:44:40 EST 2016
+#number of wrong referred paper: 2
+R_2_5, 14, -57
+R_2_15, 13, -45
+#number of as good as referred paper: 1
+R_2_9, 14
+#number of worse: 7
+#average percentage of worse results: 0.582620320855615
+
+Mon Nov 28 00:45:30 EST 2016
+#number of wrong referred paper: 3
+R_2_5, 14, -57
+R_2_15, 13, -45
+C_2_19, 17, -42
+#number of as good as referred paper: 1
+R_2_9, 14
+#number of worse: 16
+#average percentage of worse results: 0.607636965771157
+
+Mon Nov 28 00:46:20 EST 2016
+#number of wrong referred paper: 3
+R_2_5, 14, -57
+R_2_15, 13, -45
+C_2_19, 17, -42
+#number of as good as referred paper: 3
+R_2_9, 14
+RC_2_1, 11
+RC_2_5, 11
+#number of worse: 24
+#average percentage of worse results: 0.6158055962283904
+
+Mon Nov 28 00:47:10 EST 2016
+#number of wrong referred paper: 3
+R_2_5, 14, -57
+R_2_15, 13, -45
+C_2_19, 17, -42
+#number of as good as referred paper: 3
+R_2_9, 14
+RC_2_1, 11
+RC_2_5, 11
+#number of worse: 34
+#average percentage of worse results: 0.6387076130076038

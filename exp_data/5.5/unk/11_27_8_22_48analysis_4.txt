@@ -1,0 +1,20 @@
+
+Sun Nov 27 20:34:28 EST 2016
+#number of worse: 10
+#average percentage of worse results: 0.7184182881625337
+
+Sun Nov 27 20:42:48 EST 2016
+#number of worse: 20
+#average percentage of worse results: 0.672753582099389
+
+Sun Nov 27 20:51:08 EST 2016
+#number of as good as referred paper: 1
+RC_4_1, 23
+#number of worse: 29
+#average percentage of worse results: 0.6921661565289635
+
+Sun Nov 27 20:59:28 EST 2016
+#number of as good as referred paper: 1
+RC_4_1, 23
+#number of worse: 39
+#average percentage of worse results: 0.7156715468828686

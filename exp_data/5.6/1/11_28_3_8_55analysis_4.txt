@@ -1,0 +1,16 @@
+
+Mon Nov 28 15:20:36 CST 2016
+#number of worse: 10
+#average percentage of worse results: 0.5901227246751544
+
+Mon Nov 28 15:28:57 CST 2016
+#number of worse: 20
+#average percentage of worse results: 0.5695274767185523
+
+Mon Nov 28 15:37:17 CST 2016
+#number of worse: 30
+#average percentage of worse results: 0.5897604772547566
+
+Mon Nov 28 15:45:37 CST 2016
+#number of worse: 40
+#average percentage of worse results: 0.611616069869368

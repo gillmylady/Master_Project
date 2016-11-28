@@ -580,8 +580,11 @@ public class MasterProject {
         //runRealABCOnlookerBeeWithLocalSearch(true);
         //runRealABCOnlookerBeeWithLocalSearch(false);
         
-        runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(true);
-        runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(false);
+        //runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(true);
+        //runRealABCOnlookerBeeWithLocalSearchWithConstructiveWithGreedySelect(false);
+        
+        runRealABCLocalSearchDropWorstSelectBestByObjFun(true);
+        runRealABCLocalSearchDropWorstSelectBestByObjFun(false);
     }
     
     // run no onlooker bee
@@ -618,6 +621,11 @@ public class MasterProject {
     // run onlooker bee but without local search
     public static void runLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, true, false, false);
+    }
+    
+    // run onlooker bee but without local search
+    public static void runRealABCLocalSearchDropWorstSelectBestByObjFun(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, true, false, true);
     }
     
     // run onlooker bee but without local search
