@@ -1,0 +1,29 @@
+
+Tue Nov 29 02:43:28 CST 2016
+#number of wrong referred paper: 1
+R_3_7, 9, -53
+#number of worse: 9
+#average percentage of worse results: 0.5885302076091549
+
+Tue Nov 29 02:45:08 CST 2016
+#number of wrong referred paper: 2
+R_3_7, 9, -53
+C_3_3, 1, -50
+#number of worse: 18
+#average percentage of worse results: 0.5361908472222221
+
+Tue Nov 29 02:46:48 CST 2016
+#number of wrong referred paper: 3
+R_3_7, 9, -53
+C_3_3, 1, -50
+RC_3_15, 13, -52
+#number of worse: 27
+#average percentage of worse results: 0.5386646974809356
+
+Tue Nov 29 02:48:29 CST 2016
+#number of wrong referred paper: 3
+R_3_7, 9, -53
+C_3_3, 1, -50
+RC_3_15, 13, -52
+#number of worse: 37
+#average percentage of worse results: 0.5085095176258185
