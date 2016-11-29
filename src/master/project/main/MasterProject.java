@@ -583,8 +583,9 @@ public class MasterProject {
     // run the whole experiments for this project
     public static void runExperiment() throws FileNotFoundException, UnsupportedEncodingException{
         
-        runABCWithConstructiveWithGreedySelectByObjFun(true);
-        runABCWithConstructiveWithGreedySelectByObjFun(false);
+        //runABCWithConstructiveWithGreedySelectByObjFun(true);
+        //runABCWithConstructiveWithGreedySelectByObjFun(false);
+        runABCLocalSearchWithAbandonedCount(true);
     }
     
     // run no onlooker bee
@@ -658,5 +659,8 @@ public class MasterProject {
         RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 1, 10, true, true, true, true, true, true, true, true, true, true);
     }
     
-    
+    // run onlooker bee but without local search, allow abandon count in PublicData must be true to test it.
+    public static void runABCLocalSearchWithAbandonedCount(boolean oddFlag) throws FileNotFoundException, UnsupportedEncodingException{
+        RunAllInstancesInSameCaseWithLimitedTime(oddFlag, 5, 6, true, true, true, true, true, false, false, false, false, true);
+    }
 }

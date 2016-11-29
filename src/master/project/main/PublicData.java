@@ -18,6 +18,7 @@ public class PublicData {
     
     public static int workerBeeNotBackUp = 100;         //10 to 100
     public static int resetBeeCount = 50;              //20 to 50
+    //public static int resetBeeCount = 200;              //20 to 50
     
     public static int totalBeeNumber20 = 20;
     public static int totalBeeNumber46 = 46;
@@ -27,7 +28,10 @@ public class PublicData {
     public static int exaLargestParameter = 5; 
     public static int exaSecondLargestParameter = 3;
     
-    public static boolean AmIAtSublab = true;
+    public static int abandonedCountLimit = 50;
+    public static boolean allowAbandonCount = false;
+    
+    public static boolean AmIAtSublab = false;
 
     /**
      * if i'm using my old pc, then file path is different

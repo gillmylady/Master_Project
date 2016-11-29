@@ -25,6 +25,12 @@ public class AbcBasicAlgorithm {
     private List<Solution> solutions;
     private int soFarBestSolution;
     
+    //add some codes to check if more than 3 rounds, abandoned solutions arent improve, if the result is as good as our final result by using out limited time
+    private int abandonedCount = 0;         //we calculate the count of how many consecutive abandoned solutions not improved
+    private int lastAbandonedValue = 0;     //if more than 3, we stop the while loop of algorithm
+    private boolean abandonFlag = false;        //if we find abandoned solution
+    private boolean resetAbandonCountFlag = false;  //if we reset the count to 0 in one round
+    
     //constructor
     //we construct some initial solutions in here, according to the bees number
     //argument: constructiveFlag, if true, then all instances of onlookerBee is empty in the begiinning
@@ -211,6 +217,8 @@ public class AbcBasicAlgorithm {
         int averagePrio;
         
         int[] eachPrio = new int[solutions.size()];
+        abandonedCount = 0;
+        lastAbandonedValue = 0;
         
         //http://stackoverflow.com/questions/19727109/how-to-exit-a-while-loop-after-a-certain-time
         long startTime = System.currentTimeMillis();
@@ -221,6 +229,9 @@ public class AbcBasicAlgorithm {
             //if need, we can print all solutions' value in each totalRounds, to see if it's improved
             //displayAllSolution(false);
             
+            abandonFlag = false;                //reset these two in the beginning of each round
+            resetAbandonCountFlag = false;
+        
             //this is the fitness function, probability choose, for neighbor selection
             eachPrio = getSolutionFitness(solutions);
             RouletteWheel rw = new RouletteWheel(eachPrio);
@@ -296,8 +307,31 @@ public class AbcBasicAlgorithm {
                 }else{  //if allow reset onlooker bee, start judge from the first onlooker bee
                     for(int j = this.workerBeeNumber; j < eachPrio.length; j++){
                         if(solutions.get(j).getCount() > PublicData.resetBeeCount && solutions.get(j).totalPriority() < soFarBestSolution){         //highest doesnt reset
+    
+                            //update the count and abandonedValue if we find better abandoned solution
+                            //otherwise resetAbandonCountFlag is false
+                            if(solutions.get(j).totalPriority() > lastAbandonedValue){
+                                lastAbandonedValue = solutions.get(j).totalPriority();
+                                abandonedCount = 0;
+                                resetAbandonCountFlag = true;
+                            }
+                            abandonFlag = true;     //if there is, set this flag true
+                            
                             solutions.get(j).resetSolution();
                         }
+                    }
+                    
+                    //if we find some abandoned solution but we didnt reset abandonFlag, we need to add the count
+                    if(abandonFlag && resetAbandonCountFlag == false){
+                        abandonedCount++;
+                    }
+                    //if the count is great than 3, we break the loop
+                    if(abandonedCount > PublicData.abandonedCountLimit){
+                        if(allowShrink){
+                            solutionsTryShrinkAfterLoop();
+                        }
+                        if(PublicData.allowAbandonCount)
+                            return;
                     }
                 }
             }
