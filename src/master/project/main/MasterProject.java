@@ -83,6 +83,13 @@ conclusion: increasing number of bees might not help, because more steps are not
 1.  check abandoned solution and see if consecutive 3 abandoned solutions improve, if not, then stop the algorithm
         if it's getting better, the whole best solution might also be better then we continue
         -> Monday night's work
+Following this advice, i checked if we can reduce some loop time (to stop the loop earlier than the specific time) by controlling the {count of consecutive rounds of unimproved abandoned solutions}, name it N. And Yes it works!!! In here i run case 5 which is a not small not large case, including 40 instances. 
+If we use specific time (75 seconds for each instance of case 5), the average percentage of improvement is about 62%.
+If we use N as 10, the average percentage is 51%, there is still some space to improve.
+If we use N as 50, the average percentage is 59%, we are almost there.
+If we use N as 200, the average percentage is 65%, yes we achieve as good solution as running 75 seconds for each instance, however in here, as i calculate, the average of running time of each instance is only 38.5 seconds, almost half of 75 seconds!! 
+This experiment means that for some instances, we don't need that much time as referred paper, we can stop earlier and the result is similar as the one which we spend about double time. I will write this important data into my paper and list it as one of future work, more experiments are required to determine the optimal parameter of this count.
+
 2.  draw some diagram for the paper
         -> Tuesday's work
 
