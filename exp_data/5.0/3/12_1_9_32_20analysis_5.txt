@@ -1,0 +1,20 @@
+
+Thu Dec 01 09:53:35 CST 2016
+#number of worse: 10
+#average percentage of worse results: 0.40298350927383186
+
+Thu Dec 01 10:06:07 CST 2016
+#number of worse: 20
+#average percentage of worse results: 0.4257359486895777
+
+Thu Dec 01 10:18:38 CST 2016
+#number of wrong referred paper: 1
+RC_5_9, 3, -110
+#number of worse: 29
+#average percentage of worse results: 0.42478948503098896
+
+Thu Dec 01 10:31:10 CST 2016
+#number of wrong referred paper: 1
+RC_5_9, 3, -110
+#number of worse: 39
+#average percentage of worse results: 0.42451012150354767
